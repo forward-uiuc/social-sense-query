@@ -15,6 +15,10 @@ class QueryHistoryObserver
      */
     public function created(QueryHistory $history)
     {
+			if($history->has_error) {
+				return;
+			}
+
 			$payload = [
 				'username' => $history->queryOfRecord->user->name,
 				'data' => $history->data,
