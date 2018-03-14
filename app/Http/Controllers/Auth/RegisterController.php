@@ -71,8 +71,8 @@ class RegisterController extends Controller
         ]);
 
 				$application = [
-					'callback_url' => ':1111/verification?username=' . $user->name . '&hashKey=' . md5($user->name),
-					'home' => ':1111/verification?username=' . $user->name . '&hashKey=' . md5($user->name),
+					'callback_url' => 'http://localhost:1111/verification?username=' . $user->name . '&hashkey=' . md5($user->name),
+					'home' => ':1111/home?username=' . $user->name . '&hashkey=' . md5($user->name),
 					'name' => 'Data processessing and visualization',
 					'description' => 'Description for application goes here'
 				];

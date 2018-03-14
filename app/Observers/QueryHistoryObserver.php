@@ -22,15 +22,16 @@ class QueryHistoryObserver
 
 			];
 
-			$history->queryOfRecord->user->applications->each(function($application) use ($payload) {
-				$client = new Client([
-					'base_uri' =>  $application->callback_url
-				]);
+			$history->queryOfRecord->user->applications->each(function($application) use ($payload, $history) {
+				
+				$client = new Client();
 
 				try{
-					$client->request('POST', [
-						'headers' => 'application/json',
-						'body' => $payload
+					$client->request('POST', $application->callback_url, [
+						'headers' => [
+							'Content-Type' => 'application/json',
+						],
+						'json' => $payload
 					]);
 
 
