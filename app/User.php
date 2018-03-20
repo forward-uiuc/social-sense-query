@@ -58,4 +58,16 @@ class User extends Authenticatable
 		public function queries() {
 			return $this->hasMany('App\Query');
 		}
+
+		/*
+		 * Get how many gigabytes of storage this user's data is taking up
+		 */
+		public function getQuotaUsedAttribute() {
+			$used = $this->queries->reduce(function($carry, $query) {
+				return $carry + $query->history->reduce(function($carry, $history) {
+					return $carry + $history->size;
+				},0);
+			}, 0);
+			return ($used/1024)/1024;
+		}
 }
