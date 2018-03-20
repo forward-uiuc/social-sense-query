@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ConnectException;
 
 use App\QueryHistory;
+use App\Exceptions\UserQuotaReachedException;
 
 class Query extends Model
 {
@@ -52,9 +53,19 @@ class Query extends Model
 
 
 	/*
-	 * Submit this query to the graphql server, creating a new history
+	 * Submit this query to the graphql server, returning attributes of a history object
 	 */
 	public function submit() {
+
+		// First, check to see if we've used too much of the user's quota
+		
+		$quotaUsed = $this->user->quotaUsed;
+		$quotaAvailable = $this->user->quota;
+		if($quotaUsed >= $quotaAvailable){
+			throw new UserQuotaReachedException("Error, used " . $quotaUsed . " GB of " . $quotaAvailable . " GB quota.");
+
+		}
+
 		$client = new Client([
 			'base_uri' => config('services.graphql.server_uri')
 		]);
