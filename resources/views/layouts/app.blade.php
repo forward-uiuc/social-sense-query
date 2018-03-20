@@ -74,7 +74,12 @@
 				</div>
 				@endif
 
-				
+				@if (Session::has('error'))
+				<div class="alert alert-danger" role="alert">
+					{{ Session::get('error') }} 
+				</div>
+				@endif
+
         <main class="" style="margin-top: 60px;">
             @yield('content')
         </main>

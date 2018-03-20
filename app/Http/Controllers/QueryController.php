@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreQueryRequest;
 use App\Query;
 use App\QueryHistory;
+use App\Exceptions\UserQuotaReachedException;
 
 class QueryController extends Controller
 {
@@ -51,8 +52,12 @@ class QueryController extends Controller
 		public function submit(Request $request, $id) 
 		{
 			$query = Query::findOrFail($id);
-			$query->history()->save(new QueryHistory($query->submit()));
 
+			try {
+				$query->history()->save(new QueryHistory($query->submit()));
+			} catch (UserQuotaReachedException $e) {
+				$request->session()->flash('error', $e->getMessage());
+			}
 			return back();
 		}
 

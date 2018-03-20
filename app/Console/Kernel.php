@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Query;
 use App\QueryHistory;
+use App\Exceptions\UserQuotaReachedException;
 use Cron\CronExpression;
 use Illuminate\Support\Carbon;
 
@@ -32,7 +33,11 @@ class Kernel extends ConsoleKernel
 			$schedule->call(function() use ($date) {
 				Query::all()->each(function($query)  use ($date) {
 					if($query->isDue($date->toDateTimeString())){
-						$query->history()->save(new QueryHistory($query->submit()));
+						try { 
+							$query->history()->save(new QueryHistory($query->submit()));
+						} catch (UserQuotaReachedException $e){
+							\Log::notice($e->getMessage(), ['user' => $query->user->email]);
+						}
 					}
 				});	
 			})->everyMinute();
