@@ -26,5 +26,6 @@ Route::get('login/{provider}', 'AuthorizationController@authorizeProvider')->nam
 Route::get('login/{prodier}/return', 'AuthorizationController@createAuthorization')->name('authorizationReturn');
 
 Route::resource('queries', 'QueryController');
+Route::resource('users', 'UserController');
 Route::get('queries/{id}/submit', 'QueryController@submit');
 
