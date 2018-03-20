@@ -35,6 +35,13 @@
 											<a class="nav-item nav-link" href=" {{ url('/home') }}">
 												Home			
 											</a>
+
+											@if (Auth::user()->isAdmin)
+												<a class="nav-item nav-link" href=" {{ url('/users') }}">
+													Manage Users
+												</a>
+											@endif
+
 											@endauth
                     </ul>
 
