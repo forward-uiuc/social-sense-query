@@ -3,6 +3,21 @@
 @section('content')
 
 <div class="container">
+		
+		@if ($user->quotaUsed >= $user->quota)
+		<div class="row justify-content-center">
+				<div class="alert alert-danger" role="alert">
+					You have used {{ $user->quotaUsed }} GB of storage out of your quota of {{ $user->quota }} GB. Remove some stored data in order to continue to query.
+				</div>
+		</div>
+		@elseif (($user->quotaUsed / $user->quota) >= 0.5)
+		<div class="row justify-content-center">
+				<div class="alert alert-warning" role="alert">
+					You have used {{ $user->quotaUsed }} GB of storage out of your quota of {{ $user->quota }} GB. To avoid unnecessary service interruption remove stored data.
+				</div>
+		</div>
+		@endif
+
 		<div class="row justify-content-center">
 			<div class="col-md-8">
 					<div class="card border-dark mb-3">

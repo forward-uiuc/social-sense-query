@@ -62,12 +62,20 @@ class User extends Authenticatable
 		/*
 		 * Get how many gigabytes of storage this user's data is taking up
 		 */
+		private $cached_quotaUsed = false;
 		public function getQuotaUsedAttribute() {
+			if($this->cached_quotaUsed){
+				return $this->cached_quotaUsed;
+			}
+
 			$used = $this->queries->reduce(function($carry, $query) {
 				return $carry + $query->history->reduce(function($carry, $history) {
 					return $carry + $history->size;
 				},0);
 			}, 0);
-			return ($used/1024)/1024;
+
+			$used = ($used/1024)/1024;
+			$this->cached_quotaUsed = $used;
+			return $used;
 		}
 }
