@@ -15,7 +15,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'quota'
     ];
 
     /**
@@ -75,6 +75,9 @@ class User extends Authenticatable
 			}, 0);
 
 			$used = ($used/1024)/1024;
+
+			$used = (int) ($used * 1000);
+			$used = ((float) $used )/ 1000;
 			$this->cached_quotaUsed = $used;
 			return $used;
 		}

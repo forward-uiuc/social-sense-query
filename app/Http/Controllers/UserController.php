@@ -7,6 +7,16 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+		/**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+				$this->middleware('admin');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +24,8 @@ class UserController extends Controller
      */
     public function index()
     {
-			abort(404);
+			$users = User::all();
+			return view('users.list', ['users' => $users]);
     }
 
     /**
@@ -57,7 +68,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-			abort(404);
+			return view('users.edit', ['user' => $user]);
     }
 
     /**
@@ -69,17 +80,25 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        //
+			$user->fill($request->all());
+			$user->isAdmin = (bool) $request->input('admin');
+			$user->save();
+
+			$request->session()->flash('status', 'User Updated!');
+			return redirect('users');
     }
 
     /**
      * Remove the specified resource from storage.
      *
+		 * @param  \Illuminate\Http\Request  $request
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(Request $request, User $user)
     {
-        //
+			$user->delete();
+			$request->session()->flash('status', 'User Deleted!');
+			return redirect('users');
     }
 }
