@@ -17,6 +17,8 @@ window.Vue = require('vue');
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('query-builder', require('./components/QueryBuilder.vue'));
+Vue.component('context-info', require('./components/ContextInformation.vue'));
+
 const app = new Vue({
     el: '#app',
 		methods: {

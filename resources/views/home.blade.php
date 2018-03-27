@@ -21,7 +21,11 @@
 		<div class="row justify-content-center">
 			<div class="col-md-8">
 					<div class="card border-dark mb-3">
-						<div class="card-header bg-dark text-light"> Authorize Social Media Providers</div>
+						<div class="card-header bg-dark text-light"> Authorize Social Media Providers
+							<div class="float-right">
+							<context-info icon-info="fas fa-question fa-lg" popup-info="In order to build queries for each social media provider, you need to log into an account and authorize this system to perform queries on your behalf. Providers you haven't authorized are displayed in grey and the providers you have authorized are colored."></context-info>
+						</div>
+						</div>
 						<div class="card-body">
 							@foreach ($user->authorizedProviders as $providerName => $authorized)
 								<a href="{{ url('login/' . $providerName) }}">
@@ -36,7 +40,11 @@
 		<div class="row" style="margin-top:20px;">
 			<div class="col-md-6">
 				<div class="card border-dark mb-3">
-					<div class="card-header bg-dark text-light">  Manage Queries</div>
+					<div class="card-header bg-dark text-light">  Manage Queries
+							<div class="float-right">
+							<context-info icon-info="fas fa-question fa-lg" popup-info="Queries represent traversals through a graph of relationships. Here you can create queries depending on social media providers that you've authorized. After you create a query, you can manage it to see the raw data from the query, what attributes you've chosen, the history, as well as update it."></context-info>
+						</div>
+					</div>
 					<div class="card-body">
 						<a href="{{ url('queries/create') }}" class="btn btn-primary"> Create Query </a>
 						<hr/>
@@ -66,7 +74,11 @@
 
 			<div class="col-md-6">
 				<div class="card border-dark mb-3">
-					<div class="card-header bg-dark text-light">  Manage Applications </div>
+					<div class="card-header bg-dark text-light">  Manage Applications
+						<div class="float-right">
+							<context-info icon-info="fas fa-question fa-lg" popup-info="Applications are servers that receive your data when you query. By default we assume that you want access to the data processing server but if you have a server of your own that you want to have access to your data, then you can just add it here and when you submit a query it will receive the data"></context-info>
+						</div>
+					</div>
 					<div class="card-body">
 						<ul class="list-group">
 							@foreach ($user->applications as $application) 
