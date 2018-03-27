@@ -16,11 +16,10 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-
 Route::get('home', 'HomeController@index')->name('home');
+Route::get('about', 'PagesController@about')->name('about');
+Route::get('/', 'PagesController@landing')->name('landing');
 
-//Route::get('about', 'PagesController@about')->name('about');
-//Route::get('contact', 'PagesController@contact')->name('contact');
 
 Route::get('login/{provider}', 'AuthorizationController@authorizeProvider')->name('authorizeProvider');
 Route::get('login/{prodier}/return', 'AuthorizationController@createAuthorization')->name('authorizationReturn');
