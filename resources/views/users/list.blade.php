@@ -26,14 +26,14 @@
 						</td>
 						
 						<td>
-							<form id="delete-form" action="{{ route('users.destroy', ['id' => $user->id]) }}" method="POST" style="display: none;">
+							<form id="delete-form-{{$user->id}}" action="{{ route('users.destroy', ['id' => $user->id]) }}" method="POST" style="display: none;">
 								@method('delete')
 								@csrf
 						 </form>
 
 						<a href="" 
 							 class="btn btn-danger float-right" 
-							 onclick="event.preventDefault(); document.getElementById('delete-form').submit();">
+							 onclick="event.preventDefault(); document.getElementById('delete-form-{{$user->id}}').submit();">
 								<i class="fas fa-minus-circle"></i>
 								Delete User 
 						</a>
