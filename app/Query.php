@@ -91,10 +91,14 @@ class Query extends Model
 			$duration = round(microtime(true) - $start, 3) * 1000;	
 			$data = (string) $e->getResponse()->getBody(true);
 			return ['data' => $data, 'has_error' => true, 'duration' => $duration];
+
 		} catch (ConnectException $e) {
 			$duration = round(microtime(true) - $start, 3) * 1000;	
 			return ['data' => json_encode($e->getMessage()), 'has_error' => true, 'duration' => $duration];
-		}	
 
+		}	catch (ServerException $e) {
+			$duration = round(microtime(true) - $start, 3) * 1000;  
+			return ['data' => json_encode($e->getMessage()), 'has_error' => true, 'duration' => $duration];
+		}
 	}
 }

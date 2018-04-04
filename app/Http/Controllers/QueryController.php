@@ -57,6 +57,8 @@ class QueryController extends Controller
 				$query->history()->save(new QueryHistory($query->submit()));
 			} catch (UserQuotaReachedException $e) {
 				$request->session()->flash('error', $e->getMessage());
+			} catch (\RuntimeException $e) {
+				$request->session()->flash('error', $e->getMessage());
 			}
 			return back();
 		}

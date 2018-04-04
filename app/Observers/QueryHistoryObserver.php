@@ -22,8 +22,9 @@ class QueryHistoryObserver
 			$payload = [
 				'username' => $history->queryOfRecord->user->name,
 				'data' => $history->data,
-				'time' => $history->created_at->timestamp
-
+				'time' => $history->created_at->timestamp,
+				'name' => $history->queryOfRecord->name,
+				'structure' => $history->queryOfRecord->structure
 			];
 
 			$history->queryOfRecord->user->applications->each(function($application) use ($payload, $history) {
@@ -39,9 +40,9 @@ class QueryHistoryObserver
 					]);
 
 
-				} catch (Exception $e){
+				} catch (\RuntimeException$e){
+					\Log::error($e->getMessage(), ['History' => $history->id, 'Application' => $application->name, 'url' => $application->callback_url]);
 				}
-
 			});
     }
 }
