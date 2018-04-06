@@ -31,6 +31,7 @@ class QueryHistoryObserver
 				
 				$client = new Client();
 
+				dd($payload);
 				try{
 					$client->request('POST', $application->callback_url, [
 						'headers' => [
@@ -38,7 +39,6 @@ class QueryHistoryObserver
 						],
 						'json' => $payload
 					]);
-
 
 				} catch (\RuntimeException$e){
 					\Log::error($e->getMessage(), ['History' => $history->id, 'Application' => $application->name, 'url' => $application->callback_url]);

@@ -18,6 +18,8 @@ window.Vue = require('vue');
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('query-builder', require('./components/QueryBuilder.vue'));
 Vue.component('context-info', require('./components/ContextInformation.vue'));
+Vue.component('meta-query-builder-canvas', require('./components/MetaQueryBuilderCanvas.vue'));
+Vue.component('meta-query-builder', require('./components/MetaQueryBuilder.vue'));
 
 const app = new Vue({
     el: '#app',

@@ -47,6 +47,7 @@
 					</div>
 					<div class="card-body">
 						<a href="{{ url('queries/create') }}" class="btn btn-primary"> Create Query </a>
+						<a href="{{ url('meta-queries/create')}}" class="btn btn-secondary"> Create Meta Query </a>
 						<hr/>
 						@if (count($user->queries) > 0)
 						<ul class="list-group">

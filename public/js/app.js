@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 85);
+/******/ 	return __webpack_require__(__webpack_require__.s = 86);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -690,8 +690,8 @@ var eventOff = function eventOff(el, evtName, handler) {
 "use strict";
 
 
-var bind = __webpack_require__(44);
-var isBuffer = __webpack_require__(93);
+var bind = __webpack_require__(45);
+var isBuffer = __webpack_require__(94);
 
 /*global toString:true*/
 
@@ -1348,6 +1348,88 @@ module.exports = g;
 
 /***/ }),
 /* 12 */
+/***/ (function(module, exports) {
+
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
+
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
+
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
+
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
+
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
+
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
+
+	return [content].join('\n');
+}
+
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
+
+	return '/*# ' + data + ' */';
+}
+
+
+/***/ }),
+/* 13 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1370,7 +1452,7 @@ module.exports = g;
 });
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -3816,310 +3898,7 @@ Popper.Defaults = Defaults;
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(11)))
 
 /***/ }),
-/* 14 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = pluckProps;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__object__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__array__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__identity__ = __webpack_require__(51);
-
-
-
-
-/**
- * Given an array of properties or an object of property keys,
- * plucks all the values off the target object.
- * @param {{}|string[]} keysToPluck
- * @param {{}} objToPluck
- * @param {Function} transformFn
- * @return {{}}
- */
-function pluckProps(keysToPluck, objToPluck) {
-  var transformFn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : __WEBPACK_IMPORTED_MODULE_2__identity__["a" /* default */];
-
-  return (Object(__WEBPACK_IMPORTED_MODULE_1__array__["d" /* isArray */])(keysToPluck) ? keysToPluck.slice() : Object(__WEBPACK_IMPORTED_MODULE_0__object__["e" /* keys */])(keysToPluck)).reduce(function (memo, prop) {
-    // eslint-disable-next-line no-sequences
-    return memo[transformFn(prop)] = objToPluck[prop], memo;
-  }, {});
-}
-
-/***/ }),
 /* 15 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
-  props: {
-    size: {
-      type: String,
-      default: null
-    }
-  },
-  computed: {
-    sizeFormClass: function sizeFormClass() {
-      return [this.size ? "form-control-" + this.size : null];
-    },
-    sizeBtnClass: function sizeBtnClass() {
-      return [this.size ? "btn-" + this.size : null];
-    }
-  }
-});
-
-/***/ }),
-/* 16 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
-
-/***/ }),
-/* 17 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = observeDOM;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__object__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_dom__ = __webpack_require__(4);
-
-
-
-/**
- * Observe a DOM element changes, falls back to eventListener mode
- * @param {Element} el The DOM element to observe
- * @param {Function} callback callback to be called on change
- * @param {object} [opts={childList: true, subtree: true}] observe options
- * @see http://stackoverflow.com/questions/3219758
- */
-function observeDOM(el, callback, opts) {
-  var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
-  var eventListenerSupported = window.addEventListener;
-
-  // Handle case where we might be passed a vue instance
-  el = el ? el.$el || el : null;
-  /* istanbul ignore next: dificult to test in JSDOM */
-  if (!Object(__WEBPACK_IMPORTED_MODULE_1__utils_dom__["l" /* isElement */])(el)) {
-    // We can't observe somthing that isn't an element
-    return null;
-  }
-
-  var obs = null;
-
-  /* istanbul ignore next: dificult to test in JSDOM */
-  if (MutationObserver) {
-    // Define a new observer
-    obs = new MutationObserver(function (mutations) {
-      var changed = false;
-      // A Mutation can contain several change records, so we loop through them to see what has changed.
-      // We break out of the loop early if any "significant" change has been detected
-      for (var i = 0; i < mutations.length && !changed; i++) {
-        // The muttion record
-        var mutation = mutations[i];
-        // Mutation Type
-        var type = mutation.type;
-        // DOM Node (could be any DOM Node type - HTMLElement, Text, comment, etc)
-        var target = mutation.target;
-        if (type === 'characterData' && target.nodeType === Node.TEXT_NODE) {
-          // We ignore nodes that are not TEXt (i.e. comments, etc) as they don't change layout
-          changed = true;
-        } else if (type === 'attributes') {
-          changed = true;
-        } else if (type === 'childList' && (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0)) {
-          // This includes HTMLElement and Text Nodes being added/removed/re-arranged
-          changed = true;
-        }
-      }
-      if (changed) {
-        // We only call the callback if a change that could affect layout/size truely happened.
-        callback();
-      }
-    });
-
-    // Have the observer observe foo for changes in children, etc
-    obs.observe(el, Object(__WEBPACK_IMPORTED_MODULE_0__object__["a" /* assign */])({ childList: true, subtree: true }, opts));
-  } else if (eventListenerSupported) {
-    // Legacy interface. most likely not used in modern browsers
-    el.addEventListener('DOMNodeInserted', callback, false);
-    el.addEventListener('DOMNodeRemoved', callback, false);
-  }
-
-  // We return a reference to the observer so that obs.disconnect() can be called if necessary
-  // To reduce overhead when the root element is hiiden
-  return obs;
-}
-
-/***/ }),
-/* 18 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_array__ = __webpack_require__(3);
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-
-/**
- * Issue #569: collapse::toggle::state triggered too many times
- * @link https://github.com/bootstrap-vue/bootstrap-vue/issues/569
- */
-
-var BVRL = '__BV_root_listeners__';
-
-/* harmony default export */ __webpack_exports__["a"] = ({
-  methods: {
-    /**
-         * Safely register event listeners on the root Vue node.
-         * While Vue automatically removes listeners for individual components,
-         * when a component registers a listener on root and is destroyed,
-         * this orphans a callback because the node is gone,
-         * but the root does not clear the callback.
-         *
-         * This adds a non-reactive prop to a vm on the fly
-         * in order to avoid object observation and its performance costs
-         * to something that needs no reactivity.
-         * It should be highly unlikely there are any naming collisions.
-         * @param {string} event
-         * @param {function} callback
-         * @chainable
-         */
-    listenOnRoot: function listenOnRoot(event, callback) {
-      if (!this[BVRL] || !Object(__WEBPACK_IMPORTED_MODULE_0__utils_array__["d" /* isArray */])(this[BVRL])) {
-        this[BVRL] = [];
-      }
-      this[BVRL].push({ event: event, callback: callback });
-      this.$root.$on(event, callback);
-      return this;
-    },
-
-
-    /**
-         * Convenience method for calling vm.$emit on vm.$root.
-         * @param {string} event
-         * @param {*} args
-         * @chainable
-         */
-    emitOnRoot: function emitOnRoot(event) {
-      var _$root;
-
-      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-        args[_key - 1] = arguments[_key];
-      }
-
-      (_$root = this.$root).$emit.apply(_$root, [event].concat(_toConsumableArray(args)));
-      return this;
-    }
-  },
-
-  beforeDestroy: function beforeDestroy() {
-    if (this[BVRL] && Object(__WEBPACK_IMPORTED_MODULE_0__utils_array__["d" /* isArray */])(this[BVRL])) {
-      while (this[BVRL].length > 0) {
-        // shift to process in order
-        var _BVRL$shift = this[BVRL].shift(),
-            event = _BVRL$shift.event,
-            callback = _BVRL$shift.callback;
-
-        this.$root.$off(event, callback);
-      }
-    }
-  }
-});
-
-/***/ }),
-/* 19 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
-  computed: {
-    custom: function custom() {
-      return !this.plain;
-    }
-  },
-  props: {
-    plain: {
-      type: Boolean,
-      default: false
-    }
-  }
-});
-
-/***/ }),
-/* 20 */
 /***/ (function(module, exports) {
 
 /* globals __VUE_SSR_CONTEXT__ */
@@ -4228,7 +4007,456 @@ module.exports = function normalizeComponent (
 
 
 /***/ }),
+/* 16 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = pluckProps;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__object__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__array__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__identity__ = __webpack_require__(51);
+
+
+
+
+/**
+ * Given an array of properties or an object of property keys,
+ * plucks all the values off the target object.
+ * @param {{}|string[]} keysToPluck
+ * @param {{}} objToPluck
+ * @param {Function} transformFn
+ * @return {{}}
+ */
+function pluckProps(keysToPluck, objToPluck) {
+  var transformFn = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : __WEBPACK_IMPORTED_MODULE_2__identity__["a" /* default */];
+
+  return (Object(__WEBPACK_IMPORTED_MODULE_1__array__["d" /* isArray */])(keysToPluck) ? keysToPluck.slice() : Object(__WEBPACK_IMPORTED_MODULE_0__object__["e" /* keys */])(keysToPluck)).reduce(function (memo, prop) {
+    // eslint-disable-next-line no-sequences
+    return memo[transformFn(prop)] = objToPluck[prop], memo;
+  }, {});
+}
+
+/***/ }),
+/* 17 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  props: {
+    size: {
+      type: String,
+      default: null
+    }
+  },
+  computed: {
+    sizeFormClass: function sizeFormClass() {
+      return [this.size ? "form-control-" + this.size : null];
+    },
+    sizeBtnClass: function sizeBtnClass() {
+      return [this.size ? "btn-" + this.size : null];
+    }
+  }
+});
+
+/***/ }),
+/* 18 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = observeDOM;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__object__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_dom__ = __webpack_require__(4);
+
+
+
+/**
+ * Observe a DOM element changes, falls back to eventListener mode
+ * @param {Element} el The DOM element to observe
+ * @param {Function} callback callback to be called on change
+ * @param {object} [opts={childList: true, subtree: true}] observe options
+ * @see http://stackoverflow.com/questions/3219758
+ */
+function observeDOM(el, callback, opts) {
+  var MutationObserver = window.MutationObserver || window.WebKitMutationObserver || window.MozMutationObserver;
+  var eventListenerSupported = window.addEventListener;
+
+  // Handle case where we might be passed a vue instance
+  el = el ? el.$el || el : null;
+  /* istanbul ignore next: dificult to test in JSDOM */
+  if (!Object(__WEBPACK_IMPORTED_MODULE_1__utils_dom__["l" /* isElement */])(el)) {
+    // We can't observe somthing that isn't an element
+    return null;
+  }
+
+  var obs = null;
+
+  /* istanbul ignore next: dificult to test in JSDOM */
+  if (MutationObserver) {
+    // Define a new observer
+    obs = new MutationObserver(function (mutations) {
+      var changed = false;
+      // A Mutation can contain several change records, so we loop through them to see what has changed.
+      // We break out of the loop early if any "significant" change has been detected
+      for (var i = 0; i < mutations.length && !changed; i++) {
+        // The muttion record
+        var mutation = mutations[i];
+        // Mutation Type
+        var type = mutation.type;
+        // DOM Node (could be any DOM Node type - HTMLElement, Text, comment, etc)
+        var target = mutation.target;
+        if (type === 'characterData' && target.nodeType === Node.TEXT_NODE) {
+          // We ignore nodes that are not TEXt (i.e. comments, etc) as they don't change layout
+          changed = true;
+        } else if (type === 'attributes') {
+          changed = true;
+        } else if (type === 'childList' && (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0)) {
+          // This includes HTMLElement and Text Nodes being added/removed/re-arranged
+          changed = true;
+        }
+      }
+      if (changed) {
+        // We only call the callback if a change that could affect layout/size truely happened.
+        callback();
+      }
+    });
+
+    // Have the observer observe foo for changes in children, etc
+    obs.observe(el, Object(__WEBPACK_IMPORTED_MODULE_0__object__["a" /* assign */])({ childList: true, subtree: true }, opts));
+  } else if (eventListenerSupported) {
+    // Legacy interface. most likely not used in modern browsers
+    el.addEventListener('DOMNodeInserted', callback, false);
+    el.addEventListener('DOMNodeRemoved', callback, false);
+  }
+
+  // We return a reference to the observer so that obs.disconnect() can be called if necessary
+  // To reduce overhead when the root element is hiiden
+  return obs;
+}
+
+/***/ }),
+/* 19 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_array__ = __webpack_require__(3);
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+
+/**
+ * Issue #569: collapse::toggle::state triggered too many times
+ * @link https://github.com/bootstrap-vue/bootstrap-vue/issues/569
+ */
+
+var BVRL = '__BV_root_listeners__';
+
+/* harmony default export */ __webpack_exports__["a"] = ({
+  methods: {
+    /**
+         * Safely register event listeners on the root Vue node.
+         * While Vue automatically removes listeners for individual components,
+         * when a component registers a listener on root and is destroyed,
+         * this orphans a callback because the node is gone,
+         * but the root does not clear the callback.
+         *
+         * This adds a non-reactive prop to a vm on the fly
+         * in order to avoid object observation and its performance costs
+         * to something that needs no reactivity.
+         * It should be highly unlikely there are any naming collisions.
+         * @param {string} event
+         * @param {function} callback
+         * @chainable
+         */
+    listenOnRoot: function listenOnRoot(event, callback) {
+      if (!this[BVRL] || !Object(__WEBPACK_IMPORTED_MODULE_0__utils_array__["d" /* isArray */])(this[BVRL])) {
+        this[BVRL] = [];
+      }
+      this[BVRL].push({ event: event, callback: callback });
+      this.$root.$on(event, callback);
+      return this;
+    },
+
+
+    /**
+         * Convenience method for calling vm.$emit on vm.$root.
+         * @param {string} event
+         * @param {*} args
+         * @chainable
+         */
+    emitOnRoot: function emitOnRoot(event) {
+      var _$root;
+
+      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      (_$root = this.$root).$emit.apply(_$root, [event].concat(_toConsumableArray(args)));
+      return this;
+    }
+  },
+
+  beforeDestroy: function beforeDestroy() {
+    if (this[BVRL] && Object(__WEBPACK_IMPORTED_MODULE_0__utils_array__["d" /* isArray */])(this[BVRL])) {
+      while (this[BVRL].length > 0) {
+        // shift to process in order
+        var _BVRL$shift = this[BVRL].shift(),
+            event = _BVRL$shift.event,
+            callback = _BVRL$shift.callback;
+
+        this.$root.$off(event, callback);
+      }
+    }
+  }
+});
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony default export */ __webpack_exports__["a"] = ({
+  computed: {
+    custom: function custom() {
+      return !this.plain;
+    }
+  },
+  props: {
+    plain: {
+      type: Boolean,
+      default: false
+    }
+  }
+});
+
+/***/ }),
 /* 21 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/*
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
+  Modified by Evan You @yyx990803
+*/
+
+var hasDocument = typeof document !== 'undefined'
+
+if (typeof DEBUG !== 'undefined' && DEBUG) {
+  if (!hasDocument) {
+    throw new Error(
+    'vue-style-loader cannot be used in a non-browser environment. ' +
+    "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
+  ) }
+}
+
+var listToStyles = __webpack_require__(120)
+
+/*
+type StyleObject = {
+  id: number;
+  parts: Array<StyleObjectPart>
+}
+
+type StyleObjectPart = {
+  css: string;
+  media: string;
+  sourceMap: ?string
+}
+*/
+
+var stylesInDom = {/*
+  [id: number]: {
+    id: number,
+    refs: number,
+    parts: Array<(obj?: StyleObjectPart) => void>
+  }
+*/}
+
+var head = hasDocument && (document.head || document.getElementsByTagName('head')[0])
+var singletonElement = null
+var singletonCounter = 0
+var isProduction = false
+var noop = function () {}
+var options = null
+var ssrIdKey = 'data-vue-ssr-id'
+
+// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+// tags it will allow on a page
+var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\b/.test(navigator.userAgent.toLowerCase())
+
+module.exports = function (parentId, list, _isProduction, _options) {
+  isProduction = _isProduction
+
+  options = _options || {}
+
+  var styles = listToStyles(parentId, list)
+  addStylesToDom(styles)
+
+  return function update (newList) {
+    var mayRemove = []
+    for (var i = 0; i < styles.length; i++) {
+      var item = styles[i]
+      var domStyle = stylesInDom[item.id]
+      domStyle.refs--
+      mayRemove.push(domStyle)
+    }
+    if (newList) {
+      styles = listToStyles(parentId, newList)
+      addStylesToDom(styles)
+    } else {
+      styles = []
+    }
+    for (var i = 0; i < mayRemove.length; i++) {
+      var domStyle = mayRemove[i]
+      if (domStyle.refs === 0) {
+        for (var j = 0; j < domStyle.parts.length; j++) {
+          domStyle.parts[j]()
+        }
+        delete stylesInDom[domStyle.id]
+      }
+    }
+  }
+}
+
+function addStylesToDom (styles /* Array<StyleObject> */) {
+  for (var i = 0; i < styles.length; i++) {
+    var item = styles[i]
+    var domStyle = stylesInDom[item.id]
+    if (domStyle) {
+      domStyle.refs++
+      for (var j = 0; j < domStyle.parts.length; j++) {
+        domStyle.parts[j](item.parts[j])
+      }
+      for (; j < item.parts.length; j++) {
+        domStyle.parts.push(addStyle(item.parts[j]))
+      }
+      if (domStyle.parts.length > item.parts.length) {
+        domStyle.parts.length = item.parts.length
+      }
+    } else {
+      var parts = []
+      for (var j = 0; j < item.parts.length; j++) {
+        parts.push(addStyle(item.parts[j]))
+      }
+      stylesInDom[item.id] = { id: item.id, refs: 1, parts: parts }
+    }
+  }
+}
+
+function createStyleElement () {
+  var styleElement = document.createElement('style')
+  styleElement.type = 'text/css'
+  head.appendChild(styleElement)
+  return styleElement
+}
+
+function addStyle (obj /* StyleObjectPart */) {
+  var update, remove
+  var styleElement = document.querySelector('style[' + ssrIdKey + '~="' + obj.id + '"]')
+
+  if (styleElement) {
+    if (isProduction) {
+      // has SSR styles and in production mode.
+      // simply do nothing.
+      return noop
+    } else {
+      // has SSR styles but in dev mode.
+      // for some reason Chrome can't handle source map in server-rendered
+      // style tags - source maps in <style> only works if the style tag is
+      // created and inserted dynamically. So we remove the server rendered
+      // styles and inject new ones.
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  if (isOldIE) {
+    // use singleton mode for IE9.
+    var styleIndex = singletonCounter++
+    styleElement = singletonElement || (singletonElement = createStyleElement())
+    update = applyToSingletonTag.bind(null, styleElement, styleIndex, false)
+    remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true)
+  } else {
+    // use multi-style-tag mode in all other cases
+    styleElement = createStyleElement()
+    update = applyToTag.bind(null, styleElement)
+    remove = function () {
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  update(obj)
+
+  return function updateStyle (newObj /* StyleObjectPart */) {
+    if (newObj) {
+      if (newObj.css === obj.css &&
+          newObj.media === obj.media &&
+          newObj.sourceMap === obj.sourceMap) {
+        return
+      }
+      update(obj = newObj)
+    } else {
+      remove()
+    }
+  }
+}
+
+var replaceText = (function () {
+  var textStore = []
+
+  return function (index, replacement) {
+    textStore[index] = replacement
+    return textStore.filter(Boolean).join('\n')
+  }
+})()
+
+function applyToSingletonTag (styleElement, index, remove, obj) {
+  var css = remove ? '' : obj.css
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = replaceText(index, css)
+  } else {
+    var cssNode = document.createTextNode(css)
+    var childNodes = styleElement.childNodes
+    if (childNodes[index]) styleElement.removeChild(childNodes[index])
+    if (childNodes.length) {
+      styleElement.insertBefore(cssNode, childNodes[index])
+    } else {
+      styleElement.appendChild(cssNode)
+    }
+  }
+}
+
+function applyToTag (styleElement, obj) {
+  var css = obj.css
+  var media = obj.media
+  var sourceMap = obj.sourceMap
+
+  if (media) {
+    styleElement.setAttribute('media', media)
+  }
+  if (options.ssrId) {
+    styleElement.setAttribute(ssrIdKey, obj.id)
+  }
+
+  if (sourceMap) {
+    // https://developer.chrome.com/devtools/docs/javascript-debugging
+    // this makes source maps inside style tags work properly in Chrome
+    css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */'
+    // http://stackoverflow.com/a/26603875
+    css += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + ' */'
+  }
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = css
+  } else {
+    while (styleElement.firstChild) {
+      styleElement.removeChild(styleElement.firstChild)
+    }
+    styleElement.appendChild(document.createTextNode(css))
+  }
+}
+
+
+/***/ }),
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4245,7 +4473,7 @@ function prefixPropName(prefix, value) {
 }
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4286,7 +4514,7 @@ function copyProps(props) {
 }
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4312,7 +4540,7 @@ function copyProps(props) {
 });
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getNative = __webpack_require__(83);
@@ -4324,10 +4552,10 @@ module.exports = nativeCreate;
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var eq = __webpack_require__(252);
+var eq = __webpack_require__(253);
 
 /**
  * Gets the index at which the `key` is found in `array` of key-value pairs.
@@ -4351,10 +4579,10 @@ module.exports = assocIndexOf;
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isKeyable = __webpack_require__(258);
+var isKeyable = __webpack_require__(259);
 
 /**
  * Gets the data for `map`.
@@ -4375,14 +4603,14 @@ module.exports = getMapData;
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(6);
-var normalizeHeaderName = __webpack_require__(95);
+var normalizeHeaderName = __webpack_require__(96);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -4398,10 +4626,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(46);
+    adapter = __webpack_require__(47);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(46);
+    adapter = __webpack_require__(47);
   }
   return adapter;
 }
@@ -4476,10 +4704,10 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(45)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(46)))
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4538,13 +4766,13 @@ var props = {
 });
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* unused harmony export props */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_functional_data_merge__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_pluck_props__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_pluck_props__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_array__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_object__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_dom__ = __webpack_require__(4);
@@ -4661,13 +4889,13 @@ function handleFocus(evt) {
 });
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return propsFactory; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_functional_data_merge__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__input_group_text__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__input_group_text__ = __webpack_require__(32);
 
 
 
@@ -4710,7 +4938,7 @@ var propsFactory = function propsFactory(append) {
 });
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4740,7 +4968,7 @@ var props = {
 });
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4880,7 +5108,7 @@ var props = {
 });
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -4910,15 +5138,15 @@ var props = {
 });
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dropdown__ = __webpack_require__(159);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__dropdown_item__ = __webpack_require__(164);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__dropdown_item_button__ = __webpack_require__(165);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__dropdown_header__ = __webpack_require__(166);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__dropdown_divider__ = __webpack_require__(167);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__dropdown__ = __webpack_require__(160);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__dropdown_item__ = __webpack_require__(165);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__dropdown_item_button__ = __webpack_require__(166);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__dropdown_header__ = __webpack_require__(167);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__dropdown_divider__ = __webpack_require__(168);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_plugins__ = __webpack_require__(1);
 
 
@@ -4953,7 +5181,7 @@ Object(__WEBPACK_IMPORTED_MODULE_5__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -4999,7 +5227,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(163);
+var	fixUrls = __webpack_require__(164);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -5312,7 +5540,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -5371,7 +5599,7 @@ function looseEqual(a, b) {
 /* harmony default export */ __webpack_exports__["a"] = (looseEqual);
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -5456,11 +5684,11 @@ function isObject(obj) {
 });
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_popper_js__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_popper_js__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__bv_event_class__ = __webpack_require__(75);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__object__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__array__ = __webpack_require__(3);
@@ -6576,7 +6804,7 @@ var ToolTip = function () {
 /* harmony default export */ __webpack_exports__["a"] = (ToolTip);
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, exports) {
 
 /**
@@ -6608,11 +6836,11 @@ module.exports = isArray;
 
 
 /***/ }),
-/* 40 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseGetTag = __webpack_require__(82),
-    isObjectLike = __webpack_require__(231);
+    isObjectLike = __webpack_require__(232);
 
 /** `Object#toString` result references. */
 var symbolTag = '[object Symbol]';
@@ -6643,10 +6871,10 @@ module.exports = isSymbol;
 
 
 /***/ }),
-/* 41 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var root = __webpack_require__(42);
+var root = __webpack_require__(43);
 
 /** Built-in value references. */
 var Symbol = root.Symbol;
@@ -6655,10 +6883,10 @@ module.exports = Symbol;
 
 
 /***/ }),
-/* 42 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var freeGlobal = __webpack_require__(228);
+var freeGlobal = __webpack_require__(229);
 
 /** Detect free variable `self`. */
 var freeSelf = typeof self == 'object' && self && self.Object === Object && self;
@@ -6670,7 +6898,7 @@ module.exports = root;
 
 
 /***/ }),
-/* 43 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -17041,7 +17269,7 @@ return jQuery;
 
 
 /***/ }),
-/* 44 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17059,7 +17287,7 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 45 */
+/* 46 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -17249,19 +17477,19 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 46 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(6);
-var settle = __webpack_require__(96);
-var buildURL = __webpack_require__(98);
-var parseHeaders = __webpack_require__(99);
-var isURLSameOrigin = __webpack_require__(100);
-var createError = __webpack_require__(47);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(101);
+var settle = __webpack_require__(97);
+var buildURL = __webpack_require__(99);
+var parseHeaders = __webpack_require__(100);
+var isURLSameOrigin = __webpack_require__(101);
+var createError = __webpack_require__(48);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(102);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -17358,7 +17586,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(102);
+      var cookies = __webpack_require__(103);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -17436,13 +17664,13 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-/* 47 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var enhanceError = __webpack_require__(97);
+var enhanceError = __webpack_require__(98);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -17461,7 +17689,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17473,7 +17701,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -17496,234 +17724,6 @@ Cancel.prototype.toString = function toString() {
 Cancel.prototype.__CANCEL__ = true;
 
 module.exports = Cancel;
-
-
-/***/ }),
-/* 50 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-  MIT License http://www.opensource.org/licenses/mit-license.php
-  Author Tobias Koppers @sokra
-  Modified by Evan You @yyx990803
-*/
-
-var hasDocument = typeof document !== 'undefined'
-
-if (typeof DEBUG !== 'undefined' && DEBUG) {
-  if (!hasDocument) {
-    throw new Error(
-    'vue-style-loader cannot be used in a non-browser environment. ' +
-    "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
-  ) }
-}
-
-var listToStyles = __webpack_require__(119)
-
-/*
-type StyleObject = {
-  id: number;
-  parts: Array<StyleObjectPart>
-}
-
-type StyleObjectPart = {
-  css: string;
-  media: string;
-  sourceMap: ?string
-}
-*/
-
-var stylesInDom = {/*
-  [id: number]: {
-    id: number,
-    refs: number,
-    parts: Array<(obj?: StyleObjectPart) => void>
-  }
-*/}
-
-var head = hasDocument && (document.head || document.getElementsByTagName('head')[0])
-var singletonElement = null
-var singletonCounter = 0
-var isProduction = false
-var noop = function () {}
-var options = null
-var ssrIdKey = 'data-vue-ssr-id'
-
-// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-// tags it will allow on a page
-var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\b/.test(navigator.userAgent.toLowerCase())
-
-module.exports = function (parentId, list, _isProduction, _options) {
-  isProduction = _isProduction
-
-  options = _options || {}
-
-  var styles = listToStyles(parentId, list)
-  addStylesToDom(styles)
-
-  return function update (newList) {
-    var mayRemove = []
-    for (var i = 0; i < styles.length; i++) {
-      var item = styles[i]
-      var domStyle = stylesInDom[item.id]
-      domStyle.refs--
-      mayRemove.push(domStyle)
-    }
-    if (newList) {
-      styles = listToStyles(parentId, newList)
-      addStylesToDom(styles)
-    } else {
-      styles = []
-    }
-    for (var i = 0; i < mayRemove.length; i++) {
-      var domStyle = mayRemove[i]
-      if (domStyle.refs === 0) {
-        for (var j = 0; j < domStyle.parts.length; j++) {
-          domStyle.parts[j]()
-        }
-        delete stylesInDom[domStyle.id]
-      }
-    }
-  }
-}
-
-function addStylesToDom (styles /* Array<StyleObject> */) {
-  for (var i = 0; i < styles.length; i++) {
-    var item = styles[i]
-    var domStyle = stylesInDom[item.id]
-    if (domStyle) {
-      domStyle.refs++
-      for (var j = 0; j < domStyle.parts.length; j++) {
-        domStyle.parts[j](item.parts[j])
-      }
-      for (; j < item.parts.length; j++) {
-        domStyle.parts.push(addStyle(item.parts[j]))
-      }
-      if (domStyle.parts.length > item.parts.length) {
-        domStyle.parts.length = item.parts.length
-      }
-    } else {
-      var parts = []
-      for (var j = 0; j < item.parts.length; j++) {
-        parts.push(addStyle(item.parts[j]))
-      }
-      stylesInDom[item.id] = { id: item.id, refs: 1, parts: parts }
-    }
-  }
-}
-
-function createStyleElement () {
-  var styleElement = document.createElement('style')
-  styleElement.type = 'text/css'
-  head.appendChild(styleElement)
-  return styleElement
-}
-
-function addStyle (obj /* StyleObjectPart */) {
-  var update, remove
-  var styleElement = document.querySelector('style[' + ssrIdKey + '~="' + obj.id + '"]')
-
-  if (styleElement) {
-    if (isProduction) {
-      // has SSR styles and in production mode.
-      // simply do nothing.
-      return noop
-    } else {
-      // has SSR styles but in dev mode.
-      // for some reason Chrome can't handle source map in server-rendered
-      // style tags - source maps in <style> only works if the style tag is
-      // created and inserted dynamically. So we remove the server rendered
-      // styles and inject new ones.
-      styleElement.parentNode.removeChild(styleElement)
-    }
-  }
-
-  if (isOldIE) {
-    // use singleton mode for IE9.
-    var styleIndex = singletonCounter++
-    styleElement = singletonElement || (singletonElement = createStyleElement())
-    update = applyToSingletonTag.bind(null, styleElement, styleIndex, false)
-    remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true)
-  } else {
-    // use multi-style-tag mode in all other cases
-    styleElement = createStyleElement()
-    update = applyToTag.bind(null, styleElement)
-    remove = function () {
-      styleElement.parentNode.removeChild(styleElement)
-    }
-  }
-
-  update(obj)
-
-  return function updateStyle (newObj /* StyleObjectPart */) {
-    if (newObj) {
-      if (newObj.css === obj.css &&
-          newObj.media === obj.media &&
-          newObj.sourceMap === obj.sourceMap) {
-        return
-      }
-      update(obj = newObj)
-    } else {
-      remove()
-    }
-  }
-}
-
-var replaceText = (function () {
-  var textStore = []
-
-  return function (index, replacement) {
-    textStore[index] = replacement
-    return textStore.filter(Boolean).join('\n')
-  }
-})()
-
-function applyToSingletonTag (styleElement, index, remove, obj) {
-  var css = remove ? '' : obj.css
-
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = replaceText(index, css)
-  } else {
-    var cssNode = document.createTextNode(css)
-    var childNodes = styleElement.childNodes
-    if (childNodes[index]) styleElement.removeChild(childNodes[index])
-    if (childNodes.length) {
-      styleElement.insertBefore(cssNode, childNodes[index])
-    } else {
-      styleElement.appendChild(cssNode)
-    }
-  }
-}
-
-function applyToTag (styleElement, obj) {
-  var css = obj.css
-  var media = obj.media
-  var sourceMap = obj.sourceMap
-
-  if (media) {
-    styleElement.setAttribute('media', media)
-  }
-  if (options.ssrId) {
-    styleElement.setAttribute(ssrIdKey, obj.id)
-  }
-
-  if (sourceMap) {
-    // https://developer.chrome.com/devtools/docs/javascript-debugging
-    // this makes source maps inside style tags work properly in Chrome
-    css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */'
-    // http://stackoverflow.com/a/26603875
-    css += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + ' */'
-  }
-
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = css
-  } else {
-    while (styleElement.firstChild) {
-      styleElement.removeChild(styleElement.firstChild)
-    }
-    styleElement.appendChild(document.createTextNode(css))
-  }
-}
 
 
 /***/ }),
@@ -17783,7 +17783,7 @@ var props = Object(__WEBPACK_IMPORTED_MODULE_1__utils_object__["a" /* assign */]
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return props; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_functional_data_merge__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_pluck_props__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_pluck_props__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_object__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__link_link__ = __webpack_require__(8);
 
@@ -17840,7 +17840,7 @@ var props = Object(__WEBPACK_IMPORTED_MODULE_2__utils_object__["a" /* assign */]
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__input_group_addon__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__input_group_addon__ = __webpack_require__(31);
 
 
 /* harmony default export */ __webpack_exports__["a"] = ({
@@ -17854,7 +17854,7 @@ var props = Object(__WEBPACK_IMPORTED_MODULE_2__utils_object__["a" /* assign */]
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__input_group_addon__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__input_group_addon__ = __webpack_require__(31);
 
 
 /* harmony default export */ __webpack_exports__["a"] = ({
@@ -17886,10 +17886,10 @@ function upperFirst(str) {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return props; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_functional_data_merge__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_prefix_prop_name__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_copyProps__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_prefix_prop_name__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_copyProps__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_object__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mixins_card_mixin__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mixins_card_mixin__ = __webpack_require__(24);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
@@ -17966,10 +17966,10 @@ var props = Object(__WEBPACK_IMPORTED_MODULE_3__utils_object__["a" /* assign */]
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return props; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_functional_data_merge__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_prefix_prop_name__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_copyProps__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_prefix_prop_name__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_copyProps__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_object__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mixins_card_mixin__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mixins_card_mixin__ = __webpack_require__(24);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
@@ -18014,10 +18014,10 @@ var props = Object(__WEBPACK_IMPORTED_MODULE_3__utils_object__["a" /* assign */]
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return props; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_functional_data_merge__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_prefix_prop_name__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_copyProps__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_prefix_prop_name__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_copyProps__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_object__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mixins_card_mixin__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mixins_card_mixin__ = __webpack_require__(24);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
@@ -18153,7 +18153,7 @@ var props = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__collapse__ = __webpack_require__(157);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__collapse__ = __webpack_require__(158);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__directives_toggle__ = __webpack_require__(63);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_plugins__ = __webpack_require__(1);
 
@@ -18180,7 +18180,7 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toggle__ = __webpack_require__(158);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toggle__ = __webpack_require__(159);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -18263,12 +18263,12 @@ var unbindTargets = function unbindTargets(vnode, binding, listenTypes) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_popper_js__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__clickout__ = __webpack_require__(160);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__listen_on_root__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_popper_js__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__clickout__ = __webpack_require__(161);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__listen_on_root__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_array__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_object__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_key_codes__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_key_codes__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils_warn__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils_dom__ = __webpack_require__(4);
 
@@ -18853,11 +18853,11 @@ var props = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_id__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_form_radio_check__ = __webpack_require__(71);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_form__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_size__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_size__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mixins_form_state__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__mixins_form_custom__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__mixins_form_custom__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils_array__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils_loose_equal__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils_loose_equal__ = __webpack_require__(37);
 
 
 
@@ -19147,7 +19147,7 @@ var props = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_form__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_form_state__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_radio_check__ = __webpack_require__(71);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_loose_equal__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_loose_equal__ = __webpack_require__(37);
 
 
 
@@ -19379,7 +19379,7 @@ var BvEvent = function () {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modal__ = __webpack_require__(200);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modal__ = __webpack_require__(201);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -19403,12 +19403,12 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__nav__ = __webpack_require__(201);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__nav_item__ = __webpack_require__(202);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__nav_text__ = __webpack_require__(203);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__nav_form__ = __webpack_require__(204);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__nav_item_dropdown__ = __webpack_require__(205);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__dropdown__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__nav__ = __webpack_require__(202);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__nav_item__ = __webpack_require__(203);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__nav_text__ = __webpack_require__(204);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__nav_form__ = __webpack_require__(205);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__nav_item_dropdown__ = __webpack_require__(206);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__dropdown__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils_plugins__ = __webpack_require__(1);
 
 
@@ -19445,8 +19445,8 @@ Object(__WEBPACK_IMPORTED_MODULE_6__utils_plugins__["c" /* vueUse */])(VuePlugin
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_range__ = __webpack_require__(213);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_key_codes__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_range__ = __webpack_require__(214);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_key_codes__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_dom__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_link_link__ = __webpack_require__(8);
 /*
@@ -19879,7 +19879,7 @@ var props = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tooltip_class__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tooltip_class__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__object__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__dom__ = __webpack_require__(4);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -20039,8 +20039,8 @@ var PopOver = function (_ToolTip) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_array__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_object__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_dom__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_ssr__ = __webpack_require__(218);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_observe_dom__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_ssr__ = __webpack_require__(219);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_observe_dom__ = __webpack_require__(18);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
 /*
@@ -20485,9 +20485,9 @@ var OBSERVER_CONFIG = {
 /* 82 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Symbol = __webpack_require__(41),
-    getRawTag = __webpack_require__(229),
-    objectToString = __webpack_require__(230);
+var Symbol = __webpack_require__(42),
+    getRawTag = __webpack_require__(230),
+    objectToString = __webpack_require__(231);
 
 /** `Object#toString` result references. */
 var nullTag = '[object Null]',
@@ -20519,8 +20519,8 @@ module.exports = baseGetTag;
 /* 83 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseIsNative = __webpack_require__(239),
-    getValue = __webpack_require__(244);
+var baseIsNative = __webpack_require__(240),
+    getValue = __webpack_require__(245);
 
 /**
  * Gets the native function at `key` of `object`.
@@ -20579,12 +20579,63 @@ module.exports = isObject;
 /* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(86);
-module.exports = __webpack_require__(286);
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(287)
+}
+var normalizeComponent = __webpack_require__(15)
+/* script */
+var __vue_script__ = __webpack_require__(289)
+/* template */
+var __vue_template__ = __webpack_require__(290)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-4e6056c7"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/MetaQueryBuilderCanvas.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-4e6056c7", Component.options)
+  } else {
+    hotAPI.reload("data-v-4e6056c7", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
 
 
 /***/ }),
 /* 86 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(87);
+module.exports = __webpack_require__(296);
+
+
+/***/ }),
+/* 87 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
@@ -20594,9 +20645,9 @@ module.exports = __webpack_require__(286);
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-__webpack_require__(87);
+__webpack_require__(88);
 
-window.Vue = __webpack_require__(110);
+window.Vue = __webpack_require__(111);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -20604,9 +20655,11 @@ window.Vue = __webpack_require__(110);
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example-component', __webpack_require__(113));
-Vue.component('query-builder', __webpack_require__(116));
-Vue.component('context-info', __webpack_require__(283));
+Vue.component('example-component', __webpack_require__(114));
+Vue.component('query-builder', __webpack_require__(117));
+Vue.component('context-info', __webpack_require__(284));
+Vue.component('meta-query-builder-canvas', __webpack_require__(85));
+Vue.component('meta-query-builder', __webpack_require__(291));
 
 var app = new Vue({
   el: '#app',
@@ -20619,12 +20672,12 @@ var app = new Vue({
 });
 
 /***/ }),
-/* 87 */
+/* 88 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-window._ = __webpack_require__(88);
-window.Popper = __webpack_require__(13).default;
+window._ = __webpack_require__(89);
+window.Popper = __webpack_require__(14).default;
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -20633,9 +20686,9 @@ window.Popper = __webpack_require__(13).default;
  */
 
 try {
-  window.$ = window.jQuery = __webpack_require__(43);
+  window.$ = window.jQuery = __webpack_require__(44);
 
-  __webpack_require__(90);
+  __webpack_require__(91);
 } catch (e) {}
 
 /**
@@ -20644,7 +20697,7 @@ try {
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-window.axios = __webpack_require__(91);
+window.axios = __webpack_require__(92);
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -20680,7 +20733,7 @@ if (token) {
 // });
 
 /***/ }),
-/* 88 */
+/* 89 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -37782,10 +37835,10 @@ if (token) {
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11), __webpack_require__(89)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11), __webpack_require__(90)(module)))
 
 /***/ }),
-/* 89 */
+/* 90 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -37813,7 +37866,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 90 */
+/* 91 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -37822,7 +37875,7 @@ module.exports = function(module) {
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-	 true ? factory(exports, __webpack_require__(43), __webpack_require__(13)) :
+	 true ? factory(exports, __webpack_require__(44), __webpack_require__(14)) :
 	typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'popper.js'], factory) :
 	(factory((global.bootstrap = {}),global.jQuery,global.Popper));
 }(this, (function (exports,$,Popper) { 'use strict';
@@ -41713,22 +41766,22 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 
 /***/ }),
-/* 91 */
+/* 92 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(92);
+module.exports = __webpack_require__(93);
 
 /***/ }),
-/* 92 */
+/* 93 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(6);
-var bind = __webpack_require__(44);
-var Axios = __webpack_require__(94);
-var defaults = __webpack_require__(27);
+var bind = __webpack_require__(45);
+var Axios = __webpack_require__(95);
+var defaults = __webpack_require__(28);
 
 /**
  * Create an instance of Axios
@@ -41761,15 +41814,15 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(49);
-axios.CancelToken = __webpack_require__(108);
-axios.isCancel = __webpack_require__(48);
+axios.Cancel = __webpack_require__(50);
+axios.CancelToken = __webpack_require__(109);
+axios.isCancel = __webpack_require__(49);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(109);
+axios.spread = __webpack_require__(110);
 
 module.exports = axios;
 
@@ -41778,7 +41831,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 93 */
+/* 94 */
 /***/ (function(module, exports) {
 
 /*!
@@ -41805,16 +41858,16 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 94 */
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(27);
+var defaults = __webpack_require__(28);
 var utils = __webpack_require__(6);
-var InterceptorManager = __webpack_require__(103);
-var dispatchRequest = __webpack_require__(104);
+var InterceptorManager = __webpack_require__(104);
+var dispatchRequest = __webpack_require__(105);
 
 /**
  * Create a new instance of Axios
@@ -41891,7 +41944,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 95 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41910,13 +41963,13 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 96 */
+/* 97 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var createError = __webpack_require__(47);
+var createError = __webpack_require__(48);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -41943,7 +41996,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 97 */
+/* 98 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -41971,7 +42024,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 98 */
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42044,7 +42097,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 99 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42104,7 +42157,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 100 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42179,7 +42232,7 @@ module.exports = (
 
 
 /***/ }),
-/* 101 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42222,7 +42275,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 102 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42282,7 +42335,7 @@ module.exports = (
 
 
 /***/ }),
-/* 103 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42341,18 +42394,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 104 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(6);
-var transformData = __webpack_require__(105);
-var isCancel = __webpack_require__(48);
-var defaults = __webpack_require__(27);
-var isAbsoluteURL = __webpack_require__(106);
-var combineURLs = __webpack_require__(107);
+var transformData = __webpack_require__(106);
+var isCancel = __webpack_require__(49);
+var defaults = __webpack_require__(28);
+var isAbsoluteURL = __webpack_require__(107);
+var combineURLs = __webpack_require__(108);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -42434,7 +42487,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 105 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42461,7 +42514,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 106 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42482,7 +42535,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 107 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42503,13 +42556,13 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 108 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Cancel = __webpack_require__(49);
+var Cancel = __webpack_require__(50);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -42567,7 +42620,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 109 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -42601,7 +42654,7 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 110 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -53557,10 +53610,10 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11), __webpack_require__(111).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11), __webpack_require__(112).setImmediate))
 
 /***/ }),
-/* 111 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var apply = Function.prototype.apply;
@@ -53613,7 +53666,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(112);
+__webpack_require__(113);
 // On some exotic environments, it's not clear which object `setimmeidate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -53627,7 +53680,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ }),
-/* 112 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -53817,18 +53870,18 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11), __webpack_require__(45)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11), __webpack_require__(46)))
 
 /***/ }),
-/* 113 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(20)
+var normalizeComponent = __webpack_require__(15)
 /* script */
-var __vue_script__ = __webpack_require__(114)
+var __vue_script__ = __webpack_require__(115)
 /* template */
-var __vue_template__ = __webpack_require__(115)
+var __vue_template__ = __webpack_require__(116)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -53867,7 +53920,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 114 */
+/* 115 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -53896,7 +53949,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 115 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -53939,19 +53992,19 @@ if (false) {
 }
 
 /***/ }),
-/* 116 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(117)
+  __webpack_require__(118)
 }
-var normalizeComponent = __webpack_require__(20)
+var normalizeComponent = __webpack_require__(15)
 /* script */
-var __vue_script__ = __webpack_require__(120)
+var __vue_script__ = __webpack_require__(121)
 /* template */
-var __vue_template__ = __webpack_require__(282)
+var __vue_template__ = __webpack_require__(283)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -53990,17 +54043,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 117 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(118);
+var content = __webpack_require__(119);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(50)("9ea18828", content, false, {});
+var update = __webpack_require__(21)("9ea18828", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -54016,10 +54069,10 @@ if(false) {
 }
 
 /***/ }),
-/* 118 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(16)(false);
+exports = module.exports = __webpack_require__(12)(false);
 // imports
 
 
@@ -54030,7 +54083,7 @@ exports.push([module.i, "\n.container-fluid[data-v-b289042c] {\n    padding: 60p
 
 
 /***/ }),
-/* 119 */
+/* 120 */
 /***/ (function(module, exports) {
 
 /**
@@ -54063,18 +54116,18 @@ module.exports = function listToStyles (parentId, list) {
 
 
 /***/ }),
-/* 120 */
+/* 121 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_utils_js__ = __webpack_require__(121);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__schema_json__ = __webpack_require__(122);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_utils_js__ = __webpack_require__(122);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__schema_json__ = __webpack_require__(123);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__schema_json___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__schema_json__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__QueryInputForm__ = __webpack_require__(123);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__QueryInputForm__ = __webpack_require__(124);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__QueryInputForm___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__QueryInputForm__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_Query__ = __webpack_require__(128);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_bootstrap_vue__ = __webpack_require__(129);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_Query__ = __webpack_require__(129);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_bootstrap_vue__ = __webpack_require__(130);
 var _this = this;
 
 //
@@ -54501,7 +54554,7 @@ var i = 0;
 }
 
 /***/ }),
-/* 121 */
+/* 122 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -54553,25 +54606,25 @@ function buildNodesMap(schema) {
 }
 
 /***/ }),
-/* 122 */
+/* 123 */
 /***/ (function(module, exports) {
 
 module.exports = {"data":{"__schema":{"queryType":{"name":"Query"},"mutationType":null,"subscriptionType":null,"types":[{"kind":"OBJECT","name":"Query","description":"all social media ","fields":[{"name":"twitter","description":null,"args":[],"type":{"kind":"OBJECT","name":"twitterQuery","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reddit","description":null,"args":[],"type":{"kind":"OBJECT","name":"redditQuery","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"wikipedia","description":null,"args":[],"type":{"kind":"OBJECT","name":"mediaWikiQuery","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"stackoverflow","description":null,"args":[],"type":{"kind":"OBJECT","name":"stackExchangeQuery","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"spotify","description":null,"args":[],"type":{"kind":"OBJECT","name":"spotifyQuery","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"flickr","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrQuery","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"instagram","description":null,"args":[],"type":{"kind":"OBJECT","name":"instagramQuery","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tumblr","description":null,"args":[],"type":{"kind":"OBJECT","name":"tumblrQuery","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"youtube","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeQuery","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"facebook","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbQuery","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"twitterQuery","description":"Query user, tweet, geolocation by keywords.","fields":[{"name":"queryUser","description":null,"args":[{"name":"q","description":"The search query to run against people search.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"count","description":"The number of potential user results to retrieve per page. This value has a maximum of 20.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"3"},{"name":"pageNum","description":"madeup field; the aggregated pages","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"5"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"twtUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"queryTweet","description":null,"args":[{"name":"q","description":"A UTF-8, URL-encoded search query of 500 characters maximum, \n\t\t\t\t\t\t\t\t\t\tincluding operators. Queries may additionally be limited \n\t\t\t\t\t\t\t\t\t\tby complexity.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"count","description":"The number of tweets to return per page, up to a maximum of 100. \n\t\t\t\t\t\t\t\t\t\tDefaults to 15. This was formerly the “rpp” parameter in the \n\t\t\t\t\t\t\t\t\t\told Search API.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"3"},{"name":"pages","description":"This is not in the original twitter api. This fields is the iterator that append new pages\n\t\t\t\t\t\t\t\t\t\tto the search. if you specify the number of pages you want to go through, you will get the \n\t\t\t\t\t\t\t\t\t\tamount of tweets = count * pages; detail check out API/twitterAPI.js and the max_id,since_id fields\n\t\t\t\t\t\t\t\t\t\tin twitter restful API documentation.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"3"},{"name":"geocode","description":"37.781157 -122.398720 1mi","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"result_type","description":"Optional. Specifies what type of search results you would prefer \n\t\t\t\t\t\t\t\t\t\t\tto receive. The current default is “mixed.” Valid values include:\n\t\t\t\t\t\t\t\t\t\t\t* mixed : Include both popular and real time results in the response.\n\t\t\t\t\t\t\t\t\t\t\t* recent : return only the most recent results in the response\n\t\t\t\t\t\t\t\t\t\t\t* popular : return only the most popular results in the response.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"mixed\""},{"name":"locale","description":"Specify the language of the query you are sending \n\t\t\t\t\t\t\t\t\t\t\t(only ja is currently effective). This is intended for \n\t\t\t\t\t\t\t\t\t\t\tlanguage-specific consumers and the default should work in \n\t\t\t\t\t\t\t\t\t\t\tthe majority of cases.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"en\""},{"name":"until","description":"Returns tweets created before the given date. Date should\n\t\t\t\t\t\t\t\t\t\t\tbe formatted as YYYY-MM-DD. Keep in mind that the search index \n\t\t\t\t\t\t\t\t\t\t\thas a 7-day limit. In other words, no tweets will be found \n\t\t\t\t\t\t\t\t\t\t\tfor a date older than one week.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"lang","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"en\""}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tweet","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"queryGeo","description":null,"args":[{"name":"query","description":"Free-form text to match against while executing a geo-based query, \n\t\t\t\t\t\t\t\t\tbest suited for finding nearby locations by name. Remember \n\t\t\t\t\t\t\t\t\tto URL encode the query.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"ip","description":"An IP address. Used when attempting to fix geolocation based \n\t\t\t\t\t\t\t\t\toff of the user’s IP address.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"lat","description":"eg. 37.7821120598956","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"long","description":"eg. -122.400612831116","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"granularity","description":"This is the minimal granularity of place types to return and \n\t\t\t\t\t\t\t\t\t\t\tmust be one of: poi , neighborhood , city , admin or country . \n\t\t\t\t\t\t\t\t\t\t\tIf no granularity is provided for the request neighborhood is assumed.\n\t\t\t\t\t\t\t\t\t\t\tSetting this to city , for example, will find places which have \n\t\t\t\t\t\t\t\t\t\t\ta type of city , admin or country .","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"accuracy","description":"A hint on the “region” in which to search. If a number, then this \n\t\t\t\t\t\t\t\tis a radius in meters, but it can also take a string that is suffixed with ft to \n\t\t\t\t\t\t\t\tspecify feet. If this is not passed in, then it is assumed to be 0m . If coming \n\t\t\t\t\t\t\t\tfrom a device, in practice, this value is whatever accuracy the device has measuring \n\t\t\t\t\t\t\t\tits location (whether it be coming from a GPS, WiFi triangulation, etc.).","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"max_results","description":"A hint as to the number of results to return. This does not guarantee \n\t\t\t\t\t\t\t\tthat the number of results returned will equal max_results, but instead informs how \n\t\t\t\t\t\t\t\tmany “nearby” results to return. Ideally, only pass in the number of places you \n\t\t\t\t\t\t\t\tintend to display to the user here.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"twtGeo","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"SCALAR","name":"String","description":"The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.","fields":null,"inputFields":null,"interfaces":null,"enumValues":null,"possibleTypes":null},{"kind":"SCALAR","name":"Int","description":"The `Int` scalar type represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1. ","fields":null,"inputFields":null,"interfaces":null,"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"twtUser","description":"Return a twitter user.","fields":[{"name":"author_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"author_id_str","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"screen_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"author_created_at","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"profile_image_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"profile_banner_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"location","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tweets_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"followers_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"friends_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"listed_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"favourites_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"statuses_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"time_zone","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"protected","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"verified","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"is_translator","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"contributors_enabled","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"geo_enabled","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"lang","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timeline","description":"Get the timeline of current User","args":[{"name":"count","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"10"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tweet","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"friends","description":"Get a list of followees of current User","args":[{"name":"count","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"3"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"twtUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"followers","description":"Get a list of followers of current User","args":[{"name":"count","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"3"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"twtUser","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"SCALAR","name":"Boolean","description":"The `Boolean` scalar type represents `true` or `false`.","fields":null,"inputFields":null,"interfaces":null,"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tweet","description":"Return a tweet.","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id_str","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_at","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"text","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"retweet_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"favorite_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"retweeted","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"favorited","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"possibly_sensitive","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"truncated","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"lang","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"in_reply_to_user_id_str","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"in_reply_to_status_id_str","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"in_reply_to_screen_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timestamp_ms","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mentions","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"hashtags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"urls","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"is_quote_status","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"emoticons","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"sentiments","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"filter_level","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"place","description":null,"args":[],"type":{"kind":"OBJECT","name":"twtPlace","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"coordinates","description":null,"args":[],"type":{"kind":"OBJECT","name":"twtCoordinateType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user_mentions","description":null,"args":[],"type":{"kind":"OBJECT","name":"twtUserMention","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user","description":null,"args":[],"type":{"kind":"OBJECT","name":"twtUser","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"entities","description":null,"args":[],"type":{"kind":"OBJECT","name":"twtEntity","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"retweet","description":"Get a list of retweets","args":[{"name":"count","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"3"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"retweet","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"twtPlace","description":"return a place type","fields":[{"name":"country_code","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"full_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"country","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"place_type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"bounding_box_type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"bounding_box_coordinates","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"twtCoordinateType","description":"return a coordinate","fields":[{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"lon","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"lat","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"SCALAR","name":"Float","description":"The `Float` scalar type represents signed double-precision fractional values as specified by [IEEE 754](http://en.wikipedia.org/wiki/IEEE_floating_point). ","fields":null,"inputFields":null,"interfaces":null,"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"twtUserMention","description":"return a user mention type","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"Int","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"id_str","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"screen_name","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"twtEntity","description":"entity of a tweet or user","fields":[{"name":"urls","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"hashtags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"user_mentions","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"twtUser","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"retweet","description":"Retweet of a tweet","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id_str","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"text","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_at","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"in_reply_to_status_id_str","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"in_reply_to_user_id_str","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"in_reply_to_screen_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"favorite_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"retweet_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"entities","description":null,"args":[],"type":{"kind":"OBJECT","name":"twtEntity","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"retweeted_status","description":null,"args":[],"type":{"kind":"OBJECT","name":"tweet","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user","description":null,"args":[],"type":{"kind":"OBJECT","name":"twtUser","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"twtGeo","description":"Search for places that can be attached to a statuses/update. \n\tGiven a latitude and a longitude pair, an IP address, or a name, this request \n\twill return a list of all the valid places that can be used as the place_\n\tid when updating a status.","fields":[{"name":"attributes","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"country","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"country_code","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"full_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"place_type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"contained_within","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"twtGeo","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"redditQuery","description":"","fields":[{"name":"searchSubredditTopics","description":"Searches subreddits by topic.Returns An Array of subreddit objects corresponding to the search results","args":[{"name":"query","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"subreddit","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"searchSubreddits","description":"Searches subreddits by title and description.Returns A Listing containing Subreddits","args":[{"name":"query","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"subreddit","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"search","description":"Conducts a search of reddit submissions.Returns:A Listing containing the search results.","args":[{"name":"query","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"time","description":"hour, day, week, month, year, all","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"all\""},{"name":"subreddit","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"restrictSr","description":"Restricts search results to the given subreddit","type":{"kind":"SCALAR","name":"Boolean","ofType":null},"defaultValue":"false"},{"name":"sort","description":"relevance, hot, top, new, comments","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"relevance\""},{"name":"syntax","description":"cloudsearch, lucene, plain","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"count","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"redditLink","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"getCompleteReplies","description":"given a submission id, get all the content and replies within.","args":[{"name":"id","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"redditComment","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"getNewComments","description":"Gets a Listing of new comments.Return A Listing containing the retrieved comments.","args":[{"name":"subredditName","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"extra","description":"for fetchMore","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"redditComment","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"searchSubredditNames","description":"Searches for subreddits given a query. Returns An Array containing subreddit names","args":[{"name":"query","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"exact","description":null,"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"defaultValue":"false"},{"name":"includeNsfw","description":null,"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"defaultValue":"true"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"getPopularSubreddits","description":"Gets a list of subreddits, arranged by popularity.Returns A Listing containing Subreddits","args":[{"name":"options","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"},{"name":"extra","description":"for fetchMore","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"subreddit","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"getNewSubreddits","description":"Gets a list of subreddits, arranged by age. Returns A Listing containing Subreddits","args":[{"name":"options","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"},{"name":"extra","description":"for fetchMore","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"subreddit","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"getGoldSubreddits","description":"Gets a list of gold-exclusive subreddits. Returns A Listing containing Subreddits","args":[{"name":"options","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"},{"name":"extra","description":"for fetchMore","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"subreddit","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"getDefaultSubreddits","description":"Gets a list of default subreddits. Returns A Listing containing Subreddits","args":[{"name":"options","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"},{"name":"extra","description":"for fetchMore","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"subreddit","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"getHot","description":"Gets a Listing of hot posts. Return A Listing containing the retrieved submissions.","args":[{"name":"subredditName","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"options","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"},{"name":"extra","description":"for fetchMore","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"redditLink","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"getNew","description":"Gets a Listing of new posts. Return A Listing containing the retrieved submissions.","args":[{"name":"subredditName","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"options","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"},{"name":"extra","description":"for fetchMore","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"redditLink","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"getTop","description":"Gets a Listing of top posts. Return A Listing containing the retrieved submissions.","args":[{"name":"subredditName","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"options","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"},{"name":"extra","description":"for fetchMore","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"redditLink","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"getControversial","description":"Gets a Listing of controversial posts. Return A Listing containing the retrieved submissions.","args":[{"name":"subredditName","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"options","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"},{"name":"extra","description":"for fetchMore","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"redditLink","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"getRising","description":"Gets a Listing of rising posts. Return A Listing containing the retrieved submissions.","args":[{"name":"subredditName","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"options","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"},{"name":"extra","description":"for fetchMore","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"redditLink","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"subreddit","description":"","fields":[{"name":"accounts_active","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"accounts_active_is_fuzzed","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"advertiser_category","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"allow_images","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"banner_img","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"banner_size","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_utc","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"comment_score_hide_mins","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"collapse_deleted_comments","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description_html","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"display_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"display_name_prefixed","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"header_img","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"header_size","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"Int","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"header_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"hide_ads","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"icon_size","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"lang","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"key_color","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"over18","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"public_description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"public_description_html","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"public_traffic","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"quarantine","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"show_media","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"show_media_preview","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subscribers","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"spoilers_enabled","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"suggested_comment_sort","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"submission_type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"submit_text","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"submit_link_label","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"submit_text_label","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"submit_text_html","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subreddit_type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user_sr_theme_enabled","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user_is_banned","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user_is_contributor","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user_is_moderator","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user_is_subscriber","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user_is_muted","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"wiki_enabled","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"whitelist_status","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"redditLink","description":"","fields":[{"name":"approved_by","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"archived","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"author_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"author_flair_css_class","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"author_flair_text","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"banned_by","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"brand_safe","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"contest_mode","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"clicked","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_utc","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"domain","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"downs","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"distinguished","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"edited","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"gilded","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"hidden","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"hide_score","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"is_self","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link_flair_css_class","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link_flair_text","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"locked","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"media","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mod_reports","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"num_comments","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"num_reports","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"over_18","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"post_hint","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"permalink","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"quarantine","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"report_reasons","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"removal_reason","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"saved","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"score","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"selftext","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"selftext_html","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"secure_media","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"secure_media_embed","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"stickied","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"spoiler","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subreddit_display_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"suggested_sort","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subreddit_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subreddit_type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subreddit_name_prefixed","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"thumbnail","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"ups","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user_reports","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"visited","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"replies","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"redditComment","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"redditComment","description":"","fields":[{"name":"comment_author_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"author_flair_css_class","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"author_flair_text","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"archived","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"approved_by","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"banned_by","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"body","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"body_html","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_utc","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"comment_created","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"controversiality","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"distinguished","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"comment_downs","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"edited","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"gilded","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"comment_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link_author","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link_permalink","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mod_reports","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"comment_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"comment_num_comments","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"comment_num_reports","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"comment_over_18","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"parent_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"quarantine","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"report_reasons","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"removal_reason","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"saved","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"comment_score","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subreddit_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subreddit_display_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subreddit_name_prefixed","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"score_hidden","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"stickied","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subreddit_type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"comment_ups","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user_reports","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"mediaWikiQuery","description":"media wiki query","fields":[{"name":"wikiPageContent","description":null,"args":[{"name":"titles","description":"Title of the wiki page","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"wikiPageContent","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"wikiPageContent","description":"wikiPageContent structure","fields":[{"name":"batchcomplete","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"query","description":null,"args":[],"type":{"kind":"OBJECT","name":"query","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"query","description":"wikiPageContent query structure","fields":[{"name":"pages","description":null,"args":[],"type":{"kind":"OBJECT","name":"pages","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"pages","description":"wikiPageContent pages structure","fields":[{"name":"pageID","description":null,"args":[],"type":{"kind":"OBJECT","name":"pageID","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"pageID","description":"wikiPageContent page id structure","fields":[{"name":"pageid","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"ns","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"revisions","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"revisions","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"revisions","description":"wikiPageContent revisions structure","fields":[{"name":"contentformat","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"contentmodel","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"html","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"stackExchangeQuery","description":"advanced search result json","fields":[{"name":"advancedSearch","description":null,"args":[{"name":"q","description":"The question to search","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"sort","description":"How to sort the result","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"activity\""},{"name":"order","description":"Order of the result","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"desc\""}],"type":{"kind":"OBJECT","name":"advancedSearch","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"questionID","description":null,"args":[{"name":"ids","description":"question ID","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null},{"name":"sort","description":"How to sort the result","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"activity\""},{"name":"order","description":"Order of the result","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"desc\""}],"type":{"kind":"OBJECT","name":"questionID","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"advancedSearch","description":"advanced search which returns a list of answers","fields":[{"name":"items","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"item","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"has_more","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"quota_max","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"quota_remaining","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"item","description":"item structure return from StackExchange API","fields":[{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"owner","description":null,"args":[],"type":{"kind":"OBJECT","name":"owner","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"is_answered","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"view_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"answer_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"score","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"last_activity_date","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"creation_date","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"last_edit_date","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"question_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"owner","description":"owner structure return from StackExchange API","fields":[{"name":"reputation","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user_type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"profile_image","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"display_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"questionID","description":"search for a question by its ID","fields":[{"name":"items","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"item","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"has_more","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"quota_max","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"quota_remaining","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyQuery","description":"Query spotify albums, tracks, artists or playlist by keywords or other criteria","fields":[{"name":"searchTracks","description":null,"args":[{"name":"q","description":"The search query's keywords (and optional field filters and operators), \n\t\t\t\t\t\t\tfor example: q=roadhouse%20blues; q= q=\"roadhouse&20blues\"; q=roadhouse%20NOT%20blues;\n\t\t\t\t\t\t\tq=roadhouse%20OR%20blues; q=album:gold%20artist:abba&type=album; \n\t\t\t\t\t\t\tq=lil%20genre:%22southern%20hip%20hop%22&type=artist","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"limit","description":"Optional. The maximum number of results to return. Default: 20. Minimum: 1. Maximum: 50. ","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"20"},{"name":"offset","description":"Optional. The index of the first result to return. Default: 0 (i.e., the first result).\n\t\t\t\t\t\t\tMaximum offset: 100.000. Use with limit to get the next page of search results.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyTrack","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"searchArtists","description":null,"args":[{"name":"q","description":"The search query's keywords (and optional field filters and operators), \n\t\t\t\t\t\t\tfor example: q=roadhouse%20blues; q= q=\"roadhouse&20blues\"; q=roadhouse%20NOT%20blues;\n\t\t\t\t\t\t\tq=roadhouse%20OR%20blues; q=album:gold%20artist:abba&type=album; \n\t\t\t\t\t\t\tq=lil%20genre:%22southern%20hip%20hop%22&type=artist","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"limit","description":"Optional. The maximum number of results to return. Default: 20. Minimum: 1. Maximum: 50. ","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"20"},{"name":"offset","description":"Optional. The index of the first result to return. Default: 0 (i.e., the first result).\n\t\t\t\t\t\t\tMaximum offset: 100.000. Use with limit to get the next page of search results.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyArtist","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"searchPlaylists","description":null,"args":[{"name":"q","description":"The search query's keywords (and optional field filters and operators), \n\t\t\t\t\t\t\tfor example: q=roadhouse%20blues; q= q=\"roadhouse&20blues\"; q=roadhouse%20NOT%20blues;\n\t\t\t\t\t\t\tq=roadhouse%20OR%20blues; q=album:gold%20artist:abba&type=album; \n\t\t\t\t\t\t\tq=lil%20genre:%22southern%20hip%20hop%22&type=artist","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"limit","description":"Optional. The maximum number of results to return. Default: 20. Minimum: 1. Maximum: 50. ","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"20"},{"name":"offset","description":"Optional. The index of the first result to return. Default: 0 (i.e., the first result).\n\t\t\t\t\t\t\tMaximum offset: 100.000. Use with limit to get the next page of search results.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyPlaylist","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"searchAlbums","description":null,"args":[{"name":"q","description":"The search query's keywords (and optional field filters and operators), \n\t\t\t\t\t\t\tfor example: q=roadhouse%20blues; q= q=\"roadhouse&20blues\"; q=roadhouse%20NOT%20blues;\n\t\t\t\t\t\t\tq=roadhouse%20OR%20blues; q=album:gold%20artist:abba&type=album; \n\t\t\t\t\t\t\tq=lil%20genre:%22southern%20hip%20hop%22&type=artist","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"limit","description":"Optional. The maximum number of results to return. Default: 20. Minimum: 1. Maximum: 50. ","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"20"},{"name":"offset","description":"Optional. The index of the first result to return. Default: 0 (i.e., the first result).\n\t\t\t\t\t\t\tMaximum offset: 100.000. Use with limit to get the next page of search results.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyAlbum","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"getUser","description":null,"args":[{"name":"user_id","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"spotifyUser","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"browseFeaturedPlaylists","description":null,"args":[{"name":"locale","description":"The desired language, consisting of a lowercase \n\t\t\t\t\t\t\t\tISO 639 language code and an uppercase ISO 3166-1 alpha-2 country code, \n\t\t\t\t\t\t\t\tjoined by an underscore. For example: es_MX, meaning \"Spanish (Mexico)\".","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"en_US\""},{"name":"country","description":"Optional. A country: an ISO 3166-1 alpha-2 country code.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"US\""},{"name":"timestamp","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"limit","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"20"},{"name":"offset","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyPlaylist","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"browseNewReleases","description":null,"args":[{"name":"country","description":"Optional. A country: an ISO 3166-1 alpha-2 country code.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"US\""},{"name":"limit","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"20"},{"name":"offset","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyAlbum","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"browseCategories","description":null,"args":[{"name":"locale","description":"The desired language, consisting of a lowercase \n\t\t\t\t\t\t\t\tISO 639 language code and an uppercase ISO 3166-1 alpha-2 country code, \n\t\t\t\t\t\t\t\tjoined by an underscore. For example: es_MX, meaning \"Spanish (Mexico)\".","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"en_US\""},{"name":"country","description":"Optional. A country: an ISO 3166-1 alpha-2 country code.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"US\""},{"name":"limit","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"20"},{"name":"offset","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyCategory","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyTrack","description":null,"fields":[{"name":"album","description":null,"args":[],"type":{"kind":"OBJECT","name":"spotifyAlbum","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"artists","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyArtist","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"available_markets","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"disc_number","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"duration_ms","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"external_ids","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"external_urls","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"href","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"linked_from","description":null,"args":[],"type":{"kind":"OBJECT","name":"spotifyLinkedTrack","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"popularity","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"preview_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"track_number","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"uri","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"audioFeatures","description":null,"args":[],"type":{"kind":"OBJECT","name":"spotifyAudioFeaturesType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"audioAnalysis","description":null,"args":[],"type":{"kind":"OBJECT","name":"spotifyAudioAnalysisType","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyAlbum","description":null,"fields":[{"name":"album_type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"artists","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyArtist","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"available_markets","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"external_urls","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"href","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"images","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyImage","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"uri","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"albumInfo","description":null,"args":[],"type":{"kind":"OBJECT","name":"spotifyAlbumInfo","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tracks","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyTrack","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyArtist","description":null,"fields":[{"name":"external_urls","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"followers","description":null,"args":[],"type":{"kind":"OBJECT","name":"spotifyFollower","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"genres","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"href","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"images","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyImage","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"popularity","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"uri","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"albums","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyAlbum","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"topTracks","description":null,"args":[{"name":"country","description":"country code","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"US\""}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyTrack","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"relatedArtists","description":"Get Spotify catalog information about artists similar to a given artist. Similarity \n\t\t\t\t\t\t\tis based on analysis of the Spotify community’s listening history. Return up to 20 artists","args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyArtist","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyFollower","description":null,"fields":[{"name":"href","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"total","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyImage","description":null,"fields":[{"name":"height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyAlbumInfo","description":null,"fields":[{"name":"copyrights","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyCopyright","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"external_ids","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"genres","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"label","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"popularity","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"release_date","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyCopyright","description":null,"fields":[{"name":"text","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyLinkedTrack","description":null,"fields":[{"name":"external_urls","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"href","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"uri","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyAudioFeaturesType","description":null,"fields":[{"name":"acousticness","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"analysis_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"danceability","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"duration_ms","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"energy","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"instrumentalness","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"key","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"liveness","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"loudness","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mode","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"speechiness","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tempo","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"time_signature","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"track_href","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"uri","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"valence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyAudioAnalysisType","description":null,"fields":[{"name":"bars","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"bar","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"beats","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"beat","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"meta","description":null,"args":[],"type":{"kind":"OBJECT","name":"meta","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"sections","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"section","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"segments","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"segment","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"tatums","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tatumType","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"track","description":null,"args":[],"type":{"kind":"OBJECT","name":"trackType","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"bar","description":null,"fields":[{"name":"start","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"duration","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"confidence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"beat","description":null,"fields":[{"name":"start","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"duration","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"confidence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"meta","description":null,"fields":[{"name":"analyzer_version","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"platform","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"detailed_status","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"status_code","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timestamp","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"analysis_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"input_process","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"section","description":null,"fields":[{"name":"start","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"duration","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"confidence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"loudness","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tempo","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tempo_confidence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"key","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"key_confidence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mode","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mode_confidence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"time_signature","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"time_signature_confidence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"segment","description":null,"fields":[{"name":"start","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"duration","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"confidence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"loudness_start","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"loudness_max_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"loudness_max","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"loudness_end","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"pitches","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"Float","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"timbre","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"Float","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tatumType","description":null,"fields":[{"name":"start","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"duration","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"confidence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"trackType","description":null,"fields":[{"name":"num_samples","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"duration","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"sample_md5","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"offset_seconds","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"window_seconds","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"analysis_sample_rate","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"analysis_channels","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"end_of_fade_in","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"start_of_fade_out","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"loudness","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tempo","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tempo_confidence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"time_signature","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"time_signature_confidence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"key","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"key_confidence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mode","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mode_confidence","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"codestring","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"code_version","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"echoprintstring","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"echoprint_version","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"synchstring","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"synch_version","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"rhythmstring","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"rhythm_version","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyPlaylist","description":null,"fields":[{"name":"collaborative","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"external_urls","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"href","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"images","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyImage","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"owner","description":null,"args":[],"type":{"kind":"OBJECT","name":"spotifyUser","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"public","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"snapshot_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"uri","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"followers","description":null,"args":[],"type":{"kind":"OBJECT","name":"spotifyFollower","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tracks","description":null,"args":[],"type":{"kind":"OBJECT","name":"spotifyPaging","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyUser","description":null,"fields":[{"name":"display_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"external_urls","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"followers","description":null,"args":[],"type":{"kind":"OBJECT","name":"spotifyFollower","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"href","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"images","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyImage","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"uri","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"playlists","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyPlaylist","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyPaging","description":null,"fields":[{"name":"href","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"limit","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"next","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"offset","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"previous","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"total","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"items","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"UNION","name":"spotifyItem","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"UNION","name":"spotifyItem","description":"union type of track object and playlist track object","fields":null,"inputFields":null,"interfaces":null,"enumValues":null,"possibleTypes":[{"kind":"OBJECT","name":"spotifyTrack","ofType":null},{"kind":"OBJECT","name":"spotifyPLaylistTrack","ofType":null}]},{"kind":"OBJECT","name":"spotifyPLaylistTrack","description":null,"fields":[{"name":"added_at","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"added_by","description":null,"args":[],"type":{"kind":"OBJECT","name":"spotifyUser","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"is_local","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"track","description":null,"args":[],"type":{"kind":"OBJECT","name":"spotifyTrack","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"spotifyCategory","description":null,"fields":[{"name":"href","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"icons","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyImage","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"categoryPlaylists","description":null,"args":[{"name":"country","description":"Optional. A country: an ISO 3166-1 alpha-2 country code.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"US\""},{"name":"limit","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"20"},{"name":"offset","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"spotifyPlaylist","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrQuery","description":"Query flickr photo and group by keywords or other criteria","fields":[{"name":"queryPhoto","description":null,"args":[{"name":"user_id","description":"The NSID of the user who's photo to search or me.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"tags","description":"A comma-delimited list of tags. Photos with one or\n\t\t\t\t\t\t\t\tmore of the tags listed will be returned. You can exclude results\n\t\t\t\t\t\t\t\tthat match a term by prepending it with a - character.","type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"defaultValue":null},{"name":"tag_mode","description":"Either 'any' for an OR combination of tags, or 'all' for \n\t\t\t\t\t\t\t\tan AND combination. Defaults to 'any' if not specified.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"text","description":"A free text search. Photos who's title, description or tags \n\t\t\t\t\t\t\t\tcontain the text will be returned. You can exclude results that match a term \n\t\t\t\t\t\t\t\tby prepending it with a - character.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"min_upload_date","description":"Minimum upload date. Photos with an upload date \n\t\t\t\t\t\t\t\t\t\tgreater than or equal to this value will be returned. The date \n\t\t\t\t\t\t\t\t\t\tcan be in the form of a unix timestamp or mysql datetime.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"max_upload_date","description":"Maximum upload date. Photos with an upload date \n\t\t\t\t\t\t\t\t\t\tless than or equal to this value will be returned. The date can \n\t\t\t\t\t\t\t\t\t\tbe in the form of a unix timestamp or mysql datetime.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"min_taken_date","description":"Minimum taken date. Photos with an taken date greater \n\t\t\t\t\t\t\t\t\t\tthan or equal to this value will be returned. The date can be in the \n\t\t\t\t\t\t\t\t\t\tform of a mysql datetime or unix timestamp.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"sort","description":"The order in which to sort returned photos. Deafults to \n\t\t\t\t\t\t\t\t\t\tdate-posted-desc (unless you are doing a radial geo query, in which \n\t\t\t\t\t\t\t\t\t\tcase the default sorting is by ascending distance from the point \n\t\t\t\t\t\t\t\t\t\tspecified). The possible values are: date-posted-asc, date-posted-desc, \n\t\t\t\t\t\t\t\t\t\tdate-taken-asc, date-taken-desc, interestingness-desc, \n\t\t\t\t\t\t\t\t\t\tinterestingness-asc, and relevance.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"bbox","description":"A comma-delimited list of 4 values defining the Bounding \n\t\t\t\t\t\t\t\t\t\tBox of the area that will be searched. \nThe 4 values represent the bottom-left corner of the box and the top-right corner, minimum_longitude, \nminimum_latitude, maximum_longitude, maximum_latitude. \nLongitude has a range of -180 to 180 , latitude of -90 to 90. Defaults to -180, -90, 180, 90 if not specified. \nUnlike standard photo queries, geo (or bounding box) queries will only return 250 results per page. \nGeo queries require some sort of limiting agent in order to prevent the database from crying. This is basically \nlike the check against \"parameterless searches\" for queries without a geo component. \nA tag, for instance, is considered a limiting agent as are user defined min_date_taken and min_date_upload \nparameters — If no limiting factor is passed we return only photos added in the last 12 hours (though we \nmay extend the limit in the future).","type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"defaultValue":null},{"name":"accuracy","description":"Recorded accuracy level of the location information. Current range is 1-16 :\nWorld level is 1,Country is ~3,Region is ~6,City is ~11,Street is ~16,Defaults to maximum value if not specified.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null},{"name":"content_type","description":"Content Type setting:1 for photos only.2 for screenshots only.\n3 for 'other' only.4 for photos and screenshots.5 for screenshots and 'other'.6 for photos and 'other'.7 for photos, \nscreenshots, and 'other' (all).","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"group_id","description":"The id of a group who's pool to search. If specified, \n\t\t\t\t\t\t\t\t\t\tonly matching photos posted to the group's pool will be returned.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"contacts","description":"Search your contacts. Either 'all' or 'ff' for just friends and family. (Experimental)","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"woe_id","description":"A 32-bit identifier that uniquely represents spatial entities. \n(not used if bbox argument is present). Geo queries require some sort of limiting agent in order to prevent the database from crying. \nThis is basically like the check against \"parameterless searches\" for queries without a geo component. A tag, for instance, is considered \na limiting agent as are user defined min_date_taken and min_date_upload parameters — If no limiting factor is passed we return only \nphotos added in the last 12 hours (though we may extend the limit in the future).","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"place_id","description":"A Flickr place id. (not used if bbox argument is present). \nGeo queries require some sort of limiting agent in order to prevent the database from crying. This is basically \nlike the check against \"parameterless searches\" for queries without a geo component. A tag, for instance, is \nconsidered a limiting agent as are user defined min_date_taken and min_date_upload parameters — If no limiting \nfactor is passed we return only photos added in the last 12 hours (though we may extend the limit in the future).","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"media","description":"Filter results by media type. Possible values are all (default), photos or videos","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"has_geo","description":"Any photo that has been geotagged, or if the value is \"0\" any photo that has not been geotagged. \nGeo queries require some sort of limiting agent in order to prevent the database from crying. This is basically like the check against\n \"parameterless searches\" for queries without a geo component. A tag, for instance, is considered a limiting agent as are user defined\n min_date_taken and min_date_upload parameters — If no limiting factor is passed we return only photos added in the \n last 12 hours (though we may extend the limit in the future).","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null},{"name":"geo_context","description":"Geo context is a numeric value representing the photo's geotagginess beyond latitude \nand longitude. For example, you may wish to search for photos that were taken \"indoors\" or \"outdoors\". The current list of context IDs is :\n0, not defined. 1, indoors. 2, outdoors.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null},{"name":"lat","description":"A valid latitude, in decimal format, for doing radial geo queries. \nGeo queries require some sort of limiting agent in order to prevent the database from crying. This is basically like the check against \n\"parameterless searches\" for queries without a geo component. A tag, for instance, is considered a limiting agent as are user defined \nmin_date_taken and min_date_upload parameters — If no limiting factor is passed we return only photos added in the last 12 hours \n(though we may extend the limit in the future).","type":{"kind":"SCALAR","name":"Float","ofType":null},"defaultValue":null},{"name":"lon","description":"A valid longitude, in decimal format, for doing radial geo queries. \nGeo queries require some sort of limiting agent in order to prevent the database from crying. This is basically like the check against \n\"parameterless searches\" for queries without a geo component. A tag, for instance, is considered a limiting agent as are user defined \nmin_date_taken and min_date_upload parameters — If no limiting factor is passed we return only photos added in the last 12 hours \n(though we may extend the limit in the future).","type":{"kind":"SCALAR","name":"Float","ofType":null},"defaultValue":null},{"name":"radius","description":"A valid radius used for geo queries, greater than zero and less than 20 \n\t\t\t\t\t\t\t\t\t\tmiles (or 32 kilometers), for use with point-based geo queries. The default value is 5 (km).","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null},{"name":"radius_units","description":"The unit of measure when doing radial geo queries. Valid options \n\t\t\t\t\t\t\t\t\t\tare \"mi\" (miles) and \"km\" (kilometers). The default is \"km\".","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"in_gallery","description":"Limit the scope of the search to only photos that are in a gallery? Default is false, search all photos.","type":{"kind":"SCALAR","name":"Boolean","ofType":null},"defaultValue":null},{"name":"extras","description":"A comma-delimited list of extra information to fetch for each returned record. Currently supported \n\t\t\t\t\t\t\t\t\t\tfields are: description, license, date_upload, date_taken, owner_name, icon_server, original_format, last_update, \n\t\t\t\t\t\t\t\t\t\tgeo, tags, machine_tags, o_dims, views, media, path_alias, url_sq, url_t, url_s, url_q, url_m, url_n, url_z, url_c, url_l, url_o","type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"defaultValue":null},{"name":"per_page","description":"Number of photos to return per page. If this argument is omitted, \n\t\t\t\t\t\t\t\t\t\tit defaults to 100. The maximum allowed value is 500.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null},{"name":"page","description":"The page of results to return. If this argument is omitted, it defaults to 1.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"queryGroup","description":null,"args":[{"name":"text","description":"The text to search for.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"per_page","description":"Number of groups to return per page. If this argument is ommited, it defaults to 100. The maximum allowed value is 500.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null},{"name":"page","description":"The page of results to return. If this argument is ommited, it defaults to 1.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrGroup","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"recentPhotos","description":"Returns a list of the latest public photos uploaded to flickr.","args":[{"name":"extras","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"per_page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null},{"name":"page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"queryPlace","description":"Return a list of place IDs for a query string.\nThe flickr.places.find method is not a geocoder. It will round up to the nearest place type to \nwhich place IDs apply. For example, if you pass it a street level address it will return the city \nthat contains the address rather than the street, or building, itself.","args":[{"name":"query","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPlace","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"queryPlaceBoundingBox","description":"Return all the locations of a matching place type for a bounding box.\nThe maximum allowable size of a bounding box (the distance between the SW and NE corners) is \ngoverned by the place type you are requesting. Allowable sizes are as follows: neighbourhood: 3km (1.8mi),\nlocality: 7km (4.3mi), county: 50km (31mi), region: 200km (124mi), country: 500km (310mi),continent: 1500km (932mi)","args":[{"name":"bbox","description":"A comma-delimited list of 4 values defining the Bounding Box of the area that \n\t\t\t\t\t\t\twill be searched. The 4 values represent the bottom-left corner of the box and the top-\n\t\t\t\t\t\t\tright corner, minimum_longitude, minimum_latitude, maximum_longitude, maximum_latitude.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"place_type_id","description":"The numeric ID for a specific place type to cluster photos by. \n\t\t\t\t\t\t\t\t\t\t\t\tValid place type IDs are :22: neighbourhood, 7: locality, 8: region,\n\t\t\t\t\t\t\t\t\t\t\t\t12: country,29: continent","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPlace","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"topPlaces","description":"Return the top 100 most geotagged places for a day.","args":[{"name":"place_type_id","description":"The numeric ID for a specific place type to cluster photos by. \n\t\t\t\t\t\t\t\t\t\t\t\t\tValid place type IDs are :22: neighbourhood, 7: locality, 8: region,\n\t\t\t\t\t\t\t\t\t\t\t\t\t12: country,29: continent","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null},{"name":"date","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"woe_id","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"place_id","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPlace","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"queryUser","description":"Return a user's NSID, given their username.","args":[{"name":"username","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"flickrPerson","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"hotTags","description":"Returns a list of hot tags for the given period.","args":[{"name":"period","description":"The period for which to fetch hot tags. Valid values are day and week (defaults to day).","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"count","description":"The number of tags to return. Defaults to 20. Maximum allowed value is 200.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrTag","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrPhoto","description":"return a list of photos","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"nsid","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"secret","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"server","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"farm","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"ispublic","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"isfriend","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"isfamily","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"streamContext","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrContext","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"Exif","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrExif","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"favoritePeople","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPerson","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"people","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPerson","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"info","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrInfo","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"size","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrSize","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"comments","description":null,"args":[{"name":"min_comment_date","description":"Minimum date that a a comment was added. The date should be in the form of a unix timestamp.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"max_comment_date","description":"Maximum date that a a comment was added. The date should be in the form of a unix timestamp.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrComment","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"locations","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrLocation","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"galleriesOf","description":"Return the list of galleries to which a photo has been added. Galleries are returned sorted by date which the photo was added to the gallery.","args":[{"name":"page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"1"},{"name":"per_page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"10"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrGallery","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrContext","description":"Returns next and previous photos for a photo in a Photostream or Photoset.","fields":[{"name":"prevphoto","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrPhoto","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"nextphoto","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrPhoto","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrExif","description":"Retrieves a list of EXIF/TIFF/GPS tags for a given photo. The calling user must have permission to view the photo.","fields":[{"name":"tagspace","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tagspaceid","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tag","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"label","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"raw","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrPerson","description":"return a Owner information","fields":[{"name":"nsid","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"favedata","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"iconserver","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"iconfarm","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"popular","description":"Returns a list of popular photos of a given user","args":[{"name":"page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"1"},{"name":"per_page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"10"},{"name":"sort","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"interesting\""}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"photoset","description":"Returns the photosets belonging to the specified user.","args":[{"name":"page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"1"},{"name":"per_page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"10"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPhotoset","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"profile","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrProfile","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"groups","description":"Returns the list of public groups a user is a member of.","args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrGroup","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"personInfo","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrPersonInfo","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"photos","description":"Get a list of public photos for the given user.","args":[{"name":"page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"1"},{"name":"per_page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"10"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"photosOf","description":"Returns a list of photos containing a particular Flickr member.","args":[{"name":"page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"1"},{"name":"per_page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"10"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"collectionTree","description":"Returns a tree (or sub tree) of collections belonging to a given user.","args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flckrSetType","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"contacts","description":null,"args":[{"name":"page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"1"},{"name":"per_page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"10"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPerson","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"favoritePhotos","description":null,"args":[{"name":"page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"1"},{"name":"per_page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"10"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"gallaries","description":"Return the list of galleries created by a user. Sorted from newest to oldest.","args":[{"name":"page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"1"},{"name":"per_page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"10"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrGallery","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":"Get the tag list for a given user (or the currently logged in user).","args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrTag","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"popularTags","description":"Get the popular tags for a given user (or the currently logged in user).","args":[{"name":"count","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrTag","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrPhotoset","description":"return a user's photosets","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"primary","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"secret","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"server","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"farm","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"photos","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"videos","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"count_views","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"count_comment","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"date_create","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"date_update","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"comments","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrComment","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrComment","description":"return a list of comments for a photo","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"author","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"authorname","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"iconserver","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"iconfarm","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"datecreate","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"permalink","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"path_alias","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"realname","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"_content","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrProfile","description":"Returns specified user's profile info, respecting profile privacy settings","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"nsid","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"showcase_set","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"first_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"last_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"website","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"occupation","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"hometown","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"city","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"country","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrGroup","description":"Search for groups. 18+ groups will only be returned for authenticated calls where the authenticated user is over 18.","fields":[{"name":"nsid","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"eighteenplus","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"iconfarm","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"iconserver","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"admin","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"invitation_only","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"members","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"pool_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"groupInfo","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrGroupInfo","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"topics","description":"Get a list of discussion topics in a group.","args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrTopic","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrGroupInfo","description":"Get information about a group.","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"iconserver","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"iconfarm","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"lang","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"ispoolmoderated","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"members","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"privacy","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrTopic","description":"","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subject","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"author","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"authorname","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"author_path_alias","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"author_is_deleted","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"is_pro","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"role","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"iconserver","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"iconfarm","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"count_replies","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"can_edit","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"can_delete","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"can_reply","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"is_sticky","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"is_locked","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"datecreate","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"datelastpost","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"last_reply","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"lastedit","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"message","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrPersonInfo","description":"Get information about a user.","fields":[{"name":"ispro","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"can_buy_pro","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"path_alias","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"expire","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"username","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"realname","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mbox_sha1sum","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"location","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timezone","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"photosurl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"profileurl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mobileurl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"photos_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"firstdatetaken","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"firstdate","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flckrSetType","description":null,"fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrGallery","description":null,"fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"owner","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"date_created","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"date_update","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"primary_photo_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"primary_photo_server","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"primary_photo_farm","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"primary_photo_secret","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"count_photos","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"count_videos","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"photosInGallery","description":null,"args":[{"name":"page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null},{"name":"per_page","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrTag","description":"","fields":[{"name":"count","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"score","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"_content","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tagClusters","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrCluster","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"relatedTags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrTag","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrCluster","description":"Gives you a list of tag clusters for the given tag.","fields":[{"name":"total","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tag","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrTag","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrInfo","description":"","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"secret","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"server","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"farm","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"dateuploaded","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"isfavorite","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"license","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"safety_level","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"rotation","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"views","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"media","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"owner","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrPerson","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"dates","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrDate","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"comments","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tagged","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrTagged","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"urls","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"flickrUrl","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrDate","description":"return Date information","fields":[{"name":"posted","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"taken","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"takengranularity","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"takenunknown","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"lastupdate","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrTagged","description":"return a Tagged in photo","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"author","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"authorname","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"raw","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"_content","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"machine_tag","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrUrl","description":"return a URL","fields":[{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"_content","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrSize","description":"Returns the available sizes for a photo. The calling user must have permission to view the photo.","fields":[{"name":"label","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"height","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"media","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrLocation","description":"Get the geo data (latitude and longitude and the accuracy level) for a photo.","fields":[{"name":"latitude","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"longitude","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"accuracy","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrPlace","description":"Return a list of place IDs for a query string.","fields":[{"name":"place_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"woeid","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"latitude","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"longitude","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"place_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"place_type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timezone","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"_content","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"woe_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"placeInfo","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrPlaceInfo","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"flickrPlaceInfo","description":"Get informations about a place.","fields":[{"name":"neighbourhood","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrPlace","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"continent","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrPlace","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"locality","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrPlace","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"county","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrPlace","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"region","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrPlace","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"country","description":null,"args":[],"type":{"kind":"OBJECT","name":"flickrPlace","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"shapefile","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"instagramQuery","description":"instagram api call","fields":[{"name":"usersSelf","description":null,"args":[],"type":{"kind":"OBJECT","name":"users","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"users","description":null,"args":[{"name":"user_id","description":"User Id","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"users","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"usersSearch","description":null,"args":[{"name":"q","description":"A query string","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"count","description":"Number of users to return","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"usersSearch","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"usersSelfFollows","description":null,"args":[],"type":{"kind":"OBJECT","name":"usersSelfFollows","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"usersSelfFollowedBy","description":null,"args":[],"type":{"kind":"OBJECT","name":"usersSelfFollowedBy","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"usersSelfRequestedBy","description":null,"args":[],"type":{"kind":"OBJECT","name":"usersSelfRequestedBy","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"usersRelationship","description":null,"args":[{"name":"user_id","description":"User Id","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"usersRelationship","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mediaID","description":null,"args":[{"name":"media_id","description":"Media ID","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"mediaID","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mediaShortCode","description":null,"args":[{"name":"shortcode","description":"Media Short Code","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"mediaShortCode","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mediaSearch","description":null,"args":[{"name":"lat","description":"Media Search Latitude","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"lng","description":"Media Search Longitude","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"mediaSearch","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"comments","description":null,"args":[{"name":"media_id","description":"comments","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"comments","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":null,"args":[{"name":"media_id","description":"likes","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"likesType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tagName","description":null,"args":[{"name":"tag_name","description":"tag name","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"tagName","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tagMediaRecent","description":null,"args":[{"name":"tag_name","description":"tag name","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"mediaRecent","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tagSearch","description":null,"args":[{"name":"q","description":"query","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"tagSearch","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"locationID","description":null,"args":[{"name":"location_id","description":"query","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"locationID","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"locationMediaRecent","description":null,"args":[{"name":"location_id","description":"query","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"locationMediaRecent","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"locationSearch","description":null,"args":[{"name":"lat","description":"latitude","type":{"kind":"SCALAR","name":"Float","ofType":null},"defaultValue":null},{"name":"lng","description":"longitude","type":{"kind":"SCALAR","name":"Float","ofType":null},"defaultValue":null}],"type":{"kind":"OBJECT","name":"locationSearch","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"users","description":"json structure for users type","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"OBJECT","name":"insData","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"insData","description":"instagram data json structure","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"username","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"full_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"profile_picture","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"bio","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"website","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"counts","description":null,"args":[],"type":{"kind":"OBJECT","name":"counts","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"counts","description":"instagram counts json structure","fields":[{"name":"media","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"follows","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"followed_by","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"usersSearch","description":"json structure for users search","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"userInfo","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"userInfo","description":"json structure for users information","fields":[{"name":"username","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"first_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"profile_picture","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"last_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"usersSelfFollows","description":"json structure for users self follows","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"followerInfo","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"followerInfo","description":"json structure for follower info","fields":[{"name":"username","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"profile_picture","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"full_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"usersSelfFollowedBy","description":"json structure for users self followed by","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"followerInfo","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"usersSelfRequestedBy","description":"json structure for users self requested by","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"followerInfo","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"usersRelationship","description":"json structure for users self requested by","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"OBJECT","name":"relationship","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"relationship","description":"json structure for relationship","fields":[{"name":"outgoing_status","description":"Your relationship to the user","args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"incoming_status","description":"A user's relationship to you","args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"mediaID","description":"json structure for Media ID Type","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"UNION","name":"media","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"UNION","name":"media","description":"json structure for Media Type","fields":null,"inputFields":null,"interfaces":null,"enumValues":null,"possibleTypes":[{"kind":"OBJECT","name":"Image","ofType":null},{"kind":"OBJECT","name":"Video","ofType":null}]},{"kind":"OBJECT","name":"Image","description":"json structure for Image Data Type","fields":[{"name":"distance","description":"Only for mediaSearch Type","args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"users_in_photo","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"userPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"filter","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tag","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"comments","description":null,"args":[],"type":{"kind":"OBJECT","name":"mediaComments","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"caption","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":null,"args":[],"type":{"kind":"OBJECT","name":"likes","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user","description":null,"args":[],"type":{"kind":"OBJECT","name":"followerInfo","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"images","description":null,"args":[],"type":{"kind":"OBJECT","name":"images","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"location","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"userPhoto","description":"json structure for User Photo Type","fields":[{"name":"user","description":null,"args":[],"type":{"kind":"OBJECT","name":"followerInfo","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"position","description":null,"args":[],"type":{"kind":"OBJECT","name":"position","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"position","description":"json structure for Position Type","fields":[{"name":"x","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"y","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tag","description":"json structure for Tags Type","fields":[{"name":"tag","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"mediaComments","description":"json structure for Media Comments Type","fields":[{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"media_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"likes","description":"json structure for Likes Type","fields":[{"name":"count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"images","description":"json structure for Images Type","fields":[{"name":"low_resolution","description":null,"args":[],"type":{"kind":"OBJECT","name":"lowResolution","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"thumbnail","description":null,"args":[],"type":{"kind":"OBJECT","name":"thumbnail","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"standard_resolution","description":null,"args":[],"type":{"kind":"OBJECT","name":"standardResolution","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"lowResolution","description":"json structure for lowResolution Type","fields":[{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"thumbnail","description":"json structure for Thumbnail Type","fields":[{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"standardResolution","description":"json structure for standardResolution Type","fields":[{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"Video","description":"json structure for Video Type","fields":[{"name":"distance","description":"Only for mediaSearch Type","args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"videos","description":null,"args":[],"type":{"kind":"OBJECT","name":"videos","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"users_in_photo","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"userPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"filter","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tag","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"comments","description":null,"args":[],"type":{"kind":"OBJECT","name":"mediaComments","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"caption","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":null,"args":[],"type":{"kind":"OBJECT","name":"likes","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user","description":null,"args":[],"type":{"kind":"OBJECT","name":"followerInfo","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"images","description":null,"args":[],"type":{"kind":"OBJECT","name":"images","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"location","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"videos","description":"json structure for Videos Type","fields":[{"name":"low_resolution","description":null,"args":[],"type":{"kind":"OBJECT","name":"lowResolution","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"standard_resolution","description":null,"args":[],"type":{"kind":"OBJECT","name":"standardResolution","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"mediaShortCode","description":"json structure for Media Short Code Type","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"UNION","name":"media","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"mediaSearch","description":"json structure for Media Search Type","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"UNION","name":"media","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"comments","description":"Media comments","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"commentsData","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"commentsData","description":"json structure for comments Type","fields":[{"name":"created_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"text","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"from","description":null,"args":[],"type":{"kind":"OBJECT","name":"followerInfo","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"likesType","description":"json structure for Likes Type","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"followerInfo","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tagName","description":"json structure for Tag Name Type","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"OBJECT","name":"tagData","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tagData","description":"json structure for Tag Data Type","fields":[{"name":"media_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"mediaRecent","description":"json structure for Media Recent Type","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"UNION","name":"media","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tagSearch","description":"json structure for Tag Search Type","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tagData","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"locationID","description":"json structure for Location ID Type","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"OBJECT","name":"locationData","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"locationData","description":"json structure for Location Data Type","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"latitude","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"longitude","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"locationMediaRecent","description":"json structure for Location Media Recent Type","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"UNION","name":"media","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"locationSearch","description":"json structure for Location Search Type","fields":[{"name":"data","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"locationData","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tumblrQuery","description":"","fields":[{"name":"searchPosts","description":"Get Posts with Tag","args":[{"name":"tag","description":"The tag on the posts you'd like to retrieve","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"before","description":"The timestamp of when you'd like to see posts before","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null},{"name":"limit","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"20"},{"name":"fliter","description":"Specifies the post format to return, other than HTML:\n\t\t\t\t\t\t\ttext – Plain text, no HTMLraw – As entered by the user (no \n\t\t\t\t\t\t\tpost-processing); if the user writes in Markdown, the Markdown \n\t\t\t\t\t\t\twill be returned rather than HTML","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tumblrBlog","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tumblrBlog","description":"","fields":[{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"blog_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"post_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"slug","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"date","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timestamp","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"state","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"format","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reblog_key","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"short_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"summary","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"recommended_source","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"recommended_color","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"note_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"caption","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reblog_tree_html","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reblog_comment","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"can_like","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"can_reblog","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"can_send_in_message","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"can_reply","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"display_avatar","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"trail","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tumblrTrail","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"photoset_layout","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"photos","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tumblrPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"featured_in_tag","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"featured_timestamp","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"liked_timestamp","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"info","description":null,"args":[],"type":{"kind":"OBJECT","name":"tumblrBlogInfo","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":"This method can be used to retrieve the publicly exposed likes from a blog.","args":[{"name":"limit","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"5"},{"name":"offset","description":"Liked post number to start at","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"},{"name":"before","description":"Retrieve posts liked before the specified timestamp","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"after","description":"Retrieve posts liked after the specified timestamp","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tumblrBlog","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"posts","description":"Retrieve published posts for a blog","args":[{"name":"type","description":"choose between text, quote, link, answer, video, audio, photo, chat","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"id","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"tag","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"limit","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"5"},{"name":"offset","description":"Liked post number to start at","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"0"},{"name":"reblog_info","description":null,"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"defaultValue":"false"},{"name":"notes_info","description":null,"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"defaultValue":"false"},{"name":"fliter","description":"choose between text, html, text, raw","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"UNION","name":"tumblrPost","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tumblrTrail","description":null,"fields":[{"name":"blog","description":null,"args":[],"type":{"kind":"OBJECT","name":"tempBlog","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"post_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"content_raw","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"content","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"is_current_item","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"is_root_item","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tempBlog","description":null,"fields":[{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"active","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"theme","description":null,"args":[],"type":{"kind":"OBJECT","name":"tempTheme","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"share_likes","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"share_following","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"can_be_followed","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tempTheme","description":null,"fields":[{"name":"header_full_width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"header_full_height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"header_focus_width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"header_focus_height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"avatar_shape","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"background_color","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"body_font","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"header_bounds","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"header_image","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"header_image_focused","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"header_image_scaled","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"header_stretch","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link_color","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"show_avatar","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"show_description","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"show_header_image","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"show_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title_color","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title_font","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title_font_weight","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tumblrPhoto","description":null,"fields":[{"name":"caption","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"original_size","description":null,"args":[],"type":{"kind":"OBJECT","name":"tempSize","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"alt_sizes","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tempSize","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tempSize","description":null,"fields":[{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tumblrBlogInfo","description":"","fields":[{"name":"ask","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"ask_anon","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"ask_page_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"can_subscribe","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"is_adult","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"is_nsfw","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"posts","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reply_conditions","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"share_likes","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subscribed","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"total_posts","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"updated","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"UNION","name":"tumblrPost","description":null,"fields":null,"inputFields":null,"interfaces":null,"enumValues":null,"possibleTypes":[{"kind":"OBJECT","name":"tumblrTextPostType","ofType":null},{"kind":"OBJECT","name":"tumblrPhotoPostType","ofType":null},{"kind":"OBJECT","name":"tumblrQuotePostType","ofType":null},{"kind":"OBJECT","name":"tumblrLinkPostType","ofType":null},{"kind":"OBJECT","name":"tumblrChatPostType","ofType":null},{"kind":"OBJECT","name":"tumblrAudioPostType","ofType":null},{"kind":"OBJECT","name":"tumblrPlayer","ofType":null},{"kind":"OBJECT","name":"tumblrAnswerPostType","ofType":null}]},{"kind":"OBJECT","name":"tumblrTextPostType","description":"","fields":[{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"blog_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"post_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"date","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timestamp","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"format","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reblog_key","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"bookmarklet","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mobile","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"liked","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"state","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"total_posts","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"note_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"body","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tumblrPhotoPostType","description":"","fields":[{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"blog_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"post_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"date","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timestamp","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"format","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reblog_key","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"bookmarklet","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mobile","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"liked","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"state","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"total_posts","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"note_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"photos","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tumblrPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"caption","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tumblrQuotePostType","description":"","fields":[{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"blog_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"post_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"date","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timestamp","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"format","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reblog_key","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"bookmarklet","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mobile","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"liked","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"state","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"total_posts","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"note_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"text","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tumblrLinkPostType","description":"","fields":[{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"blog_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"post_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"date","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timestamp","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"format","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reblog_key","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"bookmarklet","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mobile","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"liked","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"state","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"total_posts","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"note_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"author","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"excerpt","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"publisher","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"photos","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tumblrPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tumblrChatPostType","description":"","fields":[{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"blog_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"post_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"date","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timestamp","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"format","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reblog_key","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"bookmarklet","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mobile","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"liked","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"state","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"total_posts","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"note_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"body","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"dialogue","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"tumblrDialogue","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tumblrDialogue","description":null,"fields":[{"name":"label","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"phrase","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tumblrAudioPostType","description":"","fields":[{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"blog_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"post_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"date","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timestamp","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"format","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reblog_key","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"bookmarklet","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mobile","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"liked","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"state","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"total_posts","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"note_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"caption","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"player","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"plays","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"album_art","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"artist","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"album","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"track_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"track_number","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"year","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tumblrPlayer","description":null,"fields":[{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"embed_code","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"tumblrAnswerPostType","description":"","fields":[{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"blog_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"post_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"date","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timestamp","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"format","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reblog_key","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"bookmarklet","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mobile","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"liked","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"state","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"total_posts","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"note_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"asking_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"asking_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"question","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"answer","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"youtubeQuery","description":"A search result contains information about a YouTube video, channel, \nor playlist that matches the search parameters specified in an API \nrequest. While a search result points to a uniquely identifiable resource, \nlike a video, it does not have its own persistent data.","fields":[{"name":"search","description":null,"args":[{"name":"location","description":"e.g.(37.42307,-122.08427)","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"locationRadius","description":"Valid measurement units are m, km, ft, \n\t\t\t\t\t\t\t\t\tand mi. For example, valid parameter values include \n\t\t\t\t\t\t\t\t\t1500m, 5km, 10000ft, and 0.75mi. The API does not support \n\t\t\t\t\t\t\t\t\tlocationRadius parameter values larger than 1000 kilometers.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"maxResults","description":"Acceptable values are 0 to 50, inclusive. The default value is 5.","type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"5"},{"name":"order","description":"date, rating, relevance, title, videoCount, viewCount","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"relevance\""},{"name":"publishedAfter","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"1970-01-01T00:00:00Z\""},{"name":"publishedBefore","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"1970-01-01T00:00:00Z\""},{"name":"q","description":"The q parameter specifies the query term to search for.Your request can \n\t\t\t\t\t\t\t\t\talso use the Boolean NOT (-) and OR (|) operators to exclude videos or to find \n\t\t\t\t\t\t\t\t\tvideos that are associated with one of several search terms.","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null},{"name":"type","description":"channel, playlist,video","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"playlist\""}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"youtubeList","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"youtubeList","description":"","fields":[{"name":"kind","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"etag","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"info","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeId","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"snippet","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeSnippet","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"youtubeId","description":null,"fields":[{"name":"kind","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"videoId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channelId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"playlistId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"videoInfo","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"youtubeVideo","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"channelInfo","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"youtubeChannel","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"playlistInfo","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"youtubePlaylist","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"youtubeVideo","description":"","fields":[{"name":"kind","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"etag","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"snippet","description":null,"args":[],"type":{"kind":"OBJECT","name":"videoSnippet","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"contentDetails","description":null,"args":[],"type":{"kind":"OBJECT","name":"videoContent","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"status","description":null,"args":[],"type":{"kind":"OBJECT","name":"videoStatus","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"statistics","description":null,"args":[],"type":{"kind":"OBJECT","name":"videoStatistics","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"player","description":null,"args":[],"type":{"kind":"OBJECT","name":"videoPlayer","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"topicDetails","description":null,"args":[],"type":{"kind":"OBJECT","name":"videoTopic","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"recordingDetails","description":null,"args":[],"type":{"kind":"OBJECT","name":"videoRecording","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"liveStreamingDetails","description":null,"args":[],"type":{"kind":"OBJECT","name":"videoLive","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"commentThread","description":null,"args":[{"name":"maxResults","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":null},{"name":"searchTerms","description":"show the comments matching this text pattern","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"youtubeCommentthread","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"videoSnippet","description":"","fields":[{"name":"publishedAt","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channelId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"default_thumbnails","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeThumbnailType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"medium_thumbnails","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeThumbnailType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"high_thumbnails","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeThumbnailType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channelTitle","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"categoryId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"liveBroadcastContent","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"defaultLanguage","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"localized_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"localized_description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"defaultAudioLanguage","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"youtubeThumbnailType","description":null,"fields":[{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"videoContent","description":null,"fields":[{"name":"duration","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"dimension","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"definition","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"caption","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"licensedContent","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"regionRestriction_allowed","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"regionRestriction_blocked","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"contentRating","description":null,"args":[],"type":{"kind":"OBJECT","name":"ratingType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"projection","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"hasCustomThumbnail","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"ratingType","description":null,"fields":[{"name":"acbRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"agcomRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"anatelRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"bbfcRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"bfvcRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"bmukkRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"catvRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"catvfrRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"cbfcRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"cccRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"cceRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"chfilmRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"chvrsRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"cicfRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"cnaRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"cncRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"csaRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"cscfRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"czfilmRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"djctqRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"djctqRatingReasons","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"ecbmctRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"eefilmRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"egfilmRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"eirinRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"fcbmRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"fcoRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"fmocRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"fpbRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"fpbRatingReasons","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"fskRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"grfilmRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"icaaRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"ifcoRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"ilfilmRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"incaaRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"kfcbRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"kijkwijzerRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"kmrbRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"lsfRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mccaaRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mccypRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mcstRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mdaRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"medietilsynetRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mekuRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mibacRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mocRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"moctwRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mpaaRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mpaatRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mtrcbRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"nbcRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"nbcplRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"nfrcRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"nfvcbRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"nkclvRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"oflcRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"pefilmRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"rcnofRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"resorteviolenciaRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"rtcRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"rteRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"russiaRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"skfilmRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"smaisRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"smsaRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tvpgRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"ytRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"videoStatus","description":null,"fields":[{"name":"uploadStatus","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"failureReason","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"rejectionReason","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"privacyStatus","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"publishAt","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"license","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"embeddable","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"publicStatsViewable","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"videoStatistics","description":null,"fields":[{"name":"viewCount","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"likeCount","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"dislikeCount","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"favoriteCount","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"commentCount","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"videoPlayer","description":null,"fields":[{"name":"embedHtml","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"embedHeight","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"embedWidth","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"videoTopic","description":null,"fields":[{"name":"topicIds","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"relevantTopicIds","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"topicCategories","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"videoRecording","description":null,"fields":[{"name":"locationDescription","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"latitude","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"longitude","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"altitude","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"recordingDate","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"videoLive","description":null,"fields":[{"name":"actualStartTime","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"actualEndTime","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"scheduledStartTime","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"scheduledEndTime","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"concurrentViewers","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"activeLiveChatId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"youtubeCommentthread","description":"","fields":[{"name":"kind","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"etag","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"snippet","description":null,"args":[],"type":{"kind":"OBJECT","name":"commentthreadSnippet","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"commentthreadSnippet","description":null,"fields":[{"name":"channelId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"videoId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"topLevelComment","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeComment","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"canReply","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"totalReplyCount","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"isPublic","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"youtubeComment","description":"","fields":[{"name":"kind","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"etag","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"snippet","description":null,"args":[],"type":{"kind":"OBJECT","name":"commentSnippetType","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"commentSnippetType","description":null,"fields":[{"name":"authorDisplayName","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"authorProfileImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"authorChannelUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"authorChannelId_value","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channelId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"videoId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"textDisplay","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"textOriginal","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"parentId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"canRate","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"viewerRating","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"likeCount","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"moderationStatus","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"publishedAt","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"updateAt","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"youtubeChannel","description":"","fields":[{"name":"kind","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"etag","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"snippet","description":null,"args":[],"type":{"kind":"OBJECT","name":"channelSnippet","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"contentDetails","description":null,"args":[],"type":{"kind":"OBJECT","name":"channelContent","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"statistics","description":null,"args":[],"type":{"kind":"OBJECT","name":"channelStatistics","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"topicDetails","description":null,"args":[],"type":{"kind":"OBJECT","name":"channelTopic","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"status","description":null,"args":[],"type":{"kind":"OBJECT","name":"channelStatus","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"brandingSettings","description":null,"args":[],"type":{"kind":"OBJECT","name":"channelBranding","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"invideoPromotion","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"channelPromotion","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"contentOwnerDetails","description":null,"args":[],"type":{"kind":"OBJECT","name":"channelOwner","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"commentThread","description":null,"args":[{"name":"maxResults","description":null,"type":{"kind":"SCALAR","name":"Int","ofType":null},"defaultValue":"5"},{"name":"searchTerms","description":"show the comments matching this text pattern","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"\""}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"youtubeCommentthread","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"channelSnippet","description":null,"fields":[{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"customUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"publishedAt","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"default_thumbnails","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeThumbnailType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"medium_thumbnails","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeThumbnailType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"high_thumbnails","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeThumbnailType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"defaultLanguage","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"localized_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"localized_description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"country","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"channelContent","description":null,"fields":[{"name":"likes","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"favorites","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"uploads","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"watchHistory","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"watchLater","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"channelStatistics","description":null,"fields":[{"name":"viewCount","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"commentCount","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subscriberCount","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"hiddenSubscriberCount","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"videoCount","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"channelTopic","description":null,"fields":[{"name":"topicIds","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"topicCategories","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"channelStatus","description":null,"fields":[{"name":"privacyStatus","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"isLinked","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"longUploadsStatus","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"channelBranding","description":null,"fields":[{"name":"channel_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channel_description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channel_keywords","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channel_defaultTab","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channel_trackingAnalyticsAccountId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channel_moderateComments","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channel_showRelatedChannels","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channel_showBrowseView","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channel_featuredChannelsTitle","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channel_featuredChannelsUrls","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"channel_unsubscribedTrailer","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channel_profileColor","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channel_defaultLanguage","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channel_country","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"watch_textColor","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"watch_backgroundColor","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"watch_featuredPlaylistId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerMobileImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_watchIconImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_trackingImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerTabletLowImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerTabletImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerTabletHdImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerTabletExtraHdImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerMobileLowImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerMobileMediumHdImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerMobileHdImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerMobileExtraHdImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerTvImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerTvLowImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerTvMediumImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerTvHighImageUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"image_bannerExternalUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"hints","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"hint","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"hint","description":null,"fields":[{"name":"property","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"value","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"channelPromotion","description":null,"fields":[{"name":"id_type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id_videoId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id_websiteUrl","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id_recentlyUploadedBy","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timing_type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timing_offsetMs","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timing_durationMs","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"customMessage","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"promotedByContentOwner","description":null,"args":[],"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"channelOwner","description":null,"fields":[{"name":"contentOwner","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timeLinked","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"youtubePlaylist","description":"","fields":[{"name":"kind","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"etag","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"snippet","description":null,"args":[],"type":{"kind":"OBJECT","name":"playlistSnippet","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"status","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"contentDetails","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"player","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"playlistSnippet","description":null,"fields":[{"name":"publishedAt","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channelId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"default_thumbnails","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeThumbnailType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"medium_thumbnails","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeThumbnailType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"high_thumbnails","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeThumbnailType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channelTitle","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"defaultLanguage","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"localized_title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"localized_description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"youtubeSnippet","description":null,"fields":[{"name":"publishedAt","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channelId","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"default_thumbnails","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeThumbnailType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"medium_thumbnails","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeThumbnailType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"high_thumbnails","description":null,"args":[],"type":{"kind":"OBJECT","name":"youtubeThumbnailType","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"channelTitle","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"liveBroadcastContent","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbQuery","description":"Query user, page, event, group, place, placetopic.","fields":[{"name":"queryUser","description":null,"args":[{"name":"q","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"queryPage","description":null,"args":[{"name":"q","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPage","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"queryPlace","description":null,"args":[{"name":"q","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPlace","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"queryEvent","description":null,"args":[{"name":"q","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbEvent","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"queryGroup","description":null,"args":[{"name":"q","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbGroup","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"queryPlaceTopic","description":null,"args":[{"name":"q","description":null,"type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":null}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPlaceTopic","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbUser","description":"Return a facebook user.","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"about","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"birthday","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"email","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"first_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"gender","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"last_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"locale","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"middle_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name_format","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"political","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"quotes","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"relationship_status","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"religion","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"updated_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"website","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"age_range","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbAge","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"cover","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbCoverPhoto","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"currency","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbCurrency","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"devices","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbDevice","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"education","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbEducationExp","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"favorite_athletes","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbExperience","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"favorite_teams","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbExperience","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"hometown","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPage","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"inspirational_people","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbExperience","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"interested_in","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"languages","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbExperience","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"location","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPage","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"meeting_for","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"significant_other","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbUser","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"sports","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbExperience","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"work","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbExperience","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"albums","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbAlbum","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"photos","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"events","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbEvent","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"locations","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbLocation","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"groups","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbGroup","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"family","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"friends","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbLike","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"videos","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbVideo","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"feed","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPost","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"picture","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbProfilePic","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbAge","description":"Return a facebook user's age range.","fields":[{"name":"max","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"min","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbCoverPhoto","description":"Return a facebook user's cover photo.","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"offset_y","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbCurrency","description":"Return a facebook user's local currency information.","fields":[{"name":"usd_exchange","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"usd_exchange_inverse","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"user_currency","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbDevice","description":"return a list of devices the person is using. thiw will return only IOS and Android devices","fields":[{"name":"hardware","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"os","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbEducationExp","description":"the person's education","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"classes","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbExperience","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"concentration","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPage","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"degree","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPage","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"school","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPage","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"with","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"year","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPage","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbExperience","description":"experience","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"from","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPage","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"with","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbPage","description":"return a facebook page","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"about","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"affiliation","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"artists_we_like","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"attire","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"awards","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"band_interests","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"band_members","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"bio","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"birthday","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"booking_agent","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"built","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"category","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"checkins","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"culinary_team","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"current_location","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description_html","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"directed_by","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"display_subtext","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"emails","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"features","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"food_styles","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"founded","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"general_info","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"general_manager","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"genre","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"hometown","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"influences","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"location","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbLocation","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"members","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"mission","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"company_overview","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"network","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"overall_star_rating","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"personal_info","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"personal_interests","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"pharma_safety_info","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"phone","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"plot_outline","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"press_contact","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"price_range","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"produced_by","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"products","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"public_transit","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"rating_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"record_label","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"release_date","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"schedule","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"screenplay_by","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"season","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"single_line_address","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"starring","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"store_number","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"studio","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"talking_about_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"username","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"website","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"written_by","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"best_page","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPage","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"category_list","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPageCategory","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"contact_address","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbMailingAddress","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"cover","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbCoverPhoto","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"parent_page","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPage","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"restaurant_services","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPageRestaurantServices","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"restaurant_specialties","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPageRestaurantSpecialties","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"albums","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbAlbum","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"photos","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"events","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbEvent","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"locations","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbLocation","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbLike","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"videos","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbVideo","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"feed","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPost","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"picture","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbProfilePic","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"tagged","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPost","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbLocation","description":"Location of Place","fields":[{"name":"city","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"country","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"latitude","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"longitude","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"state","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"street","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"zip","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbPageCategory","description":"The Page's sub-categories","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbMailingAddress","description":"The mailing or contact address for this page. This field will be blank if the contact address is the same as the physical address","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"city","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"city_page","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPage","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"country","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"postal_code","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"region","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"street1","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"street2","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbPageRestaurantServices","description":"","fields":[{"name":"catering","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"delivery","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"groups","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"kids","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"outdoor","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"pickup","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reserve","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"takeout","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"waiter","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"walkins","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbPageRestaurantSpecialties","description":"","fields":[{"name":"breakfast","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"coffee","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"dinner","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"drinks","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"lunch","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbAlbum","description":"Return a facebook album.","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"location","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"privacy","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"updated_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"from","description":null,"args":[],"type":{"kind":"UNION","name":"fbProfile","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"place","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPage","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"cover_photo","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPhoto","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"event","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbEvent","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"photos","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"sharedposts","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPost","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbLike","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"reactions","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbReaction","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"comments","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbComment","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"UNION","name":"fbProfile","description":"a list of profile node: User,Page,Group,Event,Application\n\t\tcan be keep working on e.g. userType|pageType|groupType|eventType|","fields":null,"inputFields":null,"interfaces":null,"enumValues":null,"possibleTypes":[{"kind":"OBJECT","name":"fbUser","ofType":null},{"kind":"OBJECT","name":"fbPage","ofType":null}]},{"kind":"OBJECT","name":"fbPhoto","description":"Return a facebook photo.","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"backdated_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"icon","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"page_story_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"picture","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"updated_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"backdated_time_granularity","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"images","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPlatformImageSource","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"name_tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbEntityAtTextRange","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"webp_images","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPlatformImageSource","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"album","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbAlbum","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"from","description":null,"args":[],"type":{"kind":"UNION","name":"fbProfile","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"event","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbEvent","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"place","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPlace","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"reactions","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbReaction","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"sharedposts","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPost","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"sponsor_tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPage","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbTaggableSubject","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbLike","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"comments","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbComment","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbPlatformImageSource","description":"The different stored representations of the photo. \n\tCan vary in number based upon the size of the original photo.","fields":[{"name":"height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbEntityAtTextRange","description":"An array containing an array of objects mentioned in the \n\tname field which contain the id, name, and type of each object as well \n\tas the offset and length which can be used to match it up with its \ncorresponding string in the name field","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"length","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"offset","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbEvent","description":"Return a facebook event.","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"end_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"attending_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"category","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"declined_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"interested_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"maybe_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"noreply_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"start_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"ticket_uri","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"timezone","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"updated_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"cover","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbCoverPhoto","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"place","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPlace","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"parent_group","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbGroup","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"admins","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"attending","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"comments","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbComment","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"declined","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"interested","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"maybe","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"noreply","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"photos","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"picture","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbProfilePic","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"videos","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbVideo","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"feed","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPost","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbPlace","description":"return a Facebook place","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"location","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbLocation","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbGroup","description":"Represents a Facebook group.","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"cover","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbCoverPhoto","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"email","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"icon","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"member_request_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"owner","description":null,"args":[],"type":{"kind":"UNION","name":"fbProfile","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"parent","description":null,"args":[],"type":{"kind":"UNION","name":"fbProfile","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"privacy","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"updated_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"admins","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"albums","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbAlbum","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"events","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbEvent","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"members","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"photos","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPhoto","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"feed","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPost","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"videos","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbVideo","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbPost","description":"An individual entry in a profile's feed. The profile could be a user, page, app, or group.","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"caption","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"from","description":null,"args":[],"type":{"kind":"UNION","name":"fbProfile","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"icon","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"link","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"message","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"object_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"parent_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"permalink_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"picture","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"place","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPlace","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"share","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"status_type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"story","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"to","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"UNION","name":"fbProfile","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"updated_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"with_tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbLike","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"reactions","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbReaction","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"comments","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbComment","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"sharedposts","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPost","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"attachments","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbAttachment","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbLike","description":"this reference describes the /likes edge that is common \n\tto multiple Graph API nodes. The structure and operations are the \n\tsame for each node.","fields":[{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbReaction","description":"type enum {NONE, LIKE, LOVE, WOW, HAHA, SAD, ANGRY, THANKFUL}.","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbComment","description":"A comment can be made on various types of content\n\ton Facebook. Most Graph API nodes have a /comments edge that \n\tlists all the comments on that object. The /{comment-id} node\n\treturns a single comment.","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"attachment","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbAttachment","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"comment_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"from","description":null,"args":[],"type":{"kind":"UNION","name":"fbProfile","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"like_count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"message","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"parent","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbComment","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbLike","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"comments","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbComment","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbAttachment","description":"Media content associated with a story or comment. Story attachments are accessed from the following endpoints:","fields":[{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description_tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbUser","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"media","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbVideo","description":"Represents an individual video on Facebook.","fields":[{"name":"backdated_time_granularity","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"content_category","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"embed_html","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"backdated_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"event","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbEvent","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"format","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbVideoFormat","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"from","description":null,"args":[],"type":{"kind":"UNION","name":"fbProfile","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"icon","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"length","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"permalink_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"picture","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"place","description":null,"args":[],"type":{"kind":"OBJECT","name":"fbPlace","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"source","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"title","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"universal_video_id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"updated_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"captions","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbVideoCaption","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"comments","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbComment","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"likes","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbLike","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"reactions","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbReaction","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"sharedposts","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPost","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"sponsor_tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbPage","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"tags","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbTaggableSubject2","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"thumbnails","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"OBJECT","name":"fbThumbnail","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbVideoFormat","description":"The different formats of the video.","fields":[{"name":"embed_html","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"filter","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"picture","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbVideoCaption","description":"Captions for the video.","fields":[{"name":"created_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"locale","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"locale_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbTaggableSubject2","description":"Represents an object can be tagged in some content","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbThumbnail","description":"Represents an video's thumbnail on Facebook.","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"scale","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"uri","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbProfilePic","description":"Profile Picture.","fields":[{"name":"height","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"width","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbTaggableSubject","description":"Represents an object can be tagged in some content","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"created_time","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"x","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"y","description":null,"args":[],"type":{"kind":"SCALAR","name":"Float","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"fbPlaceTopic","description":"Reading the category of a place Page.","fields":[{"name":"id","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"count","description":null,"args":[],"type":{"kind":"SCALAR","name":"Int","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"icon_url","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"parent_ids","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"plural_name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"top_subtopic_names","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"__Schema","description":"A GraphQL Schema defines the capabilities of a GraphQL server. It exposes all available types and directives on the server, as well as the entry points for query, mutation, and subscription operations.","fields":[{"name":"types","description":"A list of all types supported by this server.","args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"LIST","name":null,"ofType":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"__Type"}}}},"isDeprecated":false,"deprecationReason":null},{"name":"queryType","description":"The type that query operations will be rooted at.","args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"__Type","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"mutationType","description":"If this server supports mutation, the type that mutation operations will be rooted at.","args":[],"type":{"kind":"OBJECT","name":"__Type","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"subscriptionType","description":"If this server support subscription, the type that subscription operations will be rooted at.","args":[],"type":{"kind":"OBJECT","name":"__Type","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"directives","description":"A list of all directives supported by this server.","args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"LIST","name":null,"ofType":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"__Directive"}}}},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"__Type","description":"The fundamental unit of any GraphQL Schema is the type. There are many kinds of types in GraphQL as represented by the `__TypeKind` enum.\n\nDepending on the kind of a type, certain fields describe information about that type. Scalar types provide no information beyond a name and description, while Enum types provide their values. Object and Interface types provide the fields they describe. Abstract types, Union and Interface, provide the Object types possible at runtime. List and NonNull types compose other types.","fields":[{"name":"kind","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"ENUM","name":"__TypeKind","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"name","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"fields","description":null,"args":[{"name":"includeDeprecated","description":null,"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"defaultValue":"false"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"__Field","ofType":null}}},"isDeprecated":false,"deprecationReason":null},{"name":"interfaces","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"__Type","ofType":null}}},"isDeprecated":false,"deprecationReason":null},{"name":"possibleTypes","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"__Type","ofType":null}}},"isDeprecated":false,"deprecationReason":null},{"name":"enumValues","description":null,"args":[{"name":"includeDeprecated","description":null,"type":{"kind":"SCALAR","name":"Boolean","ofType":null},"defaultValue":"false"}],"type":{"kind":"LIST","name":null,"ofType":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"__EnumValue","ofType":null}}},"isDeprecated":false,"deprecationReason":null},{"name":"inputFields","description":null,"args":[],"type":{"kind":"LIST","name":null,"ofType":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"__InputValue","ofType":null}}},"isDeprecated":false,"deprecationReason":null},{"name":"ofType","description":null,"args":[],"type":{"kind":"OBJECT","name":"__Type","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"ENUM","name":"__TypeKind","description":"An enum describing what kind of type a given `__Type` is.","fields":null,"inputFields":null,"interfaces":null,"enumValues":[{"name":"SCALAR","description":"Indicates this type is a scalar.","isDeprecated":false,"deprecationReason":null},{"name":"OBJECT","description":"Indicates this type is an object. `fields` and `interfaces` are valid fields.","isDeprecated":false,"deprecationReason":null},{"name":"INTERFACE","description":"Indicates this type is an interface. `fields` and `possibleTypes` are valid fields.","isDeprecated":false,"deprecationReason":null},{"name":"UNION","description":"Indicates this type is a union. `possibleTypes` is a valid field.","isDeprecated":false,"deprecationReason":null},{"name":"ENUM","description":"Indicates this type is an enum. `enumValues` is a valid field.","isDeprecated":false,"deprecationReason":null},{"name":"INPUT_OBJECT","description":"Indicates this type is an input object. `inputFields` is a valid field.","isDeprecated":false,"deprecationReason":null},{"name":"LIST","description":"Indicates this type is a list. `ofType` is a valid field.","isDeprecated":false,"deprecationReason":null},{"name":"NON_NULL","description":"Indicates this type is a non-null. `ofType` is a valid field.","isDeprecated":false,"deprecationReason":null}],"possibleTypes":null},{"kind":"OBJECT","name":"__Field","description":"Object and Interface types are described by a list of Fields, each of which has a name, potentially a list of arguments, and a return type.","fields":[{"name":"name","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"args","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"LIST","name":null,"ofType":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"__InputValue"}}}},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"__Type","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"isDeprecated","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"Boolean","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"deprecationReason","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"__InputValue","description":"Arguments provided to Fields or Directives and the input fields of an InputObject are represented as Input Values which describe their type and optionally a default value.","fields":[{"name":"name","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"type","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"__Type","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"defaultValue","description":"A GraphQL-formatted string representing the default value for this input value.","args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"__EnumValue","description":"One possible value for a given Enum. Enum values are unique values, not a placeholder for a string or numeric value. However an Enum value is returned in a JSON response as a string.","fields":[{"name":"name","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"isDeprecated","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"Boolean","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"deprecationReason","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"OBJECT","name":"__Directive","description":"A Directive provides a way to describe alternate runtime execution and type validation behavior in a GraphQL document.\n\nIn some cases, you need to provide options to alter GraphQL's execution behavior in ways field arguments will not suffice, such as conditionally including or skipping a field. Directives provide this by describing additional information to the executor.","fields":[{"name":"name","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"String","ofType":null}},"isDeprecated":false,"deprecationReason":null},{"name":"description","description":null,"args":[],"type":{"kind":"SCALAR","name":"String","ofType":null},"isDeprecated":false,"deprecationReason":null},{"name":"locations","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"LIST","name":null,"ofType":{"kind":"NON_NULL","name":null,"ofType":{"kind":"ENUM","name":"__DirectiveLocation"}}}},"isDeprecated":false,"deprecationReason":null},{"name":"args","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"LIST","name":null,"ofType":{"kind":"NON_NULL","name":null,"ofType":{"kind":"OBJECT","name":"__InputValue"}}}},"isDeprecated":false,"deprecationReason":null},{"name":"onOperation","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"Boolean","ofType":null}},"isDeprecated":true,"deprecationReason":"Use `locations`."},{"name":"onFragment","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"Boolean","ofType":null}},"isDeprecated":true,"deprecationReason":"Use `locations`."},{"name":"onField","description":null,"args":[],"type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"Boolean","ofType":null}},"isDeprecated":true,"deprecationReason":"Use `locations`."}],"inputFields":null,"interfaces":[],"enumValues":null,"possibleTypes":null},{"kind":"ENUM","name":"__DirectiveLocation","description":"A Directive can be adjacent to many parts of the GraphQL language, a __DirectiveLocation describes one such possible adjacencies.","fields":null,"inputFields":null,"interfaces":null,"enumValues":[{"name":"QUERY","description":"Location adjacent to a query operation.","isDeprecated":false,"deprecationReason":null},{"name":"MUTATION","description":"Location adjacent to a mutation operation.","isDeprecated":false,"deprecationReason":null},{"name":"SUBSCRIPTION","description":"Location adjacent to a subscription operation.","isDeprecated":false,"deprecationReason":null},{"name":"FIELD","description":"Location adjacent to a field.","isDeprecated":false,"deprecationReason":null},{"name":"FRAGMENT_DEFINITION","description":"Location adjacent to a fragment definition.","isDeprecated":false,"deprecationReason":null},{"name":"FRAGMENT_SPREAD","description":"Location adjacent to a fragment spread.","isDeprecated":false,"deprecationReason":null},{"name":"INLINE_FRAGMENT","description":"Location adjacent to an inline fragment.","isDeprecated":false,"deprecationReason":null},{"name":"SCHEMA","description":"Location adjacent to a schema definition.","isDeprecated":false,"deprecationReason":null},{"name":"SCALAR","description":"Location adjacent to a scalar definition.","isDeprecated":false,"deprecationReason":null},{"name":"OBJECT","description":"Location adjacent to an object type definition.","isDeprecated":false,"deprecationReason":null},{"name":"FIELD_DEFINITION","description":"Location adjacent to a field definition.","isDeprecated":false,"deprecationReason":null},{"name":"ARGUMENT_DEFINITION","description":"Location adjacent to an argument definition.","isDeprecated":false,"deprecationReason":null},{"name":"INTERFACE","description":"Location adjacent to an interface definition.","isDeprecated":false,"deprecationReason":null},{"name":"UNION","description":"Location adjacent to a union definition.","isDeprecated":false,"deprecationReason":null},{"name":"ENUM","description":"Location adjacent to an enum definition.","isDeprecated":false,"deprecationReason":null},{"name":"ENUM_VALUE","description":"Location adjacent to an enum value definition.","isDeprecated":false,"deprecationReason":null},{"name":"INPUT_OBJECT","description":"Location adjacent to an input object type definition.","isDeprecated":false,"deprecationReason":null},{"name":"INPUT_FIELD_DEFINITION","description":"Location adjacent to an input object field definition.","isDeprecated":false,"deprecationReason":null}],"possibleTypes":null}],"directives":[{"name":"include","description":"Directs the executor to include this field or fragment only when the `if` argument is true.","args":[{"name":"if","description":"Included when true.","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"Boolean","ofType":null}},"defaultValue":null}],"onOperation":false,"onFragment":true,"onField":true},{"name":"skip","description":"Directs the executor to skip this field or fragment when the `if` argument is true.","args":[{"name":"if","description":"Skipped when true.","type":{"kind":"NON_NULL","name":null,"ofType":{"kind":"SCALAR","name":"Boolean","ofType":null}},"defaultValue":null}],"onOperation":false,"onFragment":true,"onField":true},{"name":"deprecated","description":"Marks an element of a GraphQL schema as no longer supported.","args":[{"name":"reason","description":"Explains why this element was deprecated, usually also including a suggestion for how to access supported similar data. Formatted in [Markdown](https://daringfireball.net/projects/markdown/).","type":{"kind":"SCALAR","name":"String","ofType":null},"defaultValue":"\"No longer supported\""}],"onOperation":false,"onFragment":false,"onField":false}]}}}
 
 /***/ }),
-/* 123 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(124)
+  __webpack_require__(125)
 }
-var normalizeComponent = __webpack_require__(20)
+var normalizeComponent = __webpack_require__(15)
 /* script */
-var __vue_script__ = __webpack_require__(126)
+var __vue_script__ = __webpack_require__(127)
 /* template */
-var __vue_template__ = __webpack_require__(127)
+var __vue_template__ = __webpack_require__(128)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -54610,17 +54663,17 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 124 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(125);
+var content = __webpack_require__(126);
 if(typeof content === 'string') content = [[module.i, content, '']];
 if(content.locals) module.exports = content.locals;
 // add the styles to the DOM
-var update = __webpack_require__(50)("22197d63", content, false, {});
+var update = __webpack_require__(21)("22197d63", content, false, {});
 // Hot Module Replacement
 if(false) {
  // When the styles change, update the <style> tags
@@ -54636,10 +54689,10 @@ if(false) {
 }
 
 /***/ }),
-/* 125 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(16)(false);
+exports = module.exports = __webpack_require__(12)(false);
 // imports
 
 
@@ -54650,7 +54703,7 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 
 
 /***/ }),
-/* 126 */
+/* 127 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -54683,7 +54736,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 127 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -54871,7 +54924,7 @@ if (false) {
 }
 
 /***/ }),
-/* 128 */
+/* 129 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55046,12 +55099,12 @@ var BaseQuery = function () {
 }();
 
 /***/ }),
-/* 129 */
+/* 130 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components__ = __webpack_require__(130);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__directives__ = __webpack_require__(274);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__components__ = __webpack_require__(131);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__directives__ = __webpack_require__(275);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_plugins__ = __webpack_require__(1);
 
 
@@ -55082,47 +55135,47 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* unused harmony default export */ var _unused_webpack_default_export = (VuePlugin);
 
 /***/ }),
-/* 130 */
+/* 131 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__alert__ = __webpack_require__(131);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__badge__ = __webpack_require__(133);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__breadcrumb__ = __webpack_require__(135);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__button__ = __webpack_require__(137);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__button_group__ = __webpack_require__(138);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__button_toolbar__ = __webpack_require__(140);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__input_group__ = __webpack_require__(142);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__card__ = __webpack_require__(144);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__carousel__ = __webpack_require__(149);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__layout__ = __webpack_require__(152);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__alert__ = __webpack_require__(132);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__badge__ = __webpack_require__(134);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__breadcrumb__ = __webpack_require__(136);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__button__ = __webpack_require__(138);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__button_group__ = __webpack_require__(139);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__button_toolbar__ = __webpack_require__(141);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__input_group__ = __webpack_require__(143);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__card__ = __webpack_require__(145);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__carousel__ = __webpack_require__(150);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__layout__ = __webpack_require__(153);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__collapse__ = __webpack_require__(62);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__dropdown__ = __webpack_require__(34);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__embed__ = __webpack_require__(168);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__form__ = __webpack_require__(170);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__form_group__ = __webpack_require__(172);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__form_checkbox__ = __webpack_require__(174);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__form_radio__ = __webpack_require__(176);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__form_input__ = __webpack_require__(178);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__form_textarea__ = __webpack_require__(182);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__form_file__ = __webpack_require__(184);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__form_select__ = __webpack_require__(186);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__image__ = __webpack_require__(188);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__jumbotron__ = __webpack_require__(190);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__link__ = __webpack_require__(192);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__list_group__ = __webpack_require__(193);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__media__ = __webpack_require__(196);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__modal__ = __webpack_require__(198);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__dropdown__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__embed__ = __webpack_require__(169);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__form__ = __webpack_require__(171);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__form_group__ = __webpack_require__(173);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__form_checkbox__ = __webpack_require__(175);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_16__form_radio__ = __webpack_require__(177);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_17__form_input__ = __webpack_require__(179);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_18__form_textarea__ = __webpack_require__(183);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__form_file__ = __webpack_require__(185);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__form_select__ = __webpack_require__(187);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__image__ = __webpack_require__(189);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__jumbotron__ = __webpack_require__(191);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__link__ = __webpack_require__(193);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__list_group__ = __webpack_require__(194);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__media__ = __webpack_require__(197);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__modal__ = __webpack_require__(199);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__nav__ = __webpack_require__(77);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__navbar__ = __webpack_require__(206);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__pagination__ = __webpack_require__(211);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__pagination_nav__ = __webpack_require__(214);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__popover__ = __webpack_require__(216);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__progress__ = __webpack_require__(219);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__table__ = __webpack_require__(221);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__tabs__ = __webpack_require__(269);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__tooltip__ = __webpack_require__(272);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__navbar__ = __webpack_require__(207);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__pagination__ = __webpack_require__(212);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__pagination_nav__ = __webpack_require__(215);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__popover__ = __webpack_require__(217);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__progress__ = __webpack_require__(220);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_33__table__ = __webpack_require__(222);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_34__tabs__ = __webpack_require__(270);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_35__tooltip__ = __webpack_require__(273);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Alert", function() { return __WEBPACK_IMPORTED_MODULE_0__alert__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Badge", function() { return __WEBPACK_IMPORTED_MODULE_1__badge__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Breadcrumb", function() { return __WEBPACK_IMPORTED_MODULE_2__breadcrumb__["a"]; });
@@ -55199,11 +55252,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 131 */
+/* 132 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__alert__ = __webpack_require__(132);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__alert__ = __webpack_require__(133);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -55223,11 +55276,11 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 132 */
+/* 133 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__button_button_close__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__button_button_close__ = __webpack_require__(29);
 
 
 /* harmony default export */ __webpack_exports__["a"] = ({
@@ -55344,11 +55397,11 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 });
 
 /***/ }),
-/* 133 */
+/* 134 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__badge__ = __webpack_require__(134);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__badge__ = __webpack_require__(135);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -55368,13 +55421,13 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 134 */
+/* 135 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* unused harmony export props */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_functional_data_merge__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_pluck_props__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_pluck_props__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_object__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__link_link__ = __webpack_require__(8);
 
@@ -55427,11 +55480,11 @@ var props = Object(__WEBPACK_IMPORTED_MODULE_2__utils_object__["a" /* assign */]
 });
 
 /***/ }),
-/* 135 */
+/* 136 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__breadcrumb__ = __webpack_require__(136);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__breadcrumb__ = __webpack_require__(137);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__breadcrumb_item__ = __webpack_require__(52);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__breadcrumb_link__ = __webpack_require__(53);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_plugins__ = __webpack_require__(1);
@@ -55457,7 +55510,7 @@ Object(__WEBPACK_IMPORTED_MODULE_3__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 136 */
+/* 137 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55515,12 +55568,12 @@ var props = {
 });
 
 /***/ }),
-/* 137 */
+/* 138 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__button__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__button_close__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__button__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__button_close__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_plugins__ = __webpack_require__(1);
 
 
@@ -55544,11 +55597,11 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 138 */
+/* 139 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__button_group__ = __webpack_require__(139);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__button_group__ = __webpack_require__(140);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -55569,7 +55622,7 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 139 */
+/* 140 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55622,11 +55675,11 @@ var props = {
 });
 
 /***/ }),
-/* 140 */
+/* 141 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__button_toolbar__ = __webpack_require__(141);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__button_toolbar__ = __webpack_require__(142);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -55647,12 +55700,12 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 141 */
+/* 142 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_dom__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_key_codes__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_key_codes__ = __webpack_require__(13);
 
 
 
@@ -55774,16 +55827,16 @@ var ITEM_SELECTOR = ['.btn:not(.disabled):not([disabled]):not(.dropdown-item)', 
 });
 
 /***/ }),
-/* 142 */
+/* 143 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_plugins__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__input_group__ = __webpack_require__(143);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__input_group_addon__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__input_group__ = __webpack_require__(144);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__input_group_addon__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__input_group_prepend__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__input_group_append__ = __webpack_require__(55);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__input_group_text__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__input_group_text__ = __webpack_require__(32);
 
 
 
@@ -55811,7 +55864,7 @@ Object(__WEBPACK_IMPORTED_MODULE_0__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 143 */
+/* 144 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -55819,7 +55872,7 @@ Object(__WEBPACK_IMPORTED_MODULE_0__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_functional_data_merge__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__input_group_prepend__ = __webpack_require__(54);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__input_group_append__ = __webpack_require__(55);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__input_group_text__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__input_group_text__ = __webpack_require__(32);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 
@@ -55897,16 +55950,16 @@ var props = {
 });
 
 /***/ }),
-/* 144 */
+/* 145 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__card__ = __webpack_require__(145);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__card__ = __webpack_require__(146);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__card_header__ = __webpack_require__(58);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__card_body__ = __webpack_require__(57);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__card_footer__ = __webpack_require__(59);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__card_img__ = __webpack_require__(60);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__card_group__ = __webpack_require__(148);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__card_group__ = __webpack_require__(149);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils_plugins__ = __webpack_require__(1);
 
 
@@ -55936,18 +55989,18 @@ Object(__WEBPACK_IMPORTED_MODULE_6__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 145 */
+/* 146 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* unused harmony export props */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_functional_data_merge__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_prefix_prop_name__ = __webpack_require__(21);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_unprefix_prop_name__ = __webpack_require__(146);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_copyProps__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_pluck_props__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_prefix_prop_name__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_unprefix_prop_name__ = __webpack_require__(147);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_copyProps__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_pluck_props__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_object__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__mixins_card_mixin__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__mixins_card_mixin__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__card_body__ = __webpack_require__(57);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__card_header__ = __webpack_require__(58);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__card_footer__ = __webpack_require__(59);
@@ -56029,12 +56082,12 @@ var props = Object(__WEBPACK_IMPORTED_MODULE_5__utils_object__["a" /* assign */]
 });
 
 /***/ }),
-/* 146 */
+/* 147 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = unPrefixPropName;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lower_first__ = __webpack_require__(147);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__lower_first__ = __webpack_require__(148);
 
 
 /**
@@ -56046,7 +56099,7 @@ function unPrefixPropName(prefix, value) {
 }
 
 /***/ }),
-/* 147 */
+/* 148 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56062,7 +56115,7 @@ function lowerFirst(str) {
 }
 
 /***/ }),
-/* 148 */
+/* 149 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56106,12 +56159,12 @@ var props = {
 });
 
 /***/ }),
-/* 149 */
+/* 150 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__carousel__ = __webpack_require__(150);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__carousel_slide__ = __webpack_require__(151);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__carousel__ = __webpack_require__(151);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__carousel_slide__ = __webpack_require__(152);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_plugins__ = __webpack_require__(1);
 
 
@@ -56133,12 +56186,12 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 150 */
+/* 151 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_observe_dom__ = __webpack_require__(17);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_key_codes__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_observe_dom__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_key_codes__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_dom__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_id__ = __webpack_require__(5);
 
@@ -56594,11 +56647,11 @@ var TransitionEndEvents = {
 });
 
 /***/ }),
-/* 151 */
+/* 152 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__image_img__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__image_img__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_warn__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_id__ = __webpack_require__(5);
 
@@ -56711,14 +56764,14 @@ var TransitionEndEvents = {
 });
 
 /***/ }),
-/* 152 */
+/* 153 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__container__ = __webpack_require__(61);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__row__ = __webpack_require__(153);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__col__ = __webpack_require__(154);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__form_row__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__row__ = __webpack_require__(154);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__col__ = __webpack_require__(155);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__form_row__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_plugins__ = __webpack_require__(1);
 
 
@@ -56744,7 +56797,7 @@ Object(__WEBPACK_IMPORTED_MODULE_4__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 153 */
+/* 154 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56810,15 +56863,15 @@ var props = {
 });
 
 /***/ }),
-/* 154 */
+/* 155 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* unused harmony export computeBkPtClass */
 /* unused harmony export props */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_functional_data_merge__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_memoize__ = __webpack_require__(155);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_suffix_prop_name__ = __webpack_require__(156);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_memoize__ = __webpack_require__(156);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_suffix_prop_name__ = __webpack_require__(157);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_object__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_array__ = __webpack_require__(3);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -56963,7 +57016,7 @@ var props = Object(__WEBPACK_IMPORTED_MODULE_3__utils_object__["a" /* assign */]
 });
 
 /***/ }),
-/* 155 */
+/* 156 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -56981,7 +57034,7 @@ function memoize(fn) {
 }
 
 /***/ }),
-/* 156 */
+/* 157 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57001,11 +57054,11 @@ function suffixPropName(suffix, str) {
 }
 
 /***/ }),
-/* 157 */
+/* 158 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_listen_on_root__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_listen_on_root__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_dom__ = __webpack_require__(4);
 
 
@@ -57199,7 +57252,7 @@ var EVENT_TOGGLE = 'bv::toggle::collapse';
 });
 
 /***/ }),
-/* 158 */
+/* 159 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57271,14 +57324,14 @@ var EVENT_STATE = 'bv::collapse::state';
 });
 
 /***/ }),
-/* 159 */
+/* 160 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_id__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_dropdown__ = __webpack_require__(65);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__button_button__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__dropdown_css__ = __webpack_require__(161);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__button_button__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__dropdown_css__ = __webpack_require__(162);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__dropdown_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__dropdown_css__);
 
 
@@ -57401,7 +57454,7 @@ var EVENT_STATE = 'bv::collapse::state';
 });
 
 /***/ }),
-/* 160 */
+/* 161 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57429,13 +57482,13 @@ var EVENT_STATE = 'bv::collapse::state';
 });
 
 /***/ }),
-/* 161 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(162);
+var content = __webpack_require__(163);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -57443,7 +57496,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(35)(content, options);
+var update = __webpack_require__(36)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -57460,10 +57513,10 @@ if(false) {
 }
 
 /***/ }),
-/* 162 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(16)(false);
+exports = module.exports = __webpack_require__(12)(false);
 // imports
 
 
@@ -57474,7 +57527,7 @@ exports.push([module.i, "/* workaround for https://github.com/bootstrap-vue/boot
 
 
 /***/ }),
-/* 163 */
+/* 164 */
 /***/ (function(module, exports) {
 
 
@@ -57569,7 +57622,7 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 164 */
+/* 165 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57598,7 +57651,7 @@ var props = Object(__WEBPACK_IMPORTED_MODULE_1__link_link__["c" /* propsFactory 
 });
 
 /***/ }),
-/* 165 */
+/* 166 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57636,7 +57689,7 @@ var props = {
 });
 
 /***/ }),
-/* 166 */
+/* 167 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57671,7 +57724,7 @@ var props = {
 });
 
 /***/ }),
-/* 167 */
+/* 168 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57701,11 +57754,11 @@ var props = {
 });
 
 /***/ }),
-/* 168 */
+/* 169 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__embed__ = __webpack_require__(169);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__embed__ = __webpack_require__(170);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -57725,7 +57778,7 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 169 */
+/* 170 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57772,12 +57825,12 @@ var props = {
 });
 
 /***/ }),
-/* 170 */
+/* 171 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__form__ = __webpack_require__(66);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_row__ = __webpack_require__(171);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_row__ = __webpack_require__(172);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__form_text__ = __webpack_require__(67);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__form_invalid_feedback__ = __webpack_require__(68);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__form_valid_feedback__ = __webpack_require__(69);
@@ -57809,21 +57862,21 @@ Object(__WEBPACK_IMPORTED_MODULE_5__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 171 */
+/* 172 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__layout_form_row__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__layout_form_row__ = __webpack_require__(34);
 
 
 /* harmony default export */ __webpack_exports__["a"] = (__WEBPACK_IMPORTED_MODULE_0__layout_form_row__["a" /* default */]);
 
 /***/ }),
-/* 172 */
+/* 173 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__form_group__ = __webpack_require__(173);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__form_group__ = __webpack_require__(174);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -57844,7 +57897,7 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 173 */
+/* 174 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -57852,7 +57905,7 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_dom__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_id__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_state__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__layout_form_row__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__layout_form_row__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__form_form_text__ = __webpack_require__(67);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__form_form_invalid_feedback__ = __webpack_require__(68);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__form_form_valid_feedback__ = __webpack_require__(69);
@@ -58149,12 +58202,12 @@ var SELECTOR = 'input:not(:disabled),textarea:not(:disabled),select:not(:disable
 });
 
 /***/ }),
-/* 174 */
+/* 175 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__form_checkbox__ = __webpack_require__(70);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_checkbox_group__ = __webpack_require__(175);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_checkbox_group__ = __webpack_require__(176);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_plugins__ = __webpack_require__(1);
 
 
@@ -58180,16 +58233,16 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 175 */
+/* 176 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_id__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_form__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_form_options__ = __webpack_require__(37);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_size__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_form_options__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_size__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mixins_form_state__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__mixins_form_custom__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__mixins_form_custom__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__form_checkbox__ = __webpack_require__(70);
 
 
@@ -58301,12 +58354,12 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 });
 
 /***/ }),
-/* 176 */
+/* 177 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__form_radio__ = __webpack_require__(72);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_radio_group__ = __webpack_require__(177);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__form_radio_group__ = __webpack_require__(178);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_plugins__ = __webpack_require__(1);
 
 
@@ -58330,16 +58383,16 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 177 */
+/* 178 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_id__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_form_options__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_form_options__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_form__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_size__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_size__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mixins_form_state__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__mixins_form_custom__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__mixins_form_custom__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__form_radio__ = __webpack_require__(72);
 
 
@@ -58449,11 +58502,11 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 });
 
 /***/ }),
-/* 178 */
+/* 179 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__form_input__ = __webpack_require__(179);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__form_input__ = __webpack_require__(180);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -58474,16 +58527,16 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 179 */
+/* 180 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_id__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_form__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_form_size__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_form_size__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_state__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_array__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__form_input_css__ = __webpack_require__(180);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__form_input_css__ = __webpack_require__(181);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__form_input_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__form_input_css__);
 
 
@@ -58633,13 +58686,13 @@ var TYPES = ['text', 'password', 'email', 'number', 'url', 'tel', 'search', 'ran
 });
 
 /***/ }),
-/* 180 */
+/* 181 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(181);
+var content = __webpack_require__(182);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -58647,7 +58700,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(35)(content, options);
+var update = __webpack_require__(36)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -58664,10 +58717,10 @@ if(false) {
 }
 
 /***/ }),
-/* 181 */
+/* 182 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(16)(false);
+exports = module.exports = __webpack_require__(12)(false);
 // imports
 
 
@@ -58678,11 +58731,11 @@ exports.push([module.i, "/* Special styling for type=range and type=color input 
 
 
 /***/ }),
-/* 182 */
+/* 183 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__form_textarea__ = __webpack_require__(183);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__form_textarea__ = __webpack_require__(184);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -58703,13 +58756,13 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 183 */
+/* 184 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_id__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_form__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_form_size__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_form_size__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_state__ = __webpack_require__(9);
 
 
@@ -58858,11 +58911,11 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 });
 
 /***/ }),
-/* 184 */
+/* 185 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__form_file__ = __webpack_require__(185);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__form_file__ = __webpack_require__(186);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -58883,14 +58936,14 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 185 */
+/* 186 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_id__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_form__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_form_state__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_custom__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_custom__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_array__ = __webpack_require__(3);
 
 
@@ -59143,11 +59196,11 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 });
 
 /***/ }),
-/* 186 */
+/* 187 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__form_select__ = __webpack_require__(187);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__form_select__ = __webpack_require__(188);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -59168,16 +59221,16 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 187 */
+/* 188 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_id__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_form_options__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__mixins_form_options__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_form__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_size__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_form_size__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__mixins_form_state__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__mixins_form_custom__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__mixins_form_custom__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils_array__ = __webpack_require__(3);
 
 
@@ -59285,12 +59338,12 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 });
 
 /***/ }),
-/* 188 */
+/* 189 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img__ = __webpack_require__(32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_lazy__ = __webpack_require__(189);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__img_lazy__ = __webpack_require__(190);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_plugins__ = __webpack_require__(1);
 
 
@@ -59312,11 +59365,11 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 189 */
+/* 190 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__img__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_dom__ = __webpack_require__(4);
 
 
@@ -59505,11 +59558,11 @@ var THROTTLE = 100;
 });
 
 /***/ }),
-/* 190 */
+/* 191 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__jumbotron__ = __webpack_require__(191);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__jumbotron__ = __webpack_require__(192);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -59529,7 +59582,7 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 191 */
+/* 192 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -59636,7 +59689,7 @@ var props = {
 });
 
 /***/ }),
-/* 192 */
+/* 193 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -59660,12 +59713,12 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 193 */
+/* 194 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__list_group__ = __webpack_require__(194);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__list_group_item__ = __webpack_require__(195);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__list_group__ = __webpack_require__(195);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__list_group_item__ = __webpack_require__(196);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_plugins__ = __webpack_require__(1);
 
 
@@ -59687,7 +59740,7 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 194 */
+/* 195 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -59724,13 +59777,13 @@ var props = {
 });
 
 /***/ }),
-/* 195 */
+/* 196 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* unused harmony export props */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_functional_data_merge__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_pluck_props__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_pluck_props__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_object__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_array__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__link_link__ = __webpack_require__(8);
@@ -59790,11 +59843,11 @@ var props = Object(__WEBPACK_IMPORTED_MODULE_2__utils_object__["a" /* assign */]
 });
 
 /***/ }),
-/* 196 */
+/* 197 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__media__ = __webpack_require__(197);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__media__ = __webpack_require__(198);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__media_aside__ = __webpack_require__(74);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__media_body__ = __webpack_require__(73);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_plugins__ = __webpack_require__(1);
@@ -59820,7 +59873,7 @@ Object(__WEBPACK_IMPORTED_MODULE_3__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 197 */
+/* 198 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -59880,11 +59933,11 @@ var props = {
 });
 
 /***/ }),
-/* 198 */
+/* 199 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modal__ = __webpack_require__(199);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__modal__ = __webpack_require__(200);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__directives_modal__ = __webpack_require__(76);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_plugins__ = __webpack_require__(1);
 
@@ -59907,17 +59960,17 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 199 */
+/* 200 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__button_button__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__button_button_close__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__button_button__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__button_button_close__ = __webpack_require__(29);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_id__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_listen_on_root__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_observe_dom__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__mixins_listen_on_root__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_observe_dom__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_warn__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils_key_codes__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils_key_codes__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils_bv_event_class__ = __webpack_require__(75);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__utils_dom__ = __webpack_require__(4);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -60663,7 +60716,7 @@ var Selector = {
 });
 
 /***/ }),
-/* 200 */
+/* 201 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -60700,7 +60753,7 @@ var listenTypes = { click: true };
 });
 
 /***/ }),
-/* 201 */
+/* 202 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -60767,7 +60820,7 @@ var props = {
 });
 
 /***/ }),
-/* 202 */
+/* 203 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -60794,7 +60847,7 @@ var props = Object(__WEBPACK_IMPORTED_MODULE_1__link_link__["c" /* propsFactory 
 });
 
 /***/ }),
-/* 203 */
+/* 204 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -60822,7 +60875,7 @@ var props = {
 });
 
 /***/ }),
-/* 204 */
+/* 205 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -60849,7 +60902,7 @@ var props = {
 });
 
 /***/ }),
-/* 205 */
+/* 206 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -60922,17 +60975,17 @@ var props = {
 });
 
 /***/ }),
-/* 206 */
+/* 207 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__navbar__ = __webpack_require__(207);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__navbar_nav__ = __webpack_require__(208);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__navbar_brand__ = __webpack_require__(209);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__navbar_toggle__ = __webpack_require__(210);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__navbar__ = __webpack_require__(208);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__navbar_nav__ = __webpack_require__(209);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__navbar_brand__ = __webpack_require__(210);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__navbar_toggle__ = __webpack_require__(211);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__nav__ = __webpack_require__(77);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__collapse__ = __webpack_require__(62);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__dropdown__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__dropdown__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils_plugins__ = __webpack_require__(1);
 
 
@@ -60965,7 +61018,7 @@ Object(__WEBPACK_IMPORTED_MODULE_7__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 207 */
+/* 208 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -61024,7 +61077,7 @@ var props = {
 });
 
 /***/ }),
-/* 208 */
+/* 209 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -61066,14 +61119,14 @@ var props = {
 });
 
 /***/ }),
-/* 209 */
+/* 210 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* unused harmony export props */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__link_link__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vue_functional_data_merge__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_pluck_props__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_pluck_props__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_object__ = __webpack_require__(2);
 
 
@@ -61110,11 +61163,11 @@ var props = Object(__WEBPACK_IMPORTED_MODULE_3__utils_object__["a" /* assign */]
 });
 
 /***/ }),
-/* 210 */
+/* 211 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_listen_on_root__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__mixins_listen_on_root__ = __webpack_require__(19);
 
 
 /* harmony default export */ __webpack_exports__["a"] = ({
@@ -61164,11 +61217,11 @@ var props = Object(__WEBPACK_IMPORTED_MODULE_3__utils_object__["a" /* assign */]
 });
 
 /***/ }),
-/* 211 */
+/* 212 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__pagination__ = __webpack_require__(212);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__pagination__ = __webpack_require__(213);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -61188,7 +61241,7 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 212 */
+/* 213 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -61254,7 +61307,7 @@ var props = {
 });
 
 /***/ }),
-/* 213 */
+/* 214 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -61267,11 +61320,11 @@ var props = {
 });
 
 /***/ }),
-/* 214 */
+/* 215 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__pagination_nav__ = __webpack_require__(215);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__pagination_nav__ = __webpack_require__(216);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -61291,7 +61344,7 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 215 */
+/* 216 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -61385,11 +61438,11 @@ routerProps);
 });
 
 /***/ }),
-/* 216 */
+/* 217 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popover__ = __webpack_require__(217);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popover__ = __webpack_require__(218);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -61409,7 +61462,7 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 217 */
+/* 218 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -61467,7 +61520,7 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 });
 
 /***/ }),
-/* 218 */
+/* 219 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -61479,11 +61532,11 @@ var isSSR = typeof window === 'undefined';
 var HTMLElement = isSSR ? Object : window.HTMLElement;
 
 /***/ }),
-/* 219 */
+/* 220 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__progress__ = __webpack_require__(220);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__progress__ = __webpack_require__(221);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__progress_bar__ = __webpack_require__(81);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_plugins__ = __webpack_require__(1);
 
@@ -61506,7 +61559,7 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 220 */
+/* 221 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -61583,11 +61636,11 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 });
 
 /***/ }),
-/* 221 */
+/* 222 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__table__ = __webpack_require__(222);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__table__ = __webpack_require__(223);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -61607,23 +61660,23 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 222 */
+/* 223 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_startcase__ = __webpack_require__(223);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_startcase__ = __webpack_require__(224);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_lodash_startcase___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_lodash_startcase__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_get__ = __webpack_require__(224);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_get__ = __webpack_require__(225);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_lodash_get___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_lodash_get__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_loose_equal__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_stable_sort__ = __webpack_require__(266);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_key_codes__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_loose_equal__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_stable_sort__ = __webpack_require__(267);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__utils_key_codes__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__utils_warn__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__utils_object__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__utils_array__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__mixins_id__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__mixins_listen_on_root__ = __webpack_require__(18);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__table_css__ = __webpack_require__(267);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__mixins_listen_on_root__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__table_css__ = __webpack_require__(268);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__table_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10__table_css__);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -62514,7 +62567,7 @@ function processField(key, value) {
 });
 
 /***/ }),
-/* 223 */
+/* 224 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/**
@@ -63101,10 +63154,10 @@ module.exports = startCase;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ }),
-/* 224 */
+/* 225 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseGet = __webpack_require__(225);
+var baseGet = __webpack_require__(226);
 
 /**
  * Gets the value at `path` of `object`. If the resolved value is
@@ -63140,11 +63193,11 @@ module.exports = get;
 
 
 /***/ }),
-/* 225 */
+/* 226 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var castPath = __webpack_require__(226),
-    toKey = __webpack_require__(265);
+var castPath = __webpack_require__(227),
+    toKey = __webpack_require__(266);
 
 /**
  * The base implementation of `_.get` without support for default values.
@@ -63170,13 +63223,13 @@ module.exports = baseGet;
 
 
 /***/ }),
-/* 226 */
+/* 227 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isArray = __webpack_require__(39),
-    isKey = __webpack_require__(227),
-    stringToPath = __webpack_require__(232),
-    toString = __webpack_require__(262);
+var isArray = __webpack_require__(40),
+    isKey = __webpack_require__(228),
+    stringToPath = __webpack_require__(233),
+    toString = __webpack_require__(263);
 
 /**
  * Casts `value` to a path array if it's not one.
@@ -63197,11 +63250,11 @@ module.exports = castPath;
 
 
 /***/ }),
-/* 227 */
+/* 228 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isArray = __webpack_require__(39),
-    isSymbol = __webpack_require__(40);
+var isArray = __webpack_require__(40),
+    isSymbol = __webpack_require__(41);
 
 /** Used to match property names within property paths. */
 var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
@@ -63232,7 +63285,7 @@ module.exports = isKey;
 
 
 /***/ }),
-/* 228 */
+/* 229 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {/** Detect free variable `global` from Node.js. */
@@ -63243,10 +63296,10 @@ module.exports = freeGlobal;
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ }),
-/* 229 */
+/* 230 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Symbol = __webpack_require__(41);
+var Symbol = __webpack_require__(42);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -63295,7 +63348,7 @@ module.exports = getRawTag;
 
 
 /***/ }),
-/* 230 */
+/* 231 */
 /***/ (function(module, exports) {
 
 /** Used for built-in method references. */
@@ -63323,7 +63376,7 @@ module.exports = objectToString;
 
 
 /***/ }),
-/* 231 */
+/* 232 */
 /***/ (function(module, exports) {
 
 /**
@@ -63358,10 +63411,10 @@ module.exports = isObjectLike;
 
 
 /***/ }),
-/* 232 */
+/* 233 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var memoizeCapped = __webpack_require__(233);
+var memoizeCapped = __webpack_require__(234);
 
 /** Used to match property names within property paths. */
 var rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g;
@@ -63391,10 +63444,10 @@ module.exports = stringToPath;
 
 
 /***/ }),
-/* 233 */
+/* 234 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var memoize = __webpack_require__(234);
+var memoize = __webpack_require__(235);
 
 /** Used as the maximum memoize cache size. */
 var MAX_MEMOIZE_SIZE = 500;
@@ -63423,10 +63476,10 @@ module.exports = memoizeCapped;
 
 
 /***/ }),
-/* 234 */
+/* 235 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var MapCache = __webpack_require__(235);
+var MapCache = __webpack_require__(236);
 
 /** Error message constants. */
 var FUNC_ERROR_TEXT = 'Expected a function';
@@ -63502,14 +63555,14 @@ module.exports = memoize;
 
 
 /***/ }),
-/* 235 */
+/* 236 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var mapCacheClear = __webpack_require__(236),
-    mapCacheDelete = __webpack_require__(257),
-    mapCacheGet = __webpack_require__(259),
-    mapCacheHas = __webpack_require__(260),
-    mapCacheSet = __webpack_require__(261);
+var mapCacheClear = __webpack_require__(237),
+    mapCacheDelete = __webpack_require__(258),
+    mapCacheGet = __webpack_require__(260),
+    mapCacheHas = __webpack_require__(261),
+    mapCacheSet = __webpack_require__(262);
 
 /**
  * Creates a map cache object to store key-value pairs.
@@ -63540,12 +63593,12 @@ module.exports = MapCache;
 
 
 /***/ }),
-/* 236 */
+/* 237 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Hash = __webpack_require__(237),
-    ListCache = __webpack_require__(249),
-    Map = __webpack_require__(256);
+var Hash = __webpack_require__(238),
+    ListCache = __webpack_require__(250),
+    Map = __webpack_require__(257);
 
 /**
  * Removes all key-value entries from the map.
@@ -63567,14 +63620,14 @@ module.exports = mapCacheClear;
 
 
 /***/ }),
-/* 237 */
+/* 238 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var hashClear = __webpack_require__(238),
-    hashDelete = __webpack_require__(245),
-    hashGet = __webpack_require__(246),
-    hashHas = __webpack_require__(247),
-    hashSet = __webpack_require__(248);
+var hashClear = __webpack_require__(239),
+    hashDelete = __webpack_require__(246),
+    hashGet = __webpack_require__(247),
+    hashHas = __webpack_require__(248),
+    hashSet = __webpack_require__(249);
 
 /**
  * Creates a hash object.
@@ -63605,10 +63658,10 @@ module.exports = Hash;
 
 
 /***/ }),
-/* 238 */
+/* 239 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var nativeCreate = __webpack_require__(24);
+var nativeCreate = __webpack_require__(25);
 
 /**
  * Removes all key-value entries from the hash.
@@ -63626,13 +63679,13 @@ module.exports = hashClear;
 
 
 /***/ }),
-/* 239 */
+/* 240 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isFunction = __webpack_require__(240),
-    isMasked = __webpack_require__(241),
+var isFunction = __webpack_require__(241),
+    isMasked = __webpack_require__(242),
     isObject = __webpack_require__(84),
-    toSource = __webpack_require__(243);
+    toSource = __webpack_require__(244);
 
 /**
  * Used to match `RegExp`
@@ -63679,7 +63732,7 @@ module.exports = baseIsNative;
 
 
 /***/ }),
-/* 240 */
+/* 241 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var baseGetTag = __webpack_require__(82),
@@ -63722,10 +63775,10 @@ module.exports = isFunction;
 
 
 /***/ }),
-/* 241 */
+/* 242 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var coreJsData = __webpack_require__(242);
+var coreJsData = __webpack_require__(243);
 
 /** Used to detect methods masquerading as native. */
 var maskSrcKey = (function() {
@@ -63748,10 +63801,10 @@ module.exports = isMasked;
 
 
 /***/ }),
-/* 242 */
+/* 243 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var root = __webpack_require__(42);
+var root = __webpack_require__(43);
 
 /** Used to detect overreaching core-js shims. */
 var coreJsData = root['__core-js_shared__'];
@@ -63760,7 +63813,7 @@ module.exports = coreJsData;
 
 
 /***/ }),
-/* 243 */
+/* 244 */
 /***/ (function(module, exports) {
 
 /** Used for built-in method references. */
@@ -63792,7 +63845,7 @@ module.exports = toSource;
 
 
 /***/ }),
-/* 244 */
+/* 245 */
 /***/ (function(module, exports) {
 
 /**
@@ -63811,7 +63864,7 @@ module.exports = getValue;
 
 
 /***/ }),
-/* 245 */
+/* 246 */
 /***/ (function(module, exports) {
 
 /**
@@ -63834,10 +63887,10 @@ module.exports = hashDelete;
 
 
 /***/ }),
-/* 246 */
+/* 247 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var nativeCreate = __webpack_require__(24);
+var nativeCreate = __webpack_require__(25);
 
 /** Used to stand-in for `undefined` hash values. */
 var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -63870,10 +63923,10 @@ module.exports = hashGet;
 
 
 /***/ }),
-/* 247 */
+/* 248 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var nativeCreate = __webpack_require__(24);
+var nativeCreate = __webpack_require__(25);
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -63899,10 +63952,10 @@ module.exports = hashHas;
 
 
 /***/ }),
-/* 248 */
+/* 249 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var nativeCreate = __webpack_require__(24);
+var nativeCreate = __webpack_require__(25);
 
 /** Used to stand-in for `undefined` hash values. */
 var HASH_UNDEFINED = '__lodash_hash_undefined__';
@@ -63928,14 +63981,14 @@ module.exports = hashSet;
 
 
 /***/ }),
-/* 249 */
+/* 250 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var listCacheClear = __webpack_require__(250),
-    listCacheDelete = __webpack_require__(251),
-    listCacheGet = __webpack_require__(253),
-    listCacheHas = __webpack_require__(254),
-    listCacheSet = __webpack_require__(255);
+var listCacheClear = __webpack_require__(251),
+    listCacheDelete = __webpack_require__(252),
+    listCacheGet = __webpack_require__(254),
+    listCacheHas = __webpack_require__(255),
+    listCacheSet = __webpack_require__(256);
 
 /**
  * Creates an list cache object.
@@ -63966,7 +64019,7 @@ module.exports = ListCache;
 
 
 /***/ }),
-/* 250 */
+/* 251 */
 /***/ (function(module, exports) {
 
 /**
@@ -63985,10 +64038,10 @@ module.exports = listCacheClear;
 
 
 /***/ }),
-/* 251 */
+/* 252 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assocIndexOf = __webpack_require__(25);
+var assocIndexOf = __webpack_require__(26);
 
 /** Used for built-in method references. */
 var arrayProto = Array.prototype;
@@ -64026,7 +64079,7 @@ module.exports = listCacheDelete;
 
 
 /***/ }),
-/* 252 */
+/* 253 */
 /***/ (function(module, exports) {
 
 /**
@@ -64069,10 +64122,10 @@ module.exports = eq;
 
 
 /***/ }),
-/* 253 */
+/* 254 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assocIndexOf = __webpack_require__(25);
+var assocIndexOf = __webpack_require__(26);
 
 /**
  * Gets the list cache value for `key`.
@@ -64094,10 +64147,10 @@ module.exports = listCacheGet;
 
 
 /***/ }),
-/* 254 */
+/* 255 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assocIndexOf = __webpack_require__(25);
+var assocIndexOf = __webpack_require__(26);
 
 /**
  * Checks if a list cache value for `key` exists.
@@ -64116,10 +64169,10 @@ module.exports = listCacheHas;
 
 
 /***/ }),
-/* 255 */
+/* 256 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var assocIndexOf = __webpack_require__(25);
+var assocIndexOf = __webpack_require__(26);
 
 /**
  * Sets the list cache `key` to `value`.
@@ -64148,11 +64201,11 @@ module.exports = listCacheSet;
 
 
 /***/ }),
-/* 256 */
+/* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var getNative = __webpack_require__(83),
-    root = __webpack_require__(42);
+    root = __webpack_require__(43);
 
 /* Built-in method references that are verified to be native. */
 var Map = getNative(root, 'Map');
@@ -64161,10 +64214,10 @@ module.exports = Map;
 
 
 /***/ }),
-/* 257 */
+/* 258 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getMapData = __webpack_require__(26);
+var getMapData = __webpack_require__(27);
 
 /**
  * Removes `key` and its value from the map.
@@ -64185,7 +64238,7 @@ module.exports = mapCacheDelete;
 
 
 /***/ }),
-/* 258 */
+/* 259 */
 /***/ (function(module, exports) {
 
 /**
@@ -64206,10 +64259,10 @@ module.exports = isKeyable;
 
 
 /***/ }),
-/* 259 */
+/* 260 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getMapData = __webpack_require__(26);
+var getMapData = __webpack_require__(27);
 
 /**
  * Gets the map value for `key`.
@@ -64228,10 +64281,10 @@ module.exports = mapCacheGet;
 
 
 /***/ }),
-/* 260 */
+/* 261 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getMapData = __webpack_require__(26);
+var getMapData = __webpack_require__(27);
 
 /**
  * Checks if a map value for `key` exists.
@@ -64250,10 +64303,10 @@ module.exports = mapCacheHas;
 
 
 /***/ }),
-/* 261 */
+/* 262 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var getMapData = __webpack_require__(26);
+var getMapData = __webpack_require__(27);
 
 /**
  * Sets the map `key` to `value`.
@@ -64278,10 +64331,10 @@ module.exports = mapCacheSet;
 
 
 /***/ }),
-/* 262 */
+/* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var baseToString = __webpack_require__(263);
+var baseToString = __webpack_require__(264);
 
 /**
  * Converts `value` to a string. An empty string is returned for `null`
@@ -64312,13 +64365,13 @@ module.exports = toString;
 
 
 /***/ }),
-/* 263 */
+/* 264 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Symbol = __webpack_require__(41),
-    arrayMap = __webpack_require__(264),
-    isArray = __webpack_require__(39),
-    isSymbol = __webpack_require__(40);
+var Symbol = __webpack_require__(42),
+    arrayMap = __webpack_require__(265),
+    isArray = __webpack_require__(40),
+    isSymbol = __webpack_require__(41);
 
 /** Used as references for various `Number` constants. */
 var INFINITY = 1 / 0;
@@ -64355,7 +64408,7 @@ module.exports = baseToString;
 
 
 /***/ }),
-/* 264 */
+/* 265 */
 /***/ (function(module, exports) {
 
 /**
@@ -64382,10 +64435,10 @@ module.exports = arrayMap;
 
 
 /***/ }),
-/* 265 */
+/* 266 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isSymbol = __webpack_require__(40);
+var isSymbol = __webpack_require__(41);
 
 /** Used as references for various `Number` constants. */
 var INFINITY = 1 / 0;
@@ -64409,7 +64462,7 @@ module.exports = toKey;
 
 
 /***/ }),
-/* 266 */
+/* 267 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -64447,13 +64500,13 @@ function stableSort(array, compareFn) {
 }
 
 /***/ }),
-/* 267 */
+/* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(268);
+var content = __webpack_require__(269);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -64461,7 +64514,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(35)(content, options);
+var update = __webpack_require__(36)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -64478,10 +64531,10 @@ if(false) {
 }
 
 /***/ }),
-/* 268 */
+/* 269 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(16)(false);
+exports = module.exports = __webpack_require__(12)(false);
 // imports
 
 
@@ -64492,12 +64545,12 @@ exports.push([module.i, "/* Add support for fixed layout table */\ntable.b-table
 
 
 /***/ }),
-/* 269 */
+/* 270 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tabs__ = __webpack_require__(270);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tab__ = __webpack_require__(271);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tabs__ = __webpack_require__(271);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__tab__ = __webpack_require__(272);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_plugins__ = __webpack_require__(1);
 
 
@@ -64519,12 +64572,12 @@ Object(__WEBPACK_IMPORTED_MODULE_2__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 270 */
+/* 271 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_key_codes__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_observe_dom__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_key_codes__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_observe_dom__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_id__ = __webpack_require__(5);
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -64891,7 +64944,7 @@ var bTabButtonHelper = {
 });
 
 /***/ }),
-/* 271 */
+/* 272 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -65014,11 +65067,11 @@ var bTabButtonHelper = {
 });
 
 /***/ }),
-/* 272 */
+/* 273 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tooltip__ = __webpack_require__(273);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tooltip__ = __webpack_require__(274);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -65038,11 +65091,11 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 273 */
+/* 274 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_tooltip_class__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_tooltip_class__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_warn__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__mixins_toolpop__ = __webpack_require__(80);
 
@@ -65088,16 +65141,16 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 });
 
 /***/ }),
-/* 274 */
+/* 275 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__toggle__ = __webpack_require__(63);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__modal__ = __webpack_require__(76);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__scrollspy__ = __webpack_require__(275);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__tooltip__ = __webpack_require__(278);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__popover__ = __webpack_require__(280);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__scrollspy__ = __webpack_require__(276);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__tooltip__ = __webpack_require__(279);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__popover__ = __webpack_require__(281);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Toggle", function() { return __WEBPACK_IMPORTED_MODULE_0__toggle__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Modal", function() { return __WEBPACK_IMPORTED_MODULE_1__modal__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "Scrollspy", function() { return __WEBPACK_IMPORTED_MODULE_2__scrollspy__["a"]; });
@@ -65112,11 +65165,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 275 */
+/* 276 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__scrollspy__ = __webpack_require__(276);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__scrollspy__ = __webpack_require__(277);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -65136,11 +65189,11 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 276 */
+/* 277 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__scrollspy_class__ = __webpack_require__(277);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__scrollspy_class__ = __webpack_require__(278);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_object__ = __webpack_require__(2);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
@@ -65249,12 +65302,12 @@ function removeBVSS(el) {
 });
 
 /***/ }),
-/* 277 */
+/* 278 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__utils_object__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_observe_dom__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_observe_dom__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_warn__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_dom__ = __webpack_require__(4);
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -65738,11 +65791,11 @@ var ScrollSpy = function () {
 /* harmony default export */ __webpack_exports__["a"] = (ScrollSpy);
 
 /***/ }),
-/* 278 */
+/* 279 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tooltip__ = __webpack_require__(279);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__tooltip__ = __webpack_require__(280);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -65762,12 +65815,12 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 279 */
+/* 280 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_popper_js__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_tooltip_class__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_popper_js__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_tooltip_class__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_object__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_warn__ = __webpack_require__(7);
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
@@ -65937,11 +65990,11 @@ function removeBVTT(el) {
 });
 
 /***/ }),
-/* 280 */
+/* 281 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popover__ = __webpack_require__(281);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__popover__ = __webpack_require__(282);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_plugins__ = __webpack_require__(1);
 
 
@@ -65961,11 +66014,11 @@ Object(__WEBPACK_IMPORTED_MODULE_1__utils_plugins__["c" /* vueUse */])(VuePlugin
 /* harmony default export */ __webpack_exports__["a"] = (VuePlugin);
 
 /***/ }),
-/* 281 */
+/* 282 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_popper_js__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_popper_js__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__utils_popover_class__ = __webpack_require__(79);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__utils_object__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__utils_warn__ = __webpack_require__(7);
@@ -66136,7 +66189,7 @@ function removeBVPO(el) {
 });
 
 /***/ }),
-/* 282 */
+/* 283 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -66247,15 +66300,15 @@ if (false) {
 }
 
 /***/ }),
-/* 283 */
+/* 284 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
-var normalizeComponent = __webpack_require__(20)
+var normalizeComponent = __webpack_require__(15)
 /* script */
-var __vue_script__ = __webpack_require__(284)
+var __vue_script__ = __webpack_require__(285)
 /* template */
-var __vue_template__ = __webpack_require__(285)
+var __vue_template__ = __webpack_require__(286)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -66294,7 +66347,7 @@ module.exports = Component.exports
 
 
 /***/ }),
-/* 284 */
+/* 285 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -66319,7 +66372,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 285 */
+/* 286 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -66345,7 +66398,586 @@ if (false) {
 }
 
 /***/ }),
-/* 286 */
+/* 287 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(288);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(21)("6f88dd2c", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4e6056c7\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MetaQueryBuilderCanvas.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-4e6056c7\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MetaQueryBuilderCanvas.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 288 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(12)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n[data-v-4e6056c7] svg {\n\t-webkit-box-sizing: border-box;\n\t        box-sizing: border-box;\n\tborder: 1px solid rgb(212, 212, 212);\n}\n[data-v-4e6056c7] rect {\n\tstroke: rgb(95, 176, 228);\n\tstroke-width: 2;\n\tfill: rgba(205, 246, 255);\n}\n[data-v-4e6056c7] text {\n\tfont-family:'sans-serif';\n\tfill: 'black';\n}\n[data-v-4e6056c7] line {\n\tstroke: rgb(0, 0, 0);\n\tstroke-width: 5px;\n\tshape-rendering: crispEdges;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 289 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+var _this = this;
+
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	name: 'metaQueryBuilderCanvas',
+	props: {
+		height: {
+			type: Number
+		},
+		width: {
+			type: Number
+		},
+		resolution: {
+			type: Number
+		}
+	},
+	data: function data() {
+		return {
+			queryIndex: 0,
+			inputNode: null,
+			outputNode: null
+		};
+	},
+	computed: {
+		canvas: {
+			set: function set(val) {
+				_this.svg = val;
+			},
+			get: function get() {
+				return _this.svg;
+			}
+		},
+		dragBehavior: {
+			get: function get() {
+				return d3.behavior.drag().origin(function (d, i) {
+					return d3.select(this)[i][0];
+				}).on('drag', function (d) {
+					this.x = this.x || 0; //reset if not there
+					this.y = this.y || 0;
+					this.x += d3.event.dx;
+					this.y += d3.event.dy;
+					d3.select(this).attr("transform", "translate(" + this.x + "," + this.y + ")");
+					var canvas = d3.select(this.parentNode);
+					canvas.selectAll('line').attr('x1', function (d) {
+						var transformation = d3.transform(d3.select(d.outputNode.parentNode).attr('transform')).translate;
+						return parseInt(d3.select(d.outputNode).attr('cx')) + transformation[0];
+					}).attr('x2', function (d) {
+						var transformation = d3.transform(d3.select(d.inputNode.parentNode).attr('transform')).translate;
+						return parseInt(d3.select(d.inputNode).attr('cx')) + transformation[0];
+					}).attr('y1', function (d) {
+						var transformation = d3.transform(d3.select(d.outputNode.parentNode).attr('transform')).translate;
+						return parseInt(d3.select(d.outputNode).attr('cy')) + transformation[1];
+					}).attr('y2', function (d) {
+						var transformation = d3.transform(d3.select(d.inputNode.parentNode).attr('transform')).translate;
+						return parseInt(d3.select(d.inputNode).attr('cy')) + transformation[1];
+					});
+				});
+			}
+		}
+	},
+	methods: {
+		addQuery: function addQuery(query) {
+			var inputs = this.getInputs(query.structure, "");
+			var outputs = this.getOutputs(query.structure, "");
+			var name = query.name;
+
+			var queryID = ++this.queryIndex;
+
+			var width = 12.5 * name.length;
+			var height = 24 * Math.max(inputs.length, outputs.length);
+			var displayedQuery = {
+				x: 100,
+				y: 100,
+				width: width,
+				height: height,
+				label: name,
+				inputs: inputs,
+				outputs: outputs
+			};
+
+			var canvas = this.canvas;
+			var queryGroup = this.canvas.append("g");
+			queryGroup.call(this.dragBehavior);
+			queryGroup.inputNode = this.inputNode;
+			queryGroup.outputNode = this.outputNode;
+
+			// Add the rectangle
+			queryGroup.selectAll('rect').data([displayedQuery]).enter().append('rect').attr('x', function (d) {
+				return d.x;
+			}).attr('y', function (d) {
+				return d.y;
+			}).attr('width', function (d) {
+				return d.width;
+			}).attr('height', function (d) {
+				return d.height;
+			});
+
+			// Add the name label
+			queryGroup.selectAll('label').data([displayedQuery]).enter().append('text').attr('x', function (d) {
+				return d.x + d.width / 2;
+			}).attr('y', function (d) {
+				return d.y - 5;
+			}).attr('font-size', '25').attr('text-anchor', 'middle').text(function (d) {
+				return d.label;
+			});
+
+			var inputNode = this.inputNode;
+			var outputNode = this.outputNode;
+
+			for (var i = 0; i < inputs.length; i++) {
+				var text = queryGroup.selectAll('inputs').data([{ label: inputs[i], x: displayedQuery.x - 5, y: displayedQuery.y + 15 + 25 * i }]).enter().append('text').attr('x', function (d) {
+					return d.x;
+				}).attr('y', function (d) {
+					return d.y;
+				}).attr('text-anchor', 'end').attr('font-size', '15').text(function (d) {
+					return d.label;
+				});
+
+				var textBBox = text[0][0].getBBox();
+
+				queryGroup.selectAll('inputCicles').data([{ label: inputs[i], x: textBBox.x - 15, y: displayedQuery.y + 15 + 25 * i, id: queryID }]).enter().append('circle').attr('cx', function (d) {
+					return d.x;
+				}).attr('cy', function (d) {
+					return d.y - 5;
+				}).attr('stroke', 'black').attr('stroke-width', 1).attr('r', function (d) {
+					return 8;
+				}).attr('fill', function (d) {
+					return d3.rgb(210, 75, 75, .3);
+				}).on('click', function (d) {
+					this.parentNode.parentNode.inputNode = this;
+
+					if (this.parentNode.parentNode.outputNode) {
+						var node = this;
+						canvas.selectAll('connections').data([{ inputNode: this, outputNode: this.parentNode.parentNode.outputNode }]).enter().append('line').attr('x1', function (d) {
+							var transformation = d3.transform(d3.select(d.outputNode.parentNode).attr('transform')).translate;
+							return parseInt(d3.select(d.outputNode).attr('cx')) + transformation[0];
+						}).attr('x2', function (d) {
+							var transformation = d3.transform(d3.select(d.inputNode.parentNode).attr('transform')).translate;
+							return parseInt(d3.select(d.inputNode).attr('cx')) + transformation[0];
+						}).attr('y1', function (d) {
+							var transformation = d3.transform(d3.select(d.outputNode.parentNode).attr('transform')).translate;
+							return parseInt(d3.select(d.outputNode).attr('cy')) + transformation[1];
+						}).attr('y2', function (d) {
+							var transformation = d3.transform(d3.select(d.inputNode.parentNode).attr('transform')).translate;
+							return parseInt(d3.select(d.inputNode).attr('cy')) + transformation[1];
+						});
+					}
+				});
+			}
+
+			for (var _i = 0; _i < outputs.length; _i++) {
+				var _text = queryGroup.selectAll('outputs').data([{ label: outputs[_i], x: displayedQuery.width + displayedQuery.x + 5, y: displayedQuery.y + 15 + 25 * _i }]).enter().append('text').attr('x', function (d) {
+					return d.x;
+				}).attr('y', function (d) {
+					return d.y;
+				}).attr('text-anchor', 'start').attr('font-size', '15').text(function (d) {
+					return d.label;
+				});
+
+				var _textBBox = _text[0][0].getBBox();
+
+				queryGroup.selectAll('outputCircles').data([{ label: outputs[_i], x: _textBBox.x + _textBBox.width + 15, y: displayedQuery.y + 15 + 25 * _i, id: queryID }]).enter().append('circle').attr('cx', function (d) {
+					return d.x;
+				}).attr('cy', function (d) {
+					return d.y - 5;
+				}).attr('stroke', 'black').attr('stroke-width', 1).attr('r', function (d) {
+					return 8;
+				}).attr('fill', function (d) {
+					return d3.rgb(17, 137, 6, .3);
+				}).on('click', function (d) {
+					this.parentNode.parentNode.outputNode = this;
+				});
+			}
+		},
+		getInputs: function getInputs(queryStructureRoot, prefix) {
+			if (!queryStructureRoot.selected) {
+				return [];
+			}
+
+			var levelInputs = queryStructureRoot.inputs.map(function (input) {
+				return prefix + input.name + ":" + input.inputType;
+			});
+
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = queryStructureRoot.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var child = _step.value;
+
+					var inputList = this.getInputs(child, prefix + queryStructureRoot.name + ".");
+					if (!inputList.length) continue;
+					levelInputs = levelInputs.concat(inputList);
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
+
+			return levelInputs;
+		},
+		getOutputs: function getOutputs(queryStructureRoot, prefix) {
+			if (!queryStructureRoot.selected) {
+				return [];
+			}
+
+			var output = queryStructureRoot.output;
+			var levelOutput = [];
+
+			if (!output.isObject || output.isObject === "false") {
+				if (!output.isAList || output.isAList === "false") {
+					levelOutput.push(prefix + queryStructureRoot.name + ":" + output.type.name);
+				} else {
+					levelOutput.push(prefix + queryStructureRoot.name + ":" + output.type.ofType.name + '(*)');
+				}
+			}
+
+			var _iteratorNormalCompletion2 = true;
+			var _didIteratorError2 = false;
+			var _iteratorError2 = undefined;
+
+			try {
+				for (var _iterator2 = queryStructureRoot.children[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+					var child = _step2.value;
+
+					var outputList = this.getOutputs(child, prefix + queryStructureRoot.name + ".");
+
+					if (!outputList.length) continue;
+					levelOutput = levelOutput.concat(outputList);
+				}
+			} catch (err) {
+				_didIteratorError2 = true;
+				_iteratorError2 = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion2 && _iterator2.return) {
+						_iterator2.return();
+					}
+				} finally {
+					if (_didIteratorError2) {
+						throw _iteratorError2;
+					}
+				}
+			}
+
+			return levelOutput;
+		}
+
+	},
+	mounted: function mounted() {
+		this.canvas = d3.select('#canvasMount').append('svg').attr('width', this.width).attr('height', this.height);
+	}
+});
+
+/***/ }),
+/* 290 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { attrs: { id: "canvasMount" } })
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-4e6056c7", module.exports)
+  }
+}
+
+/***/ }),
+/* 291 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(292)
+}
+var normalizeComponent = __webpack_require__(15)
+/* script */
+var __vue_script__ = __webpack_require__(294)
+/* template */
+var __vue_template__ = __webpack_require__(295)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = "data-v-5e05868f"
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/MetaQueryBuilder.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-5e05868f", Component.options)
+  } else {
+    hotAPI.reload("data-v-5e05868f", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 292 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(293);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(21)("fd77484a", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5e05868f\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MetaQueryBuilder.vue", function() {
+     var newContent = require("!!../../../../node_modules/css-loader/index.js!../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-5e05868f\",\"scoped\":true,\"hasInlineConfig\":true}!../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./MetaQueryBuilder.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 293 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(12)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 294 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__MetaQueryBuilderCanvas_vue__ = __webpack_require__(85);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__MetaQueryBuilderCanvas_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__MetaQueryBuilderCanvas_vue__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+	name: 'metaQueryBuilder',
+	props: {
+		queries: {
+			type: Array
+		}
+	},
+	data: function data() {
+		return {
+			queryToAdd: null
+		};
+	},
+	methods: {
+		addQuery: function addQuery() {
+			var _this = this;
+
+			var query = this.queries.find(function (query) {
+				return query.name === _this.queryToAdd;
+			});
+			this.$refs.canvas.addQuery(query);
+		}
+	},
+	components: {
+		BuilderCanvas: __WEBPACK_IMPORTED_MODULE_0__MetaQueryBuilderCanvas_vue___default.a // This is registered here for documentation, in app.js this is registered
+	},
+	mounted: function mounted() {
+		this.queryToAdd = this.queries[0].name;
+	}
+});
+
+/***/ }),
+/* 295 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _c(
+        "div",
+        {
+          staticClass: "form-inline",
+          staticStyle: { "padding-bottom": "20px" }
+        },
+        [
+          _c("div", { staticClass: "form-group" }, [
+            _c(
+              "button",
+              { staticClass: "btn btn-info", on: { click: _vm.addQuery } },
+              [_vm._v(" Add Query ")]
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              {
+                staticClass: "input-group",
+                staticStyle: { "padding-left": "20px" }
+              },
+              [
+                _c(
+                  "select",
+                  {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.queryToAdd,
+                        expression: "queryToAdd"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    on: {
+                      change: function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value
+                            return val
+                          })
+                        _vm.queryToAdd = $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      }
+                    }
+                  },
+                  _vm._l(_vm.queries, function(query) {
+                    return _c("option", [
+                      _vm._v(
+                        "\n\t\t\t\t\t\t" + _vm._s(query.name) + "\n\t\t\t\t\t"
+                      )
+                    ])
+                  })
+                )
+              ]
+            )
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c("meta-query-builder-canvas", {
+        ref: "canvas",
+        attrs: { resolution: 20, width: 2000, height: 1000 }
+      })
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-5e05868f", module.exports)
+  }
+}
+
+/***/ }),
+/* 296 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin

@@ -12,6 +12,12 @@ use GuzzleHttp\Exception\ConnectException;
 use App\QueryHistory;
 use App\Exceptions\UserQuotaReachedException;
 
+/*
+ * A query represents a GraphQL query belonging to a user.
+ * A query history represents the output of having ran this query.
+ * This query can be part of a MetaQuery, either just as an output
+ * or as part of a graph as input to another query
+ */
 class Query extends Model
 {
 	protected $fillable = ['name','schedule','structure','description','string'];
@@ -39,6 +45,29 @@ class Query extends Model
 		}
 		return CronExpression::factory($this->schedule)->isDue($date);
 	}
+
+	/*
+	 * Get the meta queries that this query is part of
+	 */
+	public function metaQueries() {
+		return $this->hasMany('App\MetaQuery');
+	}
+
+	/*
+	 * Retrieve all the query mappings that
+	 * has this query as a source for inputs
+	 */
+	public function sourceMappings() {
+		return $this->hasMany('App\QueryMapping','from_query_id');
+	}
+
+	/*
+	 * Retrieve all teh query mappings that
+	 * has this query as a destination for inputs
+	 */
+	public function destinationMappings() {
+		return $this->hasMany('App\QueryMapping', 'to_query_id');
+	}	
 
 	/*
 	 * Get the next date that this query will run in UTC
