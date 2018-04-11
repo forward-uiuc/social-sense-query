@@ -78,7 +78,7 @@ class AuthorizationController extends Controller
 					$authorization = [
 						'access_token'  => $user->accessTokenResponseBody['oauth_token'],
 						'refresh_token' => $user->accessTokenResponseBody['oauth_token_secret'],
-						'meta' => json_encode(['expires_in' => $user->accessTokenResponseBody['x_auth_expires']]),
+						'meta' => json_encode(['expires_in' => null]),
 						'provider' => $provider
 					];
 

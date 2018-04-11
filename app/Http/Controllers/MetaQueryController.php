@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Query;
+use App\MetaQuery;
 
 class MetaQueryController extends Controller
 {
@@ -26,5 +26,18 @@ class MetaQueryController extends Controller
 		$user = \Auth::user();
 		$queries = $user->queries;
 		return view('meta-queries.create', ['queries' => $queries]);
+	}
+
+
+	/**
+	 * Store a meta query
+	 */
+	public function store(Request $request)
+	{
+			$user = \Auth::user();
+			$user->metaQueries()->save(new MetaQuery($request->all()));
+
+			$request->session()->flash('status', 'MetaQuery Stored!');
+			return redirect('home');
 	}
 }

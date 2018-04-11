@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class MetaQuery extends Model
 {
+
+	protected $fillable = ['schedule','canvas','topology'];
+	protected $table = 'meta_queries';
+
 	/*
 	 * Get the user this MetaQuery belongs to
 	 */

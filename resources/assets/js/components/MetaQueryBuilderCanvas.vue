@@ -171,8 +171,15 @@ export default {
 			}
 
 			return serializedQuery;
-		}
+		},
+		
+		getSerliazedCanvas: function() {
+			return this.editor.toJSON();
+		}, 
 
+		getSerializedQuery: function() {
+			return this.serializeQuery(this.getSerliazedCanvas());	
+		}
 	},
 	mounted: function() {
 		this.editor = new D3NE.NodeEditor('someName@1.0.0', this.$refs.d3ne, [], null);

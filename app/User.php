@@ -60,6 +60,13 @@ class User extends Authenticatable
 		}
 
 		/*
+		 * Get all of this user's meta queries
+		 */
+		public function metaQueries() {
+			return $this->hasMany('App\MetaQuery');
+		}
+
+		/*
 		 * Get how many gigabytes of storage this user's data is taking up
 		 */
 		private $cached_quotaUsed = false;
