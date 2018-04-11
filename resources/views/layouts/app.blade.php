@@ -9,11 +9,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Laravel') }}</title>
-
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 		<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
-		<script src="//d3js.org/d3.v3.min.js"></script>
 </head>
 <body>
     <div id="app">

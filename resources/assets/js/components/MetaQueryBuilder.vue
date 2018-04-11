@@ -12,7 +12,7 @@
 				</div>
 				</div>
 			</div>
-		<meta-query-builder-canvas :resolution="20" :width="2000" :height="1000" ref="canvas"></meta-query-builder-canvas>
+		<meta-query-builder-canvas ref="canvas"></meta-query-builder-canvas>
 	</div>
 </template>
 

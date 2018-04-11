@@ -34,6 +34,7 @@
 	import QueryInputForm from './QueryInputForm';
 	import  {QueryNode, Input, Output, BaseQuery}  from '../utils/Query'
 	import BootstrapVue from 'bootstrap-vue'
+	import * as d3 from 'd3';
 
 	var i = 0;
   export default {

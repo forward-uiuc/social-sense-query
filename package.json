@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "bootstrap-vue": "^2.0.0-rc.2",
-        "d3": "^3.5.17"
+        "d3": "^3.5.17",
+        "d3-node-editor": "^0.7.0"
     }
 }
