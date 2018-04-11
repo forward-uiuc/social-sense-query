@@ -13,13 +13,6 @@ class MetaQuery extends Model
 		return $this->belongsTo('App\User');
 	}
 
-	/*
-	 * Retrieve all the mappings made between
-	 * nodes for this meta query
-	 */
-	public function mappings() {
-		return $this->hasMany('App\QueryMapping');
-	}
 
 	/*
 	 * Retrieve all the nodes for this 
