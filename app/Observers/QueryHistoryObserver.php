@@ -31,7 +31,6 @@ class QueryHistoryObserver
 				
 				$client = new Client();
 
-				dd($payload);
 				try{
 					$client->request('POST', $application->callback_url, [
 						'headers' => [

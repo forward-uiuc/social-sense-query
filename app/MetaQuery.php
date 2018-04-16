@@ -30,6 +30,59 @@ class MetaQuery extends Model
 	 * Submit this meta query
 	 */
 	public function submit() {
-		dd("SUBMIT");
+		$queryNodes = collect(json_decode($this->topology))->map(function($topologyNode){
+			return new MetaQueryNode($topologyNode);
+		})->sort(function($node) {
+			return count($node->dependencies);	
+		});
+
+		$done = false;
+
+		while(!$done) {
+
+			// First, find all the nodes that can be resolved
+			// This depends on applying a node removing a node's id from it's dependencies
+			// (meaning, a node can be resolved if it has 0 dependencies)
+			$toResolve = $queryNodes->filter(function($node) {
+				return ($node->resolved == false && count($node->dependencies) == 0);
+			});
+
+			// Second, resolve all said nodes
+			$toResolve->each(function($node) {
+				$node->resolve($this->user->authorizations);
+			});
+			$resolved = $toResolve;
+
+			// Third
+			// Find all the nodes in our queryNodes that have a resolved node's id as a dependency
+			$resolvedIDs = $resolved->map(function($resolvedNode) {
+				return $resolvedNode->id;
+			})->toArray();
+
+			$toApplyArguments = $queryNodes->filter(function($node) use ($resolvedIDs) {
+
+				$dependencyIDs = collect($node->dependencies)->map(function($dependency) {
+					return $dependency->id;
+				})->toArray();
+				$intersection = array_intersect($dependencyIDs, $resolvedIDs);
+
+				return !$node->resolved && count($intersection) > 0;
+			});
+			
+
+			// Apply all resolved nodes to all nodes that have at least one of those nodes as a dependency
+			$toApplyArguments->each(function($node) use ($resolved) {
+				$resolved->each(function($resolvedNode) use ($node) {
+					$node->apply($resolvedNode);
+				});
+			});
+
+			// We're done if we've resolved all nodes
+			$done = $queryNodes->filter(function($node) {
+				return $node->resolved;
+			})->count() == $queryNodes->count();
+		}
+
+		dd("DONE");
 	}
 }

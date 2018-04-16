@@ -161,6 +161,7 @@ return [
         App\Providers\RouteServiceProvider::class,
     		\SocialiteProviders\Manager\ServiceProvider::class, // add
 				Collective\Html\HtmlServiceProvider::class,
+				App\Providers\GQLServerServiceProvider::class,
     ],
 
     /*

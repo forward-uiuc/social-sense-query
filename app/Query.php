@@ -20,6 +20,14 @@ use App\Exceptions\UserQuotaReachedException;
  */
 class Query extends Model
 {
+
+	/*
+	 * Given a query's structure, convert it into a graphql query string
+	 */
+	public static function ToGraphQLQuery($structure) {
+
+	}
+
 	protected $fillable = ['name','schedule','structure','description','string'];
 
 	/*

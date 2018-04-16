@@ -35,7 +35,7 @@ export default {
 
 			let queryInputs = this.getInputs(query.structure, '');
 			let queryOutputs = this.getOutputs(query.structure, '');
-
+			console.log('Query Inputs: ', queryInputs);
 			let sockets = this.sockets;
 			let comp = new D3NE.Component(query.name, {
 				builder(node) {
@@ -84,16 +84,19 @@ export default {
 				return [];
 			}
 
+			prefix = prefix + queryStructureRoot.name + '.';
 			let levelInputs = queryStructureRoot.inputs.map((input) => {
 					return prefix + input.name + ':' + input.inputType	
 			})
 
 			for(let child of queryStructureRoot.children){
-				let inputList = this.getInputs(child, prefix + queryStructureRoot.name + '.');
-				if(!inputList.length)
+				let inputList = this.getInputs(child, prefix);
+
+				if(!inputList.length) 
 					continue;
+
 					levelInputs = levelInputs.concat(inputList)
-				}
+			}
 			return levelInputs;
 		},
 

@@ -85439,7 +85439,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 			var queryInputs = this.getInputs(query.structure, '');
 			var queryOutputs = this.getOutputs(query.structure, '');
-
+			console.log('Query Inputs: ', queryInputs);
 			var sockets = this.sockets;
 			var comp = new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Component"](query.name, {
 				builder: function builder(node) {
@@ -85529,6 +85529,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 				return [];
 			}
 
+			prefix = prefix + queryStructureRoot.name + '.';
 			var levelInputs = queryStructureRoot.inputs.map(function (input) {
 				return prefix + input.name + ':' + input.inputType;
 			});
@@ -85541,8 +85542,10 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 				for (var _iterator3 = queryStructureRoot.children[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
 					var child = _step3.value;
 
-					var inputList = this.getInputs(child, prefix + queryStructureRoot.name + '.');
+					var inputList = this.getInputs(child, prefix);
+
 					if (!inputList.length) continue;
+
 					levelInputs = levelInputs.concat(inputList);
 				}
 			} catch (err) {
