@@ -36,6 +36,10 @@ class MetaQuery extends Model
 			return count($node->dependencies);	
 		});
 
+
+		// Maintain a collection of 
+		// queries that reflect how we resolved this at each level
+		$resolutionOrder = collect([]);
 		$done = false;
 
 		while(!$done) {
@@ -53,6 +57,8 @@ class MetaQuery extends Model
 			});
 			$resolved = $toResolve;
 
+			$resolutionOrder->push($resolved);
+
 			// Third
 			// Find all the nodes in our queryNodes that have a resolved node's id as a dependency
 			$resolvedIDs = $resolved->map(function($resolvedNode) {
@@ -68,12 +74,14 @@ class MetaQuery extends Model
 
 				return !$node->resolved && count($intersection) > 0;
 			});
-			
 
+
+				
 			// Apply all resolved nodes to all nodes that have at least one of those nodes as a dependency
-			$toApplyArguments->each(function($node) use ($resolved) {
-				$resolved->each(function($resolvedNode) use ($node) {
-					$node->apply($resolvedNode);
+			$toApplyArguments->each(function($nodeRequiringData) use ($resolved) {
+				
+				$resolved->each(function($resolvedNode) use ($nodeRequiringData) {
+					$nodeRequiringData->apply($resolvedNode);
 				});
 			});
 
@@ -83,6 +91,14 @@ class MetaQuery extends Model
 			})->count() == $queryNodes->count();
 		}
 
-		dd("DONE");
+		
+		$data = $resolutionOrder->map(function($stage) {
+			$stageData = $stage->map(function($node) {
+				dump($node->data);
+				return (object) ['queries' => $node->getQueryStrings(), 'data' => $node->data];
+			});
+
+			return $stageData;
+		});
 	}
 }

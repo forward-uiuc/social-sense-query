@@ -12,9 +12,6 @@ class MetaQueryNode
 	// $id is an integer that represents this node's unique identifier in a meta query topology
 	public $id;
 
-	// @var $query \App\QueryNode a query node that represents this query's structure
-	public $query;
-
 	// $resolved is a boolean representing if this node has had it's queried resolved (allowing us to get the data)
 	public $resolved = false;
 
@@ -31,7 +28,7 @@ class MetaQueryNode
 	public $data;
 
 	// @var $queries a collection of query nodes that this node must resolve
-	private $queries;
+	public $queries;
 
 	/**
 	 * @constructor
@@ -39,9 +36,11 @@ class MetaQueryNode
 	 */
 	public function __construct($topologyNode){	
 		$this->id = $topologyNode->id->topology;
+		
+		$userQuery = Query::where('id', $topologyNode->id->query)->first();
+		$query = QueryNode::deserialize(json_decode($userQuery->structure));
 
-		$query = QueryNode::deserialize(json_decode(Query::findOrFail($topologyNode->id->query)->first()->structure));
-		$this->queries = collect([$query, $query]);
+		$this->queries = collect([$query]);
 
 		$this->outputs = collect($topologyNode->outputs);
 
@@ -52,9 +51,9 @@ class MetaQueryNode
 			return $input->$path != null;
 		})->map(function($input){
 			$path = key($input); // PATH: The input path of where we need to apply this value
+
 			//    'id' => the topology id that we depend on,   'output' => The output path that we depend on
 			//          'input' => Where to apply that value
-			dd($input);
 			$input = (object) ['id' => $input->$path->topology_id, 'output' => $input->$path->path, 'input' => $path];
 			return $input;
 		});
@@ -65,22 +64,24 @@ class MetaQueryNode
 		});
 	}
 
+	public function getQueryStrings() {
+		return $this->queries->map(function($query) {
+			return (string) $query;
+		});
+	}
+
 	public function resolve($authorizations) {
 		$server = app(\App\Services\GQLServerService::class);
 
+		/*
+		 * $this->data is equal to a collection of responses from
+		 * each of this query
+		 */
 		$this->data = $this->queries->map(function($query) use ($authorizations, $server){
 			$response = (object) $server->submitQueryString( (string) $query, $authorizations);
 			$response->data  = json_decode($response->data)->data;
 			return $response;
 		});
-		// I am so sorry
-		// $this->data is an object that is the result of submitting this query 
-		//   (ie has a duration, data response, and 'has_error' property showcasing if
-		//    this query has an error)
-		// 
-		// $this->data->data is the actual response, which also happens to have
-		// a data attribute. To make things simpler, we're just grabbing that attribute
-		// here
 
 		$this->resolved = true;
 	}
@@ -111,19 +112,27 @@ class MetaQueryNode
 				continue;
 			} 
 			
-		
+			$isAttribute = array_search($currentLevel, $attributes) === count($attributes) -1; // whether we're at the last level
 			// The last attribute will have a ':', which we don't want and we have to handle as a special case
-			if (array_search($currentLevel, $attributes) === count($attributes) -1) {
+			if ($isAttribute) {
 				$currentLevel = explode(':', $currentLevel)[0];
 			}
 
-			if ( MetaQueryNode::getEndOfString($currentLevel) == '*'){
+			$isList = MetaQueryNode::getEndOfString($currentLevel) == '*';
+			if ($isList) {
 				$currentLevel = explode('*', $currentLevel)[0];
 			}
 			
-			$data = $data->map(function($value) use ($currentLevel) {
+			$data = $data->map(function($value) use ($currentLevel, $data){
+				// If we have a null response, continue the chain of nulls
+				if ($value === null) {
+					return $value;	
+				}
 				return $value->$currentLevel;
 			});
+			if($isList) {
+				$data = $data->flatten();
+			}
 		}
 
 		return $data;
@@ -152,16 +161,25 @@ class MetaQueryNode
 		})->each(function($dependency) use ($input) {
 			$values = $input->getOutput($dependency->output)->flatten();
 
+
 			$this->queries = $this->queries->map(function($query) use ($values, $dependency) {
 				$path = explode(":", $dependency->input)[0];
+
 				return $values->map(function($value) use ($query, $path) {
 					$newQuery = clone $query;
-					$newQuery->applyValue($path, $value);
+					if(!$newQuery->applyValue($path, $value)) {
+						dd('AHHH', $this);
+					}
 					return $newQuery;
 				});
 			})->flatten();
-			
-			dd($this->queries);
+
+
+			// Finally, after having done all that work, we can remove that node from our dependencies
+			$this->dependencies = $this->dependencies->filter(function($dependency) use ($input) {
+				return $dependency->id != $input->id;
+			});
+
 		});
 	}
 }

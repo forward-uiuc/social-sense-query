@@ -54,7 +54,6 @@
 				</thead>
 				<tbody>
 				@foreach ($query->history->sortByDesc('created_at') as $history)
-
 					@if (@$history->has_error)
 					<tr class="bg-danger"> 
 					@else
@@ -62,7 +61,7 @@
 					@endif
 						<td> {{ $history->created_at }}  </td>
 						<td> {{ $history->duration }} </td>
-						<td> <textarea class="form-control" rows="4" readonly> {!! $history->data !!} </textarea></td> 	
+  					<td> <tree-view :data="{{ $history->data }}" :options="{maxDepth: 1}"></tree-view> </td>
 					</tr> 
 
 				@endforeach

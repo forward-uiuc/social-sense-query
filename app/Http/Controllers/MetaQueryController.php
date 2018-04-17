@@ -35,7 +35,6 @@ class MetaQueryController extends Controller
 	public function store(Request $request)
 	{
 			$user = \Auth::user();
-			dd(json_decode($request->get('topology')));
 			$user->metaQueries()->save(new MetaQuery($request->all()));
 
 			$request->session()->flash('status', 'MetaQuery Stored!');

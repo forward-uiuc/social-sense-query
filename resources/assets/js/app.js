@@ -21,6 +21,9 @@ Vue.component('context-info', require('./components/ContextInformation.vue'));
 Vue.component('meta-query-builder-canvas', require('./components/MetaQueryBuilderCanvas.vue'));
 Vue.component('meta-query-builder', require('./components/MetaQueryBuilder.vue'));
 
+import TreeView from "vue-json-tree-view"
+Vue.use(TreeView)
+
 const app = new Vue({
     el: '#app',
 		methods: {

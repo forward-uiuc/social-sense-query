@@ -34,7 +34,6 @@ class GQLServerService
 		$start = microtime(true);
 
 		try{
-
 			$response = $this->client->request('POST', 'graphql', [
 				'headers' => [
 						'Content-Type' => 'application/json'
@@ -52,5 +51,6 @@ class GQLServerService
 			$duration = round(microtime(true) - $start, 3) * 1000;	
 			return ['data' => json_encode($e->getMessage()), 'has_error' => true, 'duration' => $duration];
 		}
+
 	}
 }
