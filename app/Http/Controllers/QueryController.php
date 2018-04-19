@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreQueryRequest;
-use App\Query;
-use App\QueryHistory;
+use App\Models\Query\Query;
+use App\Models\Query\QueryHistory;
 use App\Exceptions\UserQuotaReachedException;
 
 class QueryController extends Controller

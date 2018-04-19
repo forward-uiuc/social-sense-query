@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models\Query;
 
 use Illuminate\Database\Eloquent\Model;
 use Cron\CronExpression;
@@ -9,7 +9,6 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ConnectException;
 
-use App\QueryHistory;
 use App\Exceptions\UserQuotaReachedException;
 
 /*
@@ -27,14 +26,14 @@ class Query extends Model
 	 * Get the user this query belongs to
 	 */
 	public function user() {
-		return $this->belongsTo('App\User');
+		return $this->belongsTo('App\Models\User');
 	}
 
 	/*
 	 * Get the history of this query
 	 */
 	public function history() {
-		return $this->morphMany('App\QueryHistory','query');
+		return $this->morphMany(QueryHistory::class,'query');
 	}
 
 	/*

@@ -3,7 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use App\QueryHistory;
+use App\Models\Query\QueryHistory;
 use App\Observers\QueryHistoryObserver;
 
 class AppServiceProvider extends ServiceProvider

@@ -2,7 +2,7 @@
 
 namespace App\Observers;
 
-use App\QueryHistory;
+use App\Models\Query\QueryHistory;
 use GuzzleHttp\Client;
 
 class QueryHistoryObserver 

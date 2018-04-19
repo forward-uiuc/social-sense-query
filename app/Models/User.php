@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -31,14 +31,14 @@ class User extends Authenticatable
 		 * Get all callbacks for the user
 		 */
 		public function applications() {
-			return $this->hasMany('App\Application');
+			return $this->hasMany(Application::class);
 		}
 
 		/*
 		 * Get this user's authorizations
 		 */
 		public function authorizations() {
-			return $this->hasMany('App\Authorization');
+			return $this->hasMany(Authorization::class);
 		}
 
 		public function getAuthorizedProvidersAttribute() {
@@ -56,21 +56,21 @@ class User extends Authenticatable
 		 * Get all the user's queries
 		 */
 		public function queries() {
-			return $this->hasMany('App\Query');
+			return $this->hasMany('App\Models\Query\Query');
 		}
 
 		/*
 		 * Get all of this user's meta queries
 		 */
 		public function metaQueries() {
-			return $this->hasMany('App\MetaQuery');
+			return $this->hasMany('App\Models\MetaQuery\MetaQuery');
 		}
 
 		/*
 		 * Get all of this user's history
 		 */
 		public function history() {
-			return $this->hasMany('App\QueryHistory');
+			return $this->hasMany('App\Models\Query\QueryHistory');
 		}
 	
 		/*

@@ -1,9 +1,9 @@
 <?php 
 
-namespace App;
+namespace App\MetaQuery;
 
-use App\Query;
-use App\QueryNode;
+use App\Query\Query;
+use App\Query\QueryNode;
 use App\Services\GQLServerService;
 
 class MetaQueryNode

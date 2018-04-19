@@ -1,10 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Models\Query;
 
 use Illuminate\Database\Eloquent\Model;
 
-use App\QueryNode;
+use Query\QueryNode;
 
 class QueryHistory extends Model
 {

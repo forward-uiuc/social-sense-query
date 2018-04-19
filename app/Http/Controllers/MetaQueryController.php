@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\MetaQuery;
-use App\Run;
-use App\Stage;
-use App\QueryHistory;
+use App\Models\MetaQuery\MetaQuery;
+use App\Models\MetaQuery\Run;
+use App\Models\MetaQuery\Stage;
+use App\Models\Query\QueryHistory;
 
 class MetaQueryController extends Controller
 {

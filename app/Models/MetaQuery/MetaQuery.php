@@ -1,9 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Models\MetaQuery;
 
 use Illuminate\Database\Eloquent\Model;
-use App\QueryHistory;
+
+use App\Models\Query\QueryHistory;
 
 class MetaQuery extends Model
 {
@@ -15,7 +16,7 @@ class MetaQuery extends Model
 	 * Get the user this MetaQuery belongs to
 	 */
 	public function user() {
-		return $this->belongsTo('App\User');
+		return $this->belongsTo('App\Models\User');
 	}
 
 
@@ -23,7 +24,7 @@ class MetaQuery extends Model
 	* Get the runsof this query. T
 	*/
 	public function runs() {
-		return $this->hasMany('App\Run');
+		return $this->hasMany(Run::class);
 	}
 
 	/*

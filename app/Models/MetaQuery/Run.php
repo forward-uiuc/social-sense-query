@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models\MetaQuery;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,14 +12,14 @@ class Run extends Model
 	 * Get which metaQuery this run belongs to
 	 */
 	public function metaQuery() {
-		return $this->belongsTo('App\MetaQuery');
+		return $this->belongsTo(MetaQuery::class);
 	}
 
 	/*
 	 * Get all the stages that this run had
 	 */
 	public function stages() {
-		return $this->hasMany('App\Stage');
+		return $this->hasMany(Stage::class);
 	}
 }
 
