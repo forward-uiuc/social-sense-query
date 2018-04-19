@@ -23,6 +23,7 @@
         "bootstrap-vue": "^2.0.0-rc.2",
         "d3": "^3.5.17",
         "d3-node-editor": "^0.7.0",
+        "vue-d3-network": "^0.1.24",
         "vue-json-tree-view": "^2.1.3"
     }
 }

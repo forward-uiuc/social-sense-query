@@ -8,27 +8,27 @@ class QueryNode
 	/*
 	 * @var $children [QueryNode] Query nodes that are childs of this node
 	 */
-	protected $children;
+	public $children;
 
 	/*
 	 * @var $output Output The output of this node
 	 */
-	protected $output;
+	public $output;
 
 	/*
 	 * @var $input array The inputs to this node
 	 */
-	protected $inputs;
+	public $inputs;
 
 	/*
 	 * @var $name string The name of this query node
 	 */
-	protected $name;
+	public $name;
 
 	/*
 	 * @var $selected boolean Whether this query node has been selected or not
 	 */
-	protected $selected;
+	public $selected;
 
 	public function __construct(string $name, array $inputs, Output $output, array $children, bool $selected) 
 	{
@@ -131,6 +131,10 @@ class QueryNode
 	 */
 	public static function deserialize($structure) 
 	{
+		if(!$structure) {
+			return null;
+		}
+
 		$inputs = [];
 		foreach($structure->inputs as $input) {
 			array_push($inputs, new Input($input->name, $input->description, $input->inputType, $input->value));
@@ -211,7 +215,7 @@ class Output
 	/*
 	 * @var $type an instance of a GraphQL ouput type
 	 */
-	protected $type;
+	public $type;
 
 	/*
 	 * @var $isScalar boolean is the output type of this node a scalar 

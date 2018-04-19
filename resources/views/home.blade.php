@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-
-<div class="container">
+<div style="margin-right: 20px; margin-left: 20px">
 		
 		@if ($user->quotaUsed >= $user->quota)
 		<div class="row justify-content-center">
@@ -18,8 +17,8 @@
 		</div>
 		@endif
 
-		<div class="row justify-content-center">
-			<div class="col-md-8">
+		<div class="row"> <!-- Begin first row -->
+			<div class="col-md-6">
 					<div class="card border-dark mb-3">
 						<div class="card-header bg-dark text-light"> Authorize Social Media Providers
 							<div class="float-right">
@@ -35,10 +34,29 @@
 						</div>
 					</div>
 				</div>
-		</div>
 
-		<div class="row" style="margin-top:20px;">
 			<div class="col-md-6">
+				<div class="card border-dark mb-3">
+					<div class="card-header bg-dark text-light">  Manage Applications
+						<div class="float-right">
+							<context-info icon-info="fas fa-question fa-lg" popup-info="Applications are servers that receive your data when you query. By default we assume that you want access to the data processing server but if you have a server of your own that you want to have access to your data, then you can just add it here and when you submit a query it will receive the data"></context-info>
+						</div>
+					</div>
+					<div class="card-body">
+						<ul class="list-group">
+							@foreach ($user->applications as $application) 
+								<a href="{{url('') . $application->home}}" target="_blank">
+									<li class="list-group-item"> {{ $application->name }} </li>
+								</a>
+							@endforeach
+						</ul>
+				</div>
+			</div>
+		</div>
+	</div> <!-- End First Row -->
+
+		<div class="row">  <!-- Begin second row -->
+			<div class="col-md-6"> <!-- Begin first row item -->
 				<div class="card border-dark mb-3">
 					<div class="card-header bg-dark text-light">  Manage Queries
 							<div class="float-right">
@@ -71,26 +89,39 @@
 
 					</div>
 				</div>
-			</div>
+			</div>  <!-- End first row item -->
 
-			<div class="col-md-6">
+			<div class="col-md-6"> <!-- Begin second row item -->
 				<div class="card border-dark mb-3">
-					<div class="card-header bg-dark text-light">  Manage Applications
-						<div class="float-right">
-							<context-info icon-info="fas fa-question fa-lg" popup-info="Applications are servers that receive your data when you query. By default we assume that you want access to the data processing server but if you have a server of your own that you want to have access to your data, then you can just add it here and when you submit a query it will receive the data"></context-info>
+					<div class="card-header bg-dark text-light">  Manage Meta-Queries 
+							<div class="float-right">
+							<context-info icon-info="fas fa-question fa-lg" popup-info="Meta Queries represent chaining of queries together. You take the output of one query and use it as the input of another query."></context-info>
 						</div>
 					</div>
 					<div class="card-body">
+						<a href="{{ url('meta-queries/create')}}" class="btn btn-secondary"> Create Meta Query </a>
+						<hr/>
+						@if (count($user->metaQueries) > 0)
 						<ul class="list-group">
-							@foreach ($user->applications as $application) 
-								<a href="{{url('') . $application->home}}" target="_blank">
-									<li class="list-group-item"> {{ $application->name }} </li>
-								</a>
-							@endforeach
-						</ul>
-				</div>
-			</div>
-		</div>
 
-</div>
+							@foreach ($user->metaQueries as $query)
+							<li class="list-group-item"> 
+									{{ $query->name }} 
+									<br>
+										<a href="{{ url('meta-queries/'.$query->id) }}" class="btn btn-info">
+											<i class="fas fa-history fa-lg"></i>
+											Manage
+										</a>
+							</li>
+							@endforeach
+
+						</ul>
+						@endif 
+
+					</div>
+				</div>
+				</div> <!-- end second row item -->
+			</div> <!-- End second row --> 
+
+</div> <!-- end container -->
 @endsection

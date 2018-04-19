@@ -34,7 +34,13 @@ class Kernel extends ConsoleKernel
 				Query::all()->each(function($query)  use ($date) {
 					if($query->isDue($date->toDateTimeString())){
 						try { 
-							$query->history()->save(new QueryHistory($query->submit()));
+
+							$history= new QueryHistory($query->submit());
+							$history->query_structure = $query->structure;
+							$history->user_id = $query->user->id;
+
+							$query->history()->save($history);	
+
 						} catch (UserQuotaReachedException $e){
 							\Log::notice($e->getMessage(), ['user' => $query->user->email]);
 						}

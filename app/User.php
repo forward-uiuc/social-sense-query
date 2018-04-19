@@ -67,6 +67,13 @@ class User extends Authenticatable
 		}
 
 		/*
+		 * Get all of this user's history
+		 */
+		public function history() {
+			return $this->hasMany('App\QueryHistory');
+		}
+	
+		/*
 		 * Get how many gigabytes of storage this user's data is taking up
 		 */
 		private $cached_quotaUsed = false;

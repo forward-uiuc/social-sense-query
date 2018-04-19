@@ -20,16 +20,19 @@ Vue.component('query-builder', require('./components/QueryBuilder.vue'));
 Vue.component('context-info', require('./components/ContextInformation.vue'));
 Vue.component('meta-query-builder-canvas', require('./components/MetaQueryBuilderCanvas.vue'));
 Vue.component('meta-query-builder', require('./components/MetaQueryBuilder.vue'));
+Vue.component('meta-query-viewer', require('./components/MetaQueryViewer.vue'));
 
-import TreeView from "vue-json-tree-view"
+import TreeView from "vue-json-tree-view";
+import D3Network from "vue-d3-network";
+
 Vue.use(TreeView)
+Vue.use(D3Network)
 
 const app = new Vue({
     el: '#app',
 		methods: {
 			echo: function(query) {
 				return query;
-				//this.serializedQuery = query;
 			}
 		}
 });

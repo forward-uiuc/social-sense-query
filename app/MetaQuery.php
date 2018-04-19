@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\QueryHistory;
 
 class MetaQuery extends Model
 {
@@ -18,12 +19,11 @@ class MetaQuery extends Model
 	}
 
 
-	/*
-	 * Retrieve all the nodes for this 
-	 * meta query
-	 */
-	public function queries() {
-		return $this->hasMany('App\Query');
+	/*	
+	* Get the runsof this query. T
+	*/
+	public function runs() {
+		return $this->hasMany('App\Run');
 	}
 
 	/*
@@ -94,11 +94,11 @@ class MetaQuery extends Model
 		
 		$data = $resolutionOrder->map(function($stage) {
 			$stageData = $stage->map(function($node) {
-				dump($node->data);
-				return (object) ['queries' => $node->getQueryStrings(), 'data' => $node->data];
+				return $node->data;
 			});
-
 			return $stageData;
 		});
+
+		return $data;
 	}
 }

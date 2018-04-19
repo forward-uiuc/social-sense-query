@@ -54,7 +54,12 @@ class QueryController extends Controller
 			$query = Query::findOrFail($id);
 
 			try {
-				$query->history()->save(new QueryHistory($query->submit()));
+
+				$history = new QueryHistory($query->submit());
+				$history->query_structure = $query->structure;
+				$history->user_id = $query->user->id;
+				$query->history()->save($history);
+
 			} catch (UserQuotaReachedException $e) {
 				$request->session()->flash('error', $e->getMessage());
 			} catch (\RuntimeException $e) {

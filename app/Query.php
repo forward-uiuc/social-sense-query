@@ -21,13 +21,6 @@ use App\Exceptions\UserQuotaReachedException;
 class Query extends Model
 {
 
-	/*
-	 * Given a query's structure, convert it into a graphql query string
-	 */
-	public static function ToGraphQLQuery($structure) {
-
-	}
-
 	protected $fillable = ['name','schedule','structure','description','string'];
 
 	/*
@@ -41,7 +34,7 @@ class Query extends Model
 	 * Get the history of this query
 	 */
 	public function history() {
-		return $this->hasMany('App\QueryHistory');
+		return $this->morphMany('App\QueryHistory','query');
 	}
 
 	/*
@@ -54,12 +47,6 @@ class Query extends Model
 		return CronExpression::factory($this->schedule)->isDue($date);
 	}
 
-	/*
-	 * Get the meta queries that this query is part of
-	 */
-	public function metaQueries() {
-		return $this->hasMany('App\MetaQuery');
-	}
 
 	/*
 	 * Retrieve all the query mappings that

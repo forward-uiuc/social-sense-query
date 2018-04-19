@@ -39,7 +39,7 @@ class MetaQueryNode
 		
 		$userQuery = Query::where('id', $topologyNode->id->query)->first();
 		$query = QueryNode::deserialize(json_decode($userQuery->structure));
-
+		
 		$this->queries = collect([$query]);
 
 		$this->outputs = collect($topologyNode->outputs);
@@ -75,11 +75,13 @@ class MetaQueryNode
 
 		/*
 		 * $this->data is equal to a collection of responses from
-		 * each of this query
+		 * each of this query. We want this to be structured in such
+		 * a way that its easy to store 
 		 */
 		$this->data = $this->queries->map(function($query) use ($authorizations, $server){
 			$response = (object) $server->submitQueryString( (string) $query, $authorizations);
 			$response->data  = json_decode($response->data)->data;
+			$response->query_structure = json_encode($query);
 			return $response;
 		});
 
@@ -168,7 +170,7 @@ class MetaQueryNode
 				return $values->map(function($value) use ($query, $path) {
 					$newQuery = clone $query;
 					if(!$newQuery->applyValue($path, $value)) {
-						dd('AHHH', $this);
+						dd('Failure trying to apply', $value, ' To path', $path);
 					}
 					return $newQuery;
 				});

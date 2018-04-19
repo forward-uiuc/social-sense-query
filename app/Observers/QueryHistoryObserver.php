@@ -20,14 +20,14 @@ class QueryHistoryObserver
 			}
 
 			$payload = [
-				'username' => $history->queryOfRecord->user->name,
+				'username' => $history->user->name,
 				'data' => $history->data,
 				'time' => $history->created_at->timestamp,
-				'name' => $history->queryOfRecord->name,
-				'structure' => $history->queryOfRecord->structure
+				'name' => '',
+				'structure' => $history->structure
 			];
 
-			$history->queryOfRecord->user->applications->each(function($application) use ($payload, $history) {
+			$history->user->applications->each(function($application) use ($payload, $history) {
 				
 				$client = new Client();
 
