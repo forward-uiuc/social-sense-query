@@ -10,6 +10,7 @@ use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ConnectException;
 
 use App\Exceptions\UserQuotaReachedException;
+use App\Models\MetaQuery\MetaQueryNode;
 
 /*
  * A query represents a GraphQL query belonging to a user.
@@ -33,8 +34,19 @@ class Query extends Model
 	 * Get the history of this query
 	 */
 	public function history() {
-		return $this->morphMany(QueryHistory::class,'query');
+		return $this->hasMany(QueryHistory::class);
 	}
+
+	public function metaQueryNodes() {
+		return $this->morphMany(MetaQueryNode::class, 'node');
+	}
+
+	
+	public function getQueryNode() {
+		$node = json_decode($this->structure);
+		return QueryNode::deserialize(json_decode($this->structure));
+	}
+
 
 	/*
 	 * Get whether this query is due for execution
@@ -47,21 +59,6 @@ class Query extends Model
 	}
 
 
-	/*
-	 * Retrieve all the query mappings that
-	 * has this query as a source for inputs
-	 */
-	public function sourceMappings() {
-		return $this->hasMany('App\QueryMapping','from_query_id');
-	}
-
-	/*
-	 * Retrieve all teh query mappings that
-	 * has this query as a destination for inputs
-	 */
-	public function destinationMappings() {
-		return $this->hasMany('App\QueryMapping', 'to_query_id');
-	}	
 
 	/*
 	 * Get the next date that this query will run in UTC

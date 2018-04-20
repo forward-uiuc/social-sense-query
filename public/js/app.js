@@ -85402,7 +85402,7 @@ exports = module.exports = __webpack_require__(18)(false);
 
 
 // module
-exports.push([module.i, "\n[data-v-4e6056c7] .socket.number{\n    background: #96b38a\n}\n[data-v-4e6056c7] .socket.string{\n    background: #96b38a\n}\n[data-v-4e6056c7] .socket.bool{\n    background: #96b38a\n}\n.node-editor[data-v-4e6056c7] {\n\t\twidth: 1500px !important;\n\t\theight: 750px !important;\n}\n[data-v-4e6056c7] .node.selected {\n\tbackground: #E84A27 !important;\n\tborder-color: #13294b !important;\n}\n[data-v-4e6056c7] .node.selected .title {\n\tcolor: white!important;\n}\n[data-v-4e6056c7] .node {\n\tbackground:  \t#13294b !important;\n\tborder-color: #E84A27 !important;\n}\n", ""]);
+exports.push([module.i, "\n[data-v-4e6056c7] .socket.number{\n    background: #96b38a\n}\n[data-v-4e6056c7] .socket.string{\n    background: #96b38a\n}\n[data-v-4e6056c7] .socket.bool{\n    background: #96b38a\n}\n[data-v-4e6056c7] .socket.any {\n    background: #96b38a\n}\n.node-editor[data-v-4e6056c7] {\n\t\twidth: 1500px !important;\n\t\theight: 750px !important;\n}\n[data-v-4e6056c7] .node.selected {\n\tbackground: #E84A27 !important;\n\tborder-color: #13294b !important;\n}\n[data-v-4e6056c7] .node.selected .title {\n\tcolor: white!important;\n}\n[data-v-4e6056c7] .node {\n\tbackground:  \t#13294b !important;\n\tborder-color: #E84A27 !important;\n}\n", ""]);
 
 // exports
 
@@ -85436,47 +85436,53 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 	data: function data() {
 		return {
 			editor: null,
-			components: {},
+			components: [],
 			sockets: {},
 			serializedCanvas: {}
 		};
 	},
 	created: function created() {
+		var _this = this;
+
 		var numberSocket = new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Socket"]('number', 'Number', 'This represents a numeric value, either an integer or a floating point value.');
+		var anySocket = new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Socket"]('any', 'Any', 'This input can take any set of values');
+
 		this.sockets = {
 			'Int': numberSocket,
 			'Float': numberSocket,
 			'String': new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Socket"]('string', 'String', 'This represents a string.'),
-			'Boolean': new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Socket"]('bool', 'Boolean', 'This represents a boolean (true or false).')
+			'Boolean': new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Socket"]('bool', 'Boolean', 'This represents a boolean (true or false).'),
+			'Any': anySocket
 
 			// Numbers and booleans can be coerced into a string
 		};numberSocket.combineWith(this.sockets.String);
 		this.sockets.Boolean.combineWith(this.sockets.String);
+
+		Object.keys(this.sockets).forEach(function (socketName) {
+			var socket = _this.sockets[socketName];
+			socket.combineWith(_this.sockets.Any);
+		});
 	},
 	methods: {
-		buildComponent: function buildComponent(query) {
-
+		buildQueryComponent: function buildQueryComponent(query) {
 			var queryInputs = this.getInputs(query.structure, '');
 			var queryOutputs = this.getOutputs(query.structure, '');
-			console.log('Query Inputs: ', queryInputs);
+
 			var sockets = this.sockets;
 			var comp = new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Component"](query.name, {
 				builder: function builder(node) {
-					var componentInputs = [];
-					var componentOutputs = [];
-
 					var _iteratorNormalCompletion = true;
 					var _didIteratorError = false;
 					var _iteratorError = undefined;
 
 					try {
+
 						for (var _iterator = queryInputs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 							var input = _step.value;
 
 							var inputType = input.split(':')[1];
 							var inputPath = input.split(':')[0];
 							var d3Input = new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Input"](inputType + ':' + inputPath, sockets[inputType]);
-							d3Input.meta = input;
 							node.addInput(d3Input);
 						}
 					} catch (err) {
@@ -85526,20 +85532,126 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 			});
 			return {
 				component: comp,
+				name: query.name,
 				id: query.id,
+				type: 'query',
 				inputs: queryInputs,
 				outputs: queryOutputs
+			};
+		},
+		buildFunctionComponent: function buildFunctionComponent(func) {
+			var inputs = JSON.parse(func.inputs);
+			var outputs = JSON.parse(func.outputs);
+			var sockets = this.sockets;
+
+			var comp = new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Component"](func.name, {
+				builder: function builder(node) {
+					var _iteratorNormalCompletion3 = true;
+					var _didIteratorError3 = false;
+					var _iteratorError3 = undefined;
+
+					try {
+						for (var _iterator3 = inputs[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+							var input = _step3.value;
+
+
+							var inputType = input.split(':')[1];
+							var inputPath = input.split(':')[0];
+
+							console.log("AHH:", inputType, sockets[inputType]);
+
+							var d3Input = new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Input"](inputType + ':' + inputPath, sockets[inputType]);
+							node.addInput(d3Input);
+						}
+					} catch (err) {
+						_didIteratorError3 = true;
+						_iteratorError3 = err;
+					} finally {
+						try {
+							if (!_iteratorNormalCompletion3 && _iterator3.return) {
+								_iterator3.return();
+							}
+						} finally {
+							if (_didIteratorError3) {
+								throw _iteratorError3;
+							}
+						}
+					}
+
+					var _iteratorNormalCompletion4 = true;
+					var _didIteratorError4 = false;
+					var _iteratorError4 = undefined;
+
+					try {
+						for (var _iterator4 = outputs[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+							var output = _step4.value;
+
+							var outputType = output.split(':')[1];
+							node.addOutput(new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Output"](output, sockets[outputType]));
+						}
+					} catch (err) {
+						_didIteratorError4 = true;
+						_iteratorError4 = err;
+					} finally {
+						try {
+							if (!_iteratorNormalCompletion4 && _iterator4.return) {
+								_iterator4.return();
+							}
+						} finally {
+							if (_didIteratorError4) {
+								throw _iteratorError4;
+							}
+						}
+					}
+
+					return node;
+				},
+				worker: function worker(node, inputs, outputs) {}
+			});
+
+			return {
+				component: comp,
+				id: func.id,
+				name: func.name,
+				type: 'function',
+				inputs: inputs,
+				outputs: outputs
 			};
 		},
 
 		addQuery: function addQuery(query) {
 			// First, check if we need to build this component
-			if (Object.keys(this.components).indexOf(query.name) == -1) {
-				this.components[query.name] = this.buildComponent(query);
-				this.editor.components.push(this.components[query.name].component);
+			var componentMetaData = this.components.find(function (comp) {
+				return comp.id == query.id && comp.type == 'query';
+			});
+
+			if (!componentMetaData) {
+				componentMetaData = this.buildQueryComponent(query);
+				this.components.push(componentMetaData);
+				this.editor.components.push(componentMetaData.component);
 			}
-			var component = this.components[query.name].component;
+
+			var component = componentMetaData.component;
 			var node = component.builder(component.newNode());
+			this.editor.addNode(node);
+		},
+
+		addFunction: function addFunction(func) {
+			console.log(func);
+			// First, check if we need to build this component
+			var componentMetaData = this.components.find(function (comp) {
+				return comp.id == func.id && comp.type == 'function';
+			});
+
+			if (!componentMetaData) {
+				componentMetaData = this.buildFunctionComponent(func);
+				this.components.push(componentMetaData);
+				this.editor.components.push(componentMetaData.component);
+			}
+
+			var component = componentMetaData.component;
+			var node = component.builder(component.newNode());
+
 			this.editor.addNode(node);
 		},
 
@@ -85553,13 +85665,13 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 				return prefix + input.name + ':' + input.inputType;
 			});
 
-			var _iteratorNormalCompletion3 = true;
-			var _didIteratorError3 = false;
-			var _iteratorError3 = undefined;
+			var _iteratorNormalCompletion5 = true;
+			var _didIteratorError5 = false;
+			var _iteratorError5 = undefined;
 
 			try {
-				for (var _iterator3 = queryStructureRoot.children[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-					var child = _step3.value;
+				for (var _iterator5 = queryStructureRoot.children[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+					var child = _step5.value;
 
 					var inputList = this.getInputs(child, prefix);
 
@@ -85568,16 +85680,16 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 					levelInputs = levelInputs.concat(inputList);
 				}
 			} catch (err) {
-				_didIteratorError3 = true;
-				_iteratorError3 = err;
+				_didIteratorError5 = true;
+				_iteratorError5 = err;
 			} finally {
 				try {
-					if (!_iteratorNormalCompletion3 && _iterator3.return) {
-						_iterator3.return();
+					if (!_iteratorNormalCompletion5 && _iterator5.return) {
+						_iterator5.return();
 					}
 				} finally {
-					if (_didIteratorError3) {
-						throw _iteratorError3;
+					if (_didIteratorError5) {
+						throw _iteratorError5;
 					}
 				}
 			}
@@ -85607,13 +85719,13 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 				}
 			}
 
-			var _iteratorNormalCompletion4 = true;
-			var _didIteratorError4 = false;
-			var _iteratorError4 = undefined;
+			var _iteratorNormalCompletion6 = true;
+			var _didIteratorError6 = false;
+			var _iteratorError6 = undefined;
 
 			try {
-				for (var _iterator4 = queryStructureRoot.children[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-					var child = _step4.value;
+				for (var _iterator6 = queryStructureRoot.children[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+					var child = _step6.value;
 
 					var outputList = this.getOutputs(child, childPrefix + '.');
 
@@ -85621,16 +85733,16 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 					levelOutput = levelOutput.concat(outputList);
 				}
 			} catch (err) {
-				_didIteratorError4 = true;
-				_iteratorError4 = err;
+				_didIteratorError6 = true;
+				_iteratorError6 = err;
 			} finally {
 				try {
-					if (!_iteratorNormalCompletion4 && _iterator4.return) {
-						_iterator4.return();
+					if (!_iteratorNormalCompletion6 && _iterator6.return) {
+						_iterator6.return();
 					}
 				} finally {
-					if (_didIteratorError4) {
-						throw _iteratorError4;
+					if (_didIteratorError6) {
+						throw _iteratorError6;
 					}
 				}
 			}
@@ -85639,7 +85751,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 		},
 
 		serializeQuery: function serializeQuery(serializedCanvas) {
-			var _this = this;
+			var _this2 = this;
 
 			var nodes = this.editor.toJSON().nodes;
 
@@ -85647,7 +85759,10 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 			var _loop = function _loop(nodeID) {
 				var node = nodes[nodeID]; // nodes is a map between an ID to the actual node >:(
-				var nodeInfo = _this.components[node.title]; // nodeInfo has the inputs as a list of strings and outputs as a list of strings
+
+				var nodeInfo = _this2.components.find(function (metaData) {
+					return metaData.name === node.title;
+				});
 
 				// Next, take the internal connections representation and translate that to one that is better for backend processing
 
@@ -85659,7 +85774,11 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 					// will preserve all such inputs and have that resolved in the backend
 					if (input.connections.length > 0) {
 						var connection = input.connections[0]; // connection = { node: (topological ID), output: (output index) }
-						var outputNode = _this.components[nodes[connection.node].title];
+
+						var outputNode = _this2.components.find(function (metaData) {
+							return metaData.name == nodes[connection.node].title;
+						});
+
 						var outputPath = outputNode.outputs[connection.output];
 						logicalInput[inputPath] = { topology_id: connection.node, path: outputPath };
 					}
@@ -85673,7 +85792,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 				var serializedQueryNode = {
 					id: {
 						topology: node.id,
-						query: nodeInfo.id
+						type: nodeInfo.type,
+						id: nodeInfo.id
 					},
 					inputs: logicalInputs,
 					outputs: logicalOutputs
@@ -85697,7 +85817,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 		}
 	},
 	mounted: function mounted() {
-		var _this2 = this;
+		var _this3 = this;
 
 		this.editor = new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["NodeEditor"]('someName@1.0.0', this.$refs.d3ne, [], null);
 		this.engine = new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Engine"]('someName@1.0.0', this.editor.components);
@@ -85728,7 +85848,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 							return _context.stop();
 					}
 				}
-			}, _callee, _this2);
+			}, _callee, _this3);
 		})));
 
 		this.editor.eventListener.trigger('change');
@@ -105081,7 +105201,7 @@ exports = module.exports = __webpack_require__(18)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -105118,16 +105238,33 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	name: 'metaQueryBuilder',
-	props: ['formId', 'queries'],
+	props: ['formId', 'queries', 'functions'],
 	data: function data() {
 		return {
-			queryToAdd: null
+			queryToAdd: null,
+			functionToAdd: null
 		};
 	},
 	methods: {
@@ -105139,19 +105276,29 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			});
 			this.$refs.canvas.addQuery(query);
 		},
+		addFunction: function addFunction() {
+			var _this2 = this;
+
+			var func = this.functions.find(function (f) {
+				return f.name == _this2.functionToAdd;
+			});
+
+			this.$refs.canvas.addFunction(func);
+		},
 		saveQuery: function saveQuery(e) {
 			e.preventDefault();
 			this.$refs.canvasValue.value = JSON.stringify(this.$refs.canvas.getSerliazedCanvas());
 			this.$refs.topology.value = JSON.stringify(this.$refs.canvas.getSerializedQuery());
-			document.getElementById(this.formId).submit();
+			console.log(this.$refs.canvas.getSerializedQuery());
+			//document.getElementById(this.formId).submit();
 		}
 	},
 	components: {
 		BuilderCanvas: __WEBPACK_IMPORTED_MODULE_0__MetaQueryBuilderCanvas_vue___default.a // This is registered here for documentation, in app.js this is registered
 	},
 	mounted: function mounted() {
-		console.log(this.formID);
 		this.queryToAdd = this.queries[0].name;
+		this.functionToAdd = this.functions[this.functions.length - 1].name;
 	}
 });
 
@@ -105168,16 +105315,104 @@ var render = function() {
     [
       _c(
         "div",
-        {
-          staticClass: "form-inline",
-          staticStyle: { "padding-bottom": "20px" }
-        },
+        { staticClass: "row", staticStyle: { "padding-bottom": "20px" } },
         [
-          _c("div", { staticClass: "form-group" }, [
+          _c("div", { staticClass: "form-inline" }, [
+            _c("div", { staticClass: "form-group" }, [
+              _c(
+                "div",
+                { staticClass: "btn btn-info", on: { click: _vm.addQuery } },
+                [_vm._v(" Add Query ")]
+              ),
+              _vm._v(" "),
+              _c(
+                "div",
+                {
+                  staticClass: "input-group",
+                  staticStyle: { "padding-left": "20px" }
+                },
+                [
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.queryToAdd,
+                          expression: "queryToAdd"
+                        }
+                      ],
+                      staticClass: "form-control",
+                      on: {
+                        change: function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.queryToAdd = $event.target.multiple
+                            ? $$selectedVal
+                            : $$selectedVal[0]
+                        }
+                      }
+                    },
+                    _vm._l(_vm.queries, function(query) {
+                      return _c("option", [
+                        _vm._v(
+                          "\n\t\t\t\t\t\t\t" +
+                            _vm._s(query.name) +
+                            "\n\t\t\t\t\t\t"
+                        )
+                      ])
+                    })
+                  )
+                ]
+              )
+            ]),
+            _vm._v(" "),
+            _c("div", { staticStyle: { "padding-left": "20px" } }, [
+              _c("input", {
+                ref: "canvasValue",
+                attrs: { type: "hidden", name: "canvas", value: "foobar" }
+              }),
+              _vm._v(" "),
+              _c("input", {
+                ref: "topology",
+                attrs: { type: "hidden", name: "topology" }
+              }),
+              _vm._v(" "),
+              _c("input", {
+                ref: "schedule",
+                attrs: { type: "hidden", name: "schedule" }
+              }),
+              _vm._v(" "),
+              _c("input", {
+                staticClass: "btn btn-success",
+                attrs: { type: "submit", value: "Save Query" },
+                on: {
+                  click: function($event) {
+                    _vm.saveQuery($event)
+                  }
+                }
+              })
+            ])
+          ])
+        ]
+      ),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "row", staticStyle: { "padding-bottom": "20px" } },
+        [
+          _c("div", { staticClass: "form-inline" }, [
             _c(
               "div",
-              { staticClass: "btn btn-info", on: { click: _vm.addQuery } },
-              [_vm._v(" Add Query ")]
+              { staticClass: "btn btn-info", on: { click: _vm.addFunction } },
+              [_vm._v(" Add Function ")]
             ),
             _vm._v(" "),
             _c(
@@ -105194,8 +105429,8 @@ var render = function() {
                       {
                         name: "model",
                         rawName: "v-model",
-                        value: _vm.queryToAdd,
-                        expression: "queryToAdd"
+                        value: _vm.functionToAdd,
+                        expression: "functionToAdd"
                       }
                     ],
                     staticClass: "form-control",
@@ -105209,49 +105444,20 @@ var render = function() {
                             var val = "_value" in o ? o._value : o.value
                             return val
                           })
-                        _vm.queryToAdd = $event.target.multiple
+                        _vm.functionToAdd = $event.target.multiple
                           ? $$selectedVal
                           : $$selectedVal[0]
                       }
                     }
                   },
-                  _vm._l(_vm.queries, function(query) {
+                  _vm._l(_vm.functions, function(f) {
                     return _c("option", [
-                      _vm._v(
-                        "\n\t\t\t\t\t\t" + _vm._s(query.name) + "\n\t\t\t\t\t"
-                      )
+                      _vm._v("\n\t\t\t\t\t\t" + _vm._s(f.name) + "\n\t\t\t\t\t")
                     ])
                   })
                 )
               ]
             )
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "offset-md-3" }, [
-            _c("input", {
-              ref: "canvasValue",
-              attrs: { type: "hidden", name: "canvas", value: "foobar" }
-            }),
-            _vm._v(" "),
-            _c("input", {
-              ref: "topology",
-              attrs: { type: "hidden", name: "topology" }
-            }),
-            _vm._v(" "),
-            _c("input", {
-              ref: "schedule",
-              attrs: { type: "hidden", name: "schedule" }
-            }),
-            _vm._v(" "),
-            _c("input", {
-              staticClass: "btn btn-success",
-              attrs: { type: "submit" },
-              on: {
-                click: function($event) {
-                  _vm.saveQuery($event)
-                }
-              }
-            })
           ])
         ]
       ),
@@ -105357,7 +105563,7 @@ exports = module.exports = __webpack_require__(18)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -105431,30 +105637,72 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.nodes = [];
 			this.links = [];
 
-			run.stages.forEach(function (stage, index) {
-				_this.nodes.push({ id: stage.id, name: "Stage" + index, _color: 'red', type: 'stage', data: stage, index: index });
+			var index = 0;
+			var stages = [];
+			run.stages.forEach(function (stage) {
 
-				stage.history.forEach(function (queryHistory) {
-					_this.nodes.push({ id: ++id, name: "Query", _color: 'black', type: 'query', data: queryHistory.dataObject });
-					_this.links.push({ sid: id, tid: stage.id });
+				var stageNode = { id: index, name: 'Stage ' + Math.abs(index), _size: 60, _color: 'red', _labelClass: 'btn btn-info', data: stage, type: 'stage' };
+				stages.push(stageNode);
+				_this.nodes.push(stageNode);
+
+				stage.nodes.forEach(function (node) {
+					_this.nodes.push({ id: node.topology_id, name: node.node.name, data: node, _size: 50, _labelClass: 'btn btn-info', type: 'node' });
+					_this.links.push({ sid: node.topology_id, tid: index }); // Add a link from this node to its stage
+				});
+				index--;
+			});
+
+			// Add a link from each node to its dependant node
+			run.stages.forEach(function (stage) {
+				stage.nodes.forEach(function (node) {
+					node.dependencies.forEach(function (dependency) {
+						_this.links.push({ sid: dependency.output.node.topology_id, tid: dependency.input.node.topology_id, data: dependency.output.value });
+					});
 				});
 			});
 
-			for (var i = 0; i < run.stages.length - 1; i++) {
-				this.links.push({ sid: run.stages[i].id, tid: run.stages[i + 1].id });
+			var _loop = function _loop(i) {
+				var totalOutputs = [];
+
+				stages[i].data.nodes.forEach(function (node) {
+					var outputs = node.outputs.forEach(function (output) {
+						totalOutputs = totalOutputs.concat(JSON.parse(output.value));
+					});
+				});
+
+				_this.links.push({ sid: -1 * i, tid: -1 * (i + 1), data: totalOutputs });
+			};
+
+			for (var i = 0; i < stages.length - 1; i++) {
+				_loop(i);
 			}
 		},
 		clickNode: function clickNode(event, node) {
-			if (node.type == 'stage') {
-				this.dataToExamine = {
-					stage: node.index,
-					queries: node.data.history.map(function (history) {
-						return JSON.parse(history.data);
-					})
-				};
+			if (node.type === 'stage') {
+				var data = node.data.nodes.map(function (node) {
+					console.log(node.outputs);
+					return node.outputs.map(function (output) {
+						return {
+							path: output.path,
+							values: JSON.parse(output.value)
+						};
+					});
+				});
+
+				this.dataToExamine = data;
 			} else {
-				this.dataToExamine = node.data;
+
+				var display = {};
+				var outputs = node.data.outputs;
+				outputs.forEach(function (output) {
+					display[output.path] = JSON.parse(output.value);
+				});
+
+				this.dataToExamine = display;
 			}
+		},
+		clickLink: function clickLink(event, link) {
+			this.dataToExamine = link.data;
 		},
 		submit: function submit() {}
 	},
@@ -105537,7 +105785,7 @@ var render = function() {
               "net-links": _vm.links,
               options: _vm.options
             },
-            on: { "node-click": _vm.clickNode }
+            on: { "node-click": _vm.clickNode, "link-click": _vm.clickLink }
           })
         ],
         1

@@ -70,7 +70,7 @@ class QueryNode
 		$toReturn = false;
 
 		if(count($path) == 1 ) {
-			$inputToReplace = $path[0];
+			$inputToReplace = explode(':', $path[0])[0];
 
 			foreach($this->inputs as $input) {
 				if($input->name == $inputToReplace) {
@@ -160,10 +160,9 @@ class Input
 	{
 		switch($this->inputType) {
 		case "String":
-
 			return $this->name . ': "' . $this->cleanInput($this->value ? $this->value : '') . '"';
 		case "Boolean":
-			return $this->name .': ' . (string) $this->value;
+			return $this->name .': ' . ($this->value ? 'true' : 'false');
 		case "Int":
 		case "Float":
 			return $this->name .': ' . $this->value;

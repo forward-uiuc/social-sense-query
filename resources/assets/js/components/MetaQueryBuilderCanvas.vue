@@ -12,41 +12,46 @@ export default {
 	data: function() {
 		return {
 			editor: null,
-			components: {},
+			components: [], 
 			sockets: {},
 			serializedCanvas: {},
 		}
 	},
 	created: function () { 
 		let numberSocket = new D3NE.Socket('number', 'Number', 'This represents a numeric value, either an integer or a floating point value.')
+		let anySocket = new D3NE.Socket('any', 'Any', 'This input can take any set of values')
+
 		this.sockets = {
 			'Int': numberSocket,
 			'Float': numberSocket,
 			'String': new D3NE.Socket('string', 'String', 'This represents a string.'),
-			'Boolean': new D3NE.Socket('bool', 'Boolean', 'This represents a boolean (true or false).')
+			'Boolean': new D3NE.Socket('bool', 'Boolean', 'This represents a boolean (true or false).'),
+			'Any': anySocket 
 		}
 
 		// Numbers and booleans can be coerced into a string
 		numberSocket.combineWith(this.sockets.String);
 		this.sockets.Boolean.combineWith(this.sockets.String);
+
+		Object.keys(this.sockets).forEach( socketName => {
+			let socket = this.sockets[socketName];
+			socket.combineWith(this.sockets.Any);
+		});
+
 	},
 	methods: {
-		buildComponent: function(query) {
-
+		buildQueryComponent: function(query) {
 			let queryInputs = this.getInputs(query.structure, '');
 			let queryOutputs = this.getOutputs(query.structure, '');
-			console.log('Query Inputs: ', queryInputs);
+
 			let sockets = this.sockets;
 			let comp = new D3NE.Component(query.name, {
 				builder(node) {
-					let componentInputs = [];
-					let componentOutputs = [];
 
 					for(let input of queryInputs) {
 						let inputType = input.split(':')[1]
 						let inputPath = input.split(':')[0]
-						let d3Input = new D3NE.Input(inputType + ':' + inputPath, sockets[inputType])
-						d3Input.meta = input;
+												let d3Input = new D3NE.Input(inputType + ':' + inputPath, sockets[inputType])
 						node.addInput(d3Input)
 					}
 					
@@ -62,20 +67,87 @@ export default {
 			});
 			return {
 				component: comp,
+				name: query.name,
 				id: query.id,
+				type: 'query',
 				inputs: queryInputs,
 				outputs: queryOutputs
+			}
+		},
+		buildFunctionComponent: function(func) {
+			let inputs = JSON.parse(func.inputs);
+			let outputs = JSON.parse(func.outputs);
+			let sockets = this.sockets;
+
+			let comp = new D3NE.Component(func.name, {
+				builder(node) {
+					for (let input of inputs) {
+
+						let inputType = input.split(':')[1];
+						let inputPath = input.split(':')[0];
+
+					console.log("AHH:", inputType, sockets[inputType]);
+						
+						let d3Input = new D3NE.Input(inputType + ':' + inputPath, sockets[inputType]);
+						node.addInput(d3Input)
+					}
+
+					for (let output of outputs) {
+						let outputType = output.split(':')[1];
+						node.addOutput( new D3NE.Output(output, sockets[outputType]));
+					}
+
+					return node;
+				},
+				worker(node, inputs, outputs) {
+				}
+			});
+			
+			return {
+				component: comp, 
+				id: func.id,
+				name: func.name,
+				type: 'function',
+				inputs: inputs,
+				outputs: outputs
 			}
 		},
 
 		addQuery: function(query) {
 			// First, check if we need to build this component
-			if (Object.keys(this.components).indexOf(query.name) == -1){
-				this.components[query.name] = this.buildComponent(query);
-				this.editor.components.push(this.components[query.name].component)
+			let componentMetaData= this.components.find(function(comp){
+				return comp.id == query.id && comp.type == 'query';
+			})
+
+			if (!componentMetaData ){
+				componentMetaData = this.buildQueryComponent(query);
+				this.components.push(componentMetaData);
+				this.editor.components.push(componentMetaData.component);
+
 			} 
-			let component = this.components[query.name].component;
+
+			let component = componentMetaData.component;
 			let node = component.builder(component.newNode())
+			this.editor.addNode(node);
+		},
+
+		addFunction: function(func) {
+			console.log(func);
+			// First, check if we need to build this component
+			let componentMetaData  = this.components.find(function(comp) {
+				return comp.id == func.id && comp.type == 'function'
+			});
+
+			if ( !componentMetaData ){
+				componentMetaData = this.buildFunctionComponent(func);
+				this.components.push(componentMetaData);
+				this.editor.components.push(componentMetaData.component);
+			} 
+
+			let component = componentMetaData.component;
+			let node = component.builder(component.newNode())
+
+			
 			this.editor.addNode(node)
 		},
 
@@ -138,8 +210,11 @@ export default {
 			let serializedQuery = [];
 			for (let nodeID in nodes) {
 				let node = nodes[nodeID]; // nodes is a map between an ID to the actual node >:(
-				let nodeInfo = this.components[node.title]; // nodeInfo has the inputs as a list of strings and outputs as a list of strings
 
+				let nodeInfo = this.components.find( metaData => {
+					return metaData.name === node.title;
+				});
+					
 				// Next, take the internal connections representation and translate that to one that is better for backend processing
 
 				let logicalInputs = node.inputs.map( (input, index) => {
@@ -150,7 +225,11 @@ export default {
 																				 // will preserve all such inputs and have that resolved in the backend
 					if(input.connections.length > 0){
 						let connection = input.connections[0]; // connection = { node: (topological ID), output: (output index) }
-						let outputNode = this.components[nodes[connection.node].title];
+
+						let outputNode = this.components.find( metaData => {
+							return metaData.name == nodes[connection.node].title
+						});
+							
 						let outputPath = outputNode.outputs[connection.output];
 						logicalInput[inputPath] = {topology_id: connection.node, path: outputPath}
 					}
@@ -165,7 +244,8 @@ export default {
 				let serializedQueryNode = {
 					id: {
 						topology: node.id,
-						query: nodeInfo.id
+						type: nodeInfo.type,
+						id: nodeInfo.id
 					},
 					inputs: logicalInputs,
 					outputs: logicalOutputs
@@ -221,6 +301,10 @@ export default {
     background: #96b38a
   }
 
+
+>>> .socket.any {
+    background: #96b38a
+}
 
 	.node-editor {
 		width: 1500px !important;

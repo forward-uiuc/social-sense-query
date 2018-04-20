@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateMetaQueryRunStageTable extends Migration
+class CreateMetaQueryNodeInputs extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,12 @@ class CreateMetaQueryRunStageTable extends Migration
      */
     public function up()
     {
-        Schema::create('stages', function (Blueprint $table) {
+        Schema::create('meta_query_node_inputs', function (Blueprint $table) {
             $table->increments('id');
-            $table->timestamps();
-						$table->integer('run_id')->unsigned();
-						$table->foreign('run_id')->references('id')->on('runs')->onDelete('cascade');
+						$table->string('path');
+						$table->integer('meta_query_node_id')->unsigned();
+						$table->foreign('meta_query_node_id')->references('id')->on('meta_query_nodes')->onDelete('cascade');
+
         });
     }
 
@@ -28,6 +29,6 @@ class CreateMetaQueryRunStageTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('meta_query_run_stages');
+        Schema::dropIfExists('meta_query_node_inputs');
     }
 }

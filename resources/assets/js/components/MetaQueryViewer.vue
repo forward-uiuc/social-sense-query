@@ -17,7 +17,7 @@
 				</ul>
 			</div>
 				<div class="col-md-8">
-					<d3-network :net-nodes="nodes" :net-links="links" :options="options" v-on:node-click="clickNode" style="border-style:solid">
+					<d3-network :net-nodes="nodes" :net-links="links" :options="options" v-on:node-click="clickNode" v-on:link-click="clickLink" style="border-style:solid">
 					</d3-network> 
 				</div>
 		</div>
@@ -60,31 +60,71 @@ export default {
 			this.nodes = [];
 			this.links = [];
 
-			run.stages.forEach( (stage, index) => {
-				this.nodes.push({id: stage.id, name:"Stage" + index, _color: 'red', type:'stage', data: stage, index: index});
+			let index = 0;
+			let stages = [];
+			run.stages.forEach( stage => {
 
-				stage.history.forEach( queryHistory => {
-					this.nodes.push({id: ++id, name: "Query", _color: 'black', type:'query', data: queryHistory.dataObject });
-					this.links.push({sid: id, tid: stage.id}); 
+
+				let stageNode = {id: index, name: 'Stage ' + Math.abs(index), _size: 60, _color: 'red', _labelClass:'btn btn-info', data: stage, type: 'stage'};
+				stages.push(stageNode);
+				this.nodes.push(stageNode);
+
+
+				stage.nodes.forEach( node => {
+					this.nodes.push({id: node.topology_id, name: node.node.name, data:node, _size: 50, _labelClass:'btn btn-info', type:'node'});
+					this.links.push({sid: node.topology_id, tid: index}); // Add a link from this node to its stage
+				});
+				index--;
+			});
+
+			// Add a link from each node to its dependant node
+			run.stages.forEach( stage => {
+				stage.nodes.forEach( node => {
+					node.dependencies.forEach( dependency => {
+						this.links.push({sid: dependency.output.node.topology_id, tid: dependency.input.node.topology_id, data:dependency.output.value});
+					});
 				});
 			});
 
-			for(let i=0; i < run.stages.length-1; i++){
-				this.links.push({sid: run.stages[i].id, tid: run.stages[i+1].id});
+			for(let i=0; i < stages.length - 1; i++){
+				let totalOutputs = [];
+				
+				stages[i].data.nodes.forEach( node => {
+					let outputs = node.outputs.forEach( output => {
+						totalOutputs = totalOutputs.concat(JSON.parse(output.value));
+					});
+				});
+
+				this.links.push({sid: -1*i, tid: -1*(i+1), data:totalOutputs});
 			}
 
 		},
 		clickNode: function(event, node) {
-			if(node.type == 'stage') {
-				this.dataToExamine = {
-					stage: node.index,
-					queries: node.data.history.map( history => {
-						return JSON.parse(history.data);
-					})
-				}
+			if(node.type === 'stage') {
+				let data = node.data.nodes.map( node => {
+					console.log(node.outputs);
+					return node.outputs.map( output => {
+						return 	{ 
+							path: output.path,
+							values: JSON.parse(output.value)
+						};
+					});
+				});
+
+				this.dataToExamine = data;
 			} else {
-				this.dataToExamine = node.data;
+
+				let display = {};
+				let outputs = node.data.outputs;
+				outputs.forEach( output => {
+					display[output.path] = JSON.parse(output.value);
+				});
+
+				this.dataToExamine = display;
 			}
+		},
+		clickLink: function(event, link) {
+			this.dataToExamine = link.data
 		},
 		submit: function() {
 
@@ -104,8 +144,6 @@ export default {
 }
 
 </script>
-	>>> .link {
-		marker-end: "arrow"
-	}
 <style scoped>
+
 </style>

@@ -6,11 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Stage extends Model
 {
-	/*
-	 * Get the history items of this stage
-	 */
-	public function history() {
-		return $this->morphMany('App\Models\Query\QueryHistory','query');
+
+	public function nodes() {
+		return $this->hasMany(MetaQueryNode::class);
 	}
 
 	/*

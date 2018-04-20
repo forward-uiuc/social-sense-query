@@ -7,6 +7,8 @@ use App\Models\MetaQuery\MetaQuery;
 use App\Models\MetaQuery\Run;
 use App\Models\MetaQuery\Stage;
 use App\Models\Query\QueryHistory;
+use App\Factories\RunFactory; 
+use App\Models\MetaQuery\MetaQueryFunction;
 
 class MetaQueryController extends Controller
 {
@@ -28,7 +30,8 @@ class MetaQueryController extends Controller
 	{
 		$user = \Auth::user();
 		$queries = $user->queries;
-		return view('meta-queries.create', ['queries' => $queries]);
+		$functions = MetaQueryFunction::all();
+		return view('meta-queries.create', ['queries' => $queries, 'functions' => $functions]);
 	}
 
 
@@ -47,28 +50,13 @@ class MetaQueryController extends Controller
  /*	
 	* submit a meta query
 	*/
-	public function submit(Request $request, $id) 
+	public function submit(Request $request, $id, RunFactory $runFactory) 
 	{
 		$query = MetaQuery::findOrFail($id);
-		try {
-			$data = $query->submit();
-			$run = new Run(['topology' => $query->topology]);
-			$query->runs()->save($run);
 
-			$data->each(function($stageResponses) use ($run){ 
-				$stage = new Stage();
-				$run->stages()->save($stage);
+		try{ 
 
-				$stageResponses->each(function($metaQueryNodeResponses) use ($stage){
-					$metaQueryNodeResponses->each(function($queryResponse) use ($stage) {
-						$queryResponse->data = json_encode($queryResponse->data);
-						$history = new QueryHistory((array) $queryResponse);
-						$history->user_id = \Auth::user()->id;
-						$stage->history()->save($history);
-					});
-				});
-			});
-
+			$query->runs()->save($runFactory->createRun($query));
 
 		} catch (UserQuotaReachedException $e) {
 			$request->session()->flash('error', $e->getMessage());
@@ -83,19 +71,16 @@ class MetaQueryController extends Controller
 	 * Show a meta query
 	 */
 	public function show(Request $request, $id) {
-		$query = MetaQuery::where('id', $id)->with('runs.stages.history')->first();
-		$query->topology = json_decode($query->topology);
-		$query->runs->each(function($run){
-			$run->topology = json_decode($run->topology);
-			$run->stages->each(function ($stage) {
-				$stage->history->each(function($historyItem) {
-					$historyItem->string = $historyItem->queryString;
-					$historyItem->dataObject = json_decode($historyItem->data);
-					$historyItem->query = json_decode($historyItem->query_structure);
-				});
-			});
-		});
+		$withProperties = [
+			'runs.stages.nodes.inputs',
+			'runs.stages.nodes.outputs',
+			'runs.stages.nodes.node',
+			'runs.stages.nodes.dependencies',
+			'runs.stages.nodes.dependencies.input.node',
+			'runs.stages.nodes.dependencies.output.node',
+		];
 
+		$query = MetaQuery::where('id', $id)->with($withProperties)->first();
 		return view('meta-queries.show', ['query' => $query]);
 	}
 }

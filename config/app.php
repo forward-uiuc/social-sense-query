@@ -162,6 +162,7 @@ return [
     		\SocialiteProviders\Manager\ServiceProvider::class, // add
 				Collective\Html\HtmlServiceProvider::class,
 				App\Providers\GQLServerServiceProvider::class,
+				App\Providers\RunFactoryProvider::class,
     ],
 
     /*

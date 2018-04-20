@@ -5,9 +5,8 @@ namespace App\Services;
 use GuzzleHttp\Client;
 use Illuminate\Support\Collection;
 
-use \App\Query;
-use \App\MetaQuery;
-use \App\QueryNode;
+use \App\Models\Query\Query;
+use \App\Models\Query\QueryNode;
 
 class GQLServerService
 {

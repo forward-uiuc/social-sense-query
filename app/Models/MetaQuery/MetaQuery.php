@@ -5,6 +5,7 @@ namespace App\Models\MetaQuery;
 use Illuminate\Database\Eloquent\Model;
 
 use App\Models\Query\QueryHistory;
+use App\Models\User;
 
 class MetaQuery extends Model
 {
@@ -16,7 +17,7 @@ class MetaQuery extends Model
 	 * Get the user this MetaQuery belongs to
 	 */
 	public function user() {
-		return $this->belongsTo('App\Models\User');
+		return $this->belongsTo(User::class);
 	}
 
 
