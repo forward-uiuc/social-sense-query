@@ -86,7 +86,6 @@ export default {
 						let inputType = input.split(':')[1];
 						let inputPath = input.split(':')[0];
 
-					console.log("AHH:", inputType, sockets[inputType]);
 						
 						let d3Input = new D3NE.Input(inputType + ':' + inputPath, sockets[inputType]);
 						node.addInput(d3Input)
@@ -132,7 +131,6 @@ export default {
 		},
 
 		addFunction: function(func) {
-			console.log(func);
 			// First, check if we need to build this component
 			let componentMetaData  = this.components.find(function(comp) {
 				return comp.id == func.id && comp.type == 'function'

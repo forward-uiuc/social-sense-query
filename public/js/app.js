@@ -85558,8 +85558,6 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 							var inputType = input.split(':')[1];
 							var inputPath = input.split(':')[0];
 
-							console.log("AHH:", inputType, sockets[inputType]);
-
 							var d3Input = new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Input"](inputType + ':' + inputPath, sockets[inputType]);
 							node.addInput(d3Input);
 						}
@@ -85637,7 +85635,6 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 		},
 
 		addFunction: function addFunction(func) {
-			console.log(func);
 			// First, check if we need to build this component
 			var componentMetaData = this.components.find(function (comp) {
 				return comp.id == func.id && comp.type == 'function';
@@ -105201,7 +105198,7 @@ exports = module.exports = __webpack_require__(18)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -105289,8 +105286,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			e.preventDefault();
 			this.$refs.canvasValue.value = JSON.stringify(this.$refs.canvas.getSerliazedCanvas());
 			this.$refs.topology.value = JSON.stringify(this.$refs.canvas.getSerializedQuery());
-			console.log(this.$refs.canvas.getSerializedQuery());
-			//document.getElementById(this.formId).submit();
+			document.getElementById(this.formId).submit();
 		}
 	},
 	components: {

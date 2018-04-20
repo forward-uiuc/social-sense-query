@@ -39,11 +39,12 @@ class MetaQueryNode extends Model
 			return false;
 		}
 
-		$server = app(\App\Services\GQLServerService::class);
-		$user = $this->stage->run->metaQuery->user;
-		$authorizations = $user->authorizations;
-	
+			
 		if($this->node_type === 'query') {
+			$server = app(\App\Services\GQLServerService::class);
+			$user = $this->stage->run->metaQuery->user;
+			$authorizations = $user->authorizations;
+
 			
 			$queriesToResolve = collect([$this->node->getQueryNode()]);	
 			$this->dependencies->each(function($dependency) use (&$queriesToResolve) {
@@ -80,6 +81,20 @@ class MetaQueryNode extends Model
 
 			$this->resolved = true;
 			$this->save();
+
+		} else if ($this->node_type === 'function') {
+			
+			$values = $this->dependencies->map(function($dependency) {
+					return json_decode($dependency->output->value);
+			})->collapse();
+
+			$this->outputs->each(function($output) use ($values) {
+				$output->value = json_encode($this->node->computeOutput($output->path, $values));
+				$output->save();
+			});
+
+			$this->resolved = true;
+			$this->save();
 		}		
 
 	}
@@ -90,9 +105,8 @@ class MetaQueryNode extends Model
 		$node = new MetaQueryNode();
 		$node->resolved = false;
 		$node->topology_id = $topologyNode->id->topology;
-		$node->node_type = 'query';
-		$node->node_id = $topologyNode->id->query;
-
+		$node->node_type = $topologyNode->id->type; 
+		$node->node_id = $topologyNode->id->id;
 		$stage->nodes()->save($node);
 
 		collect($topologyNode->inputs)->each(function($input) use ($node) {

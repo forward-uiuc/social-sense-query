@@ -69,8 +69,7 @@ export default {
 			e.preventDefault();
 			this.$refs.canvasValue.value =JSON.stringify(this.$refs.canvas.getSerliazedCanvas());
 			this.$refs.topology.value = JSON.stringify(this.$refs.canvas.getSerializedQuery());
-			console.log(this.$refs.canvas.getSerializedQuery());
-			//document.getElementById(this.formId).submit();
+			document.getElementById(this.formId).submit();
 		}
 	},
 	components: {
