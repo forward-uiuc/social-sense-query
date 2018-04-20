@@ -8,9 +8,10 @@
 		<div class="row">
 			<div class="offset-md-1 col-md-3">
 				<h1> {{ query.name }} </h1>
-				<button v-on:click="submit" class="btn btn-success"> Run Query </button>
+				<button  class="btn btn-success" v-on:click="submitQuery"> Run Query </button>
+
 				<h3> Runs </h3>
-				<ul class="list-group ">
+				<ul class="list-group" style="overflow-y: scroll; height:800px;">
 					<li class="list-group-item list-group-item-action" v-for="run in sortedRuns" v-on:click="view(run)" style="cursor: pointer">
 						{{ run.created_at }} 
 					</li>
@@ -30,7 +31,7 @@ import D3Network from "vue-d3-network";
 
 export default {
 	name: 'metaQueryBuilder',
-	props: ['query'], 
+	props: ['query', 'formId'], 
 	data: () => {
 		return {
       nodes: [
@@ -45,7 +46,7 @@ export default {
 				linkLabels: true,
         linkWidth:10,
 				size: {
-					h: 1000,
+					h: 915,
 					w: 1000
 				},
 				canvas: false,
@@ -55,6 +56,9 @@ export default {
     }
 	},
 	methods: {
+		submitQuery: function() {
+			console.log(this.formId)
+		},
 		view: function(run) {
 			let id = 0;
 			this.nodes = [];
@@ -126,9 +130,6 @@ export default {
 		clickLink: function(event, link) {
 			this.dataToExamine = link.data
 		},
-		submit: function() {
-
-		}
 	},
 	computed: {
 	},
@@ -139,7 +140,7 @@ export default {
 		this.sortedRuns = this.query.runs.sort((a,b) => {
 			return a.created_at < b.created_at;
 		});
-
+		this.view(this.sortedRuns[0]);
 	}
 }
 

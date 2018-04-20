@@ -1,29 +1,20 @@
 <template>
 	<div>
-		<div class="row" style="padding-bottom:20px;">
-			<div class="form-inline" >
-				<div class="form-group">
-					<div class="btn btn-info" v-on:click="addQuery"> Add Query </div>
-					<div class="input-group" style="padding-left: 20px">
-						<select class="form-control" v-model="queryToAdd"> 
-							<option v-for="query in queries" >
-								{{ query.name }}
-							</option>
-						</select>
-					</div>
-				</div>
-				<div style="padding-left: 20px;">
-					<input ref="canvasValue" type="hidden" name="canvas" value="foobar"> </input>
-					<input ref="topology" type="hidden" name="topology"> </input>
-					<input ref="schedule" type="hidden" name="schedule"> </input>
-					<input type="submit" class="btn btn-success" v-on:click="saveQuery($event)" value="Save Query"></input>
+
+			<div class="form-group form-inline">
+				<div class="btn btn-info"  v-on:click="addQuery" > Add Query </div>
+				<div class="input-group col-3">
+					<select class="form-control" v-model="queryToAdd"> 
+						<option v-for="query in queries" >
+							{{ query.name }}
+						</option>
+					</select>
 				</div>
 			</div>
-		</div>
-		<div class="row" style="padding-bottom:20px;">
-			<div class="form-inline">
+
+			<div class="form-group form-inline" >
 				<div class="btn btn-info" v-on:click="addFunction"> Add Function </div>
-				<div class="input-group" style="padding-left: 20px">
+				<div class="input-group col-3" style="padding-left: 20px">
 					<select class="form-control" v-model="functionToAdd">
 						<option v-for="f in functions">
 							{{ f.name }}
@@ -31,8 +22,19 @@
 					</select>
 				</div>
 			</div>
-		</div>
 
+		<div class="form-group ">
+				<input ref="canvasValue" type="hidden" name="canvas" value="foobar"> </input>
+
+				<div class="form-group col-5 form-inline">
+					<label for="name" class="col-md-2" > Meta Query Name</label>
+					<input id="name" type="text" class="form-control"> </input>
+				</div>
+
+				<input ref="topology" type="hidden" name="topology"> </input>
+				<input ref="schedule" type="hidden" name="schedule"> </input>
+				<input type="submit" class="btn btn-success pull-right" v-on:click="saveQuery($event)" value="Save Query"></input>
+		</div>
 
 		<meta-query-builder-canvas ref="canvas"></meta-query-builder-canvas>
 	</div>

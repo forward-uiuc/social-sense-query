@@ -43,7 +43,7 @@
 
 
 	<div class="row" style="margin-top: 20px;">
-		<div class="offset-md-2 col-md-8">
+		<div class="offset-md-2 col-md-8" style="height:600px; overflow-y: scroll;">
 			<table class="table table-striped table-dark">
 				<thead>
 					<tr>

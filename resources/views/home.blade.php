@@ -65,10 +65,9 @@
 					</div>
 					<div class="card-body">
 						<a href="{{ url('queries/create') }}" class="btn btn-primary"> Create Query </a>
-						<a href="{{ url('meta-queries/create')}}" class="btn btn-secondary"> Create Meta Query </a>
 						<hr/>
 						@if (count($user->queries) > 0)
-						<ul class="list-group">
+						<ul class="list-group" style="height: 400px; overflow-y: scroll">
 
 							@foreach ($user->queries as $query)
 							<li class="list-group-item"> 
@@ -99,12 +98,12 @@
 						</div>
 					</div>
 					<div class="card-body">
-						<a href="{{ url('meta-queries/create')}}" class="btn btn-secondary"> Create Meta Query </a>
+						<a href="{{ url('meta-queries/create')}}" class="btn btn-primary"> Create Meta Query </a>
 						<hr/>
 						@if (count($user->metaQueries) > 0)
-						<ul class="list-group">
+						<ul class="list-group" style="height: 400px; overflow-y: scroll">
 
-							@foreach ($user->metaQueries as $query)
+							@foreach ($user->metaQueries->sortByDesc('created_at') as $query)
 							<li class="list-group-item"> 
 									{{ $query->name }} 
 									<br>

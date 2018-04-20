@@ -105198,7 +105198,7 @@ exports = module.exports = __webpack_require__(18)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -105211,6 +105211,8 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__MetaQueryBuilderCanvas_vue__ = __webpack_require__(175);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__MetaQueryBuilderCanvas_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__MetaQueryBuilderCanvas_vue__);
+//
+//
 //
 //
 //
@@ -105309,161 +105311,154 @@ var render = function() {
   return _c(
     "div",
     [
-      _c(
-        "div",
-        { staticClass: "row", staticStyle: { "padding-bottom": "20px" } },
-        [
-          _c("div", { staticClass: "form-inline" }, [
-            _c("div", { staticClass: "form-group" }, [
-              _c(
-                "div",
-                { staticClass: "btn btn-info", on: { click: _vm.addQuery } },
-                [_vm._v(" Add Query ")]
-              ),
-              _vm._v(" "),
-              _c(
-                "div",
+      _c("div", { staticClass: "form-group form-inline" }, [
+        _c(
+          "div",
+          { staticClass: "btn btn-info", on: { click: _vm.addQuery } },
+          [_vm._v(" Add Query ")]
+        ),
+        _vm._v(" "),
+        _c("div", { staticClass: "input-group col-3" }, [
+          _c(
+            "select",
+            {
+              directives: [
                 {
-                  staticClass: "input-group",
-                  staticStyle: { "padding-left": "20px" }
-                },
-                [
-                  _c(
-                    "select",
-                    {
-                      directives: [
-                        {
-                          name: "model",
-                          rawName: "v-model",
-                          value: _vm.queryToAdd,
-                          expression: "queryToAdd"
-                        }
-                      ],
-                      staticClass: "form-control",
-                      on: {
-                        change: function($event) {
-                          var $$selectedVal = Array.prototype.filter
-                            .call($event.target.options, function(o) {
-                              return o.selected
-                            })
-                            .map(function(o) {
-                              var val = "_value" in o ? o._value : o.value
-                              return val
-                            })
-                          _vm.queryToAdd = $event.target.multiple
-                            ? $$selectedVal
-                            : $$selectedVal[0]
-                        }
-                      }
-                    },
-                    _vm._l(_vm.queries, function(query) {
-                      return _c("option", [
-                        _vm._v(
-                          "\n\t\t\t\t\t\t\t" +
-                            _vm._s(query.name) +
-                            "\n\t\t\t\t\t\t"
-                        )
-                      ])
+                  name: "model",
+                  rawName: "v-model",
+                  value: _vm.queryToAdd,
+                  expression: "queryToAdd"
+                }
+              ],
+              staticClass: "form-control",
+              on: {
+                change: function($event) {
+                  var $$selectedVal = Array.prototype.filter
+                    .call($event.target.options, function(o) {
+                      return o.selected
                     })
-                  )
-                ]
-              )
-            ]),
-            _vm._v(" "),
-            _c("div", { staticStyle: { "padding-left": "20px" } }, [
-              _c("input", {
-                ref: "canvasValue",
-                attrs: { type: "hidden", name: "canvas", value: "foobar" }
-              }),
-              _vm._v(" "),
-              _c("input", {
-                ref: "topology",
-                attrs: { type: "hidden", name: "topology" }
-              }),
-              _vm._v(" "),
-              _c("input", {
-                ref: "schedule",
-                attrs: { type: "hidden", name: "schedule" }
-              }),
-              _vm._v(" "),
-              _c("input", {
-                staticClass: "btn btn-success",
-                attrs: { type: "submit", value: "Save Query" },
+                    .map(function(o) {
+                      var val = "_value" in o ? o._value : o.value
+                      return val
+                    })
+                  _vm.queryToAdd = $event.target.multiple
+                    ? $$selectedVal
+                    : $$selectedVal[0]
+                }
+              }
+            },
+            _vm._l(_vm.queries, function(query) {
+              return _c("option", [
+                _vm._v("\n\t\t\t\t\t\t" + _vm._s(query.name) + "\n\t\t\t\t\t")
+              ])
+            })
+          )
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "form-group form-inline" }, [
+        _c(
+          "div",
+          { staticClass: "btn btn-info", on: { click: _vm.addFunction } },
+          [_vm._v(" Add Function ")]
+        ),
+        _vm._v(" "),
+        _c(
+          "div",
+          {
+            staticClass: "input-group col-3",
+            staticStyle: { "padding-left": "20px" }
+          },
+          [
+            _c(
+              "select",
+              {
+                directives: [
+                  {
+                    name: "model",
+                    rawName: "v-model",
+                    value: _vm.functionToAdd,
+                    expression: "functionToAdd"
+                  }
+                ],
+                staticClass: "form-control",
                 on: {
-                  click: function($event) {
-                    _vm.saveQuery($event)
+                  change: function($event) {
+                    var $$selectedVal = Array.prototype.filter
+                      .call($event.target.options, function(o) {
+                        return o.selected
+                      })
+                      .map(function(o) {
+                        var val = "_value" in o ? o._value : o.value
+                        return val
+                      })
+                    _vm.functionToAdd = $event.target.multiple
+                      ? $$selectedVal
+                      : $$selectedVal[0]
                   }
                 }
-              })
-            ])
-          ])
-        ]
-      ),
-      _vm._v(" "),
-      _c(
-        "div",
-        { staticClass: "row", staticStyle: { "padding-bottom": "20px" } },
-        [
-          _c("div", { staticClass: "form-inline" }, [
-            _c(
-              "div",
-              { staticClass: "btn btn-info", on: { click: _vm.addFunction } },
-              [_vm._v(" Add Function ")]
-            ),
-            _vm._v(" "),
-            _c(
-              "div",
-              {
-                staticClass: "input-group",
-                staticStyle: { "padding-left": "20px" }
               },
-              [
-                _c(
-                  "select",
-                  {
-                    directives: [
-                      {
-                        name: "model",
-                        rawName: "v-model",
-                        value: _vm.functionToAdd,
-                        expression: "functionToAdd"
-                      }
-                    ],
-                    staticClass: "form-control",
-                    on: {
-                      change: function($event) {
-                        var $$selectedVal = Array.prototype.filter
-                          .call($event.target.options, function(o) {
-                            return o.selected
-                          })
-                          .map(function(o) {
-                            var val = "_value" in o ? o._value : o.value
-                            return val
-                          })
-                        _vm.functionToAdd = $event.target.multiple
-                          ? $$selectedVal
-                          : $$selectedVal[0]
-                      }
-                    }
-                  },
-                  _vm._l(_vm.functions, function(f) {
-                    return _c("option", [
-                      _vm._v("\n\t\t\t\t\t\t" + _vm._s(f.name) + "\n\t\t\t\t\t")
-                    ])
-                  })
-                )
-              ]
+              _vm._l(_vm.functions, function(f) {
+                return _c("option", [
+                  _vm._v("\n\t\t\t\t\t\t" + _vm._s(f.name) + "\n\t\t\t\t\t")
+                ])
+              })
             )
-          ])
-        ]
-      ),
+          ]
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "form-group " }, [
+        _c("input", {
+          ref: "canvasValue",
+          attrs: { type: "hidden", name: "canvas", value: "foobar" }
+        }),
+        _vm._v(" "),
+        _vm._m(0),
+        _vm._v(" "),
+        _c("input", {
+          ref: "topology",
+          attrs: { type: "hidden", name: "topology" }
+        }),
+        _vm._v(" "),
+        _c("input", {
+          ref: "schedule",
+          attrs: { type: "hidden", name: "schedule" }
+        }),
+        _vm._v(" "),
+        _c("input", {
+          staticClass: "btn btn-success pull-right",
+          attrs: { type: "submit", value: "Save Query" },
+          on: {
+            click: function($event) {
+              _vm.saveQuery($event)
+            }
+          }
+        })
+      ]),
       _vm._v(" "),
       _c("meta-query-builder-canvas", { ref: "canvas" })
     ],
     1
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "form-group col-5 form-inline" }, [
+      _c("label", { staticClass: "col-md-2", attrs: { for: "name" } }, [
+        _vm._v(" Meta Query Name")
+      ]),
+      _vm._v(" "),
+      _c("input", {
+        staticClass: "form-control",
+        attrs: { id: "name", type: "text" }
+      })
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -105559,7 +105554,7 @@ exports = module.exports = __webpack_require__(18)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -105598,13 +105593,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
 
 
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
 	name: 'metaQueryBuilder',
-	props: ['query'],
+	props: ['query', 'formId'],
 	data: function data() {
 		return {
 			nodes: [],
@@ -105616,7 +105612,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				linkLabels: true,
 				linkWidth: 10,
 				size: {
-					h: 1000,
+					h: 915,
 					w: 1000
 				},
 				canvas: false
@@ -105626,6 +105622,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		};
 	},
 	methods: {
+		submitQuery: function submitQuery() {
+			console.log(this.formId);
+		},
 		view: function view(run) {
 			var _this = this;
 
@@ -105699,8 +105698,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		},
 		clickLink: function clickLink(event, link) {
 			this.dataToExamine = link.data;
-		},
-		submit: function submit() {}
+		}
 	},
 	computed: {},
 	components: {
@@ -105710,6 +105708,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		this.sortedRuns = this.query.runs.sort(function (a, b) {
 			return a.created_at < b.created_at;
 		});
+		this.view(this.sortedRuns[0]);
 	}
 });
 
@@ -105743,7 +105742,7 @@ var render = function() {
         _vm._v(" "),
         _c(
           "button",
-          { staticClass: "btn btn-success", on: { click: _vm.submit } },
+          { staticClass: "btn btn-success", on: { click: _vm.submitQuery } },
           [_vm._v(" Run Query ")]
         ),
         _vm._v(" "),
@@ -105751,7 +105750,10 @@ var render = function() {
         _vm._v(" "),
         _c(
           "ul",
-          { staticClass: "list-group " },
+          {
+            staticClass: "list-group",
+            staticStyle: { "overflow-y": "scroll", height: "800px" }
+          },
           _vm._l(_vm.sortedRuns, function(run) {
             return _c(
               "li",

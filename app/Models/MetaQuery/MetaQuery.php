@@ -10,7 +10,7 @@ use App\Models\User;
 class MetaQuery extends Model
 {
 
-	protected $fillable = ['schedule','canvas','topology'];
+	protected $fillable = ['schedule','canvas','topology','name'];
 	protected $table = 'meta_queries';
 
 	/*
