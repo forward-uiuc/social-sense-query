@@ -23,7 +23,7 @@ class QueryHistoryObserver
 				'username' => $history->user->name,
 				'data' => $history->data,
 				'time' => $history->created_at->timestamp,
-				'name' => '',
+				'name' => $history->query->name,
 				'structure' => $history->structure
 			];
 
