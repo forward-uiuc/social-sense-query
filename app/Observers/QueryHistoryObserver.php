@@ -23,8 +23,8 @@ class QueryHistoryObserver
 				'username' => $history->user->name,
 				'data' => $history->data,
 				'time' => $history->created_at->timestamp,
-				'name' => $history->query->name,
-				'structure' => $history->structure
+				'name' => $history->queryOfRecord->name,
+				'structure' => $history->query_structure
 			];
 
 			$history->user->applications->each(function($application) use ($payload, $history) {

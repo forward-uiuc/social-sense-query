@@ -17,7 +17,7 @@ class QueryHistory extends Model
 	 * Get the query that generated this history item
 	 */
 	public function queryOfRecord() {
-		return $this->morphTo();
+		return $this->belongsTo(Query::class, 'query_id');
 	}
 
 	public function getQueryStringAttribute() {
