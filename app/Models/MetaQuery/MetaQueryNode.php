@@ -45,39 +45,94 @@ class MetaQueryNode extends Model
 			$user = $this->stage->run->metaQuery->user;
 			$authorizations = $user->authorizations;
 
-			
-			$queriesToResolve = collect([$this->node->getQueryNode()]);	
-			$this->dependencies->each(function($dependency) use (&$queriesToResolve) {
 
-				$values = collect(json_decode($dependency->output->value));
-				$queriesToResolve = $queriesToResolve->map(function($query) use ($values, $dependency) {
+			// If we're trying to resolve a meta query node representing a query 
+			$baseQuery = $this->node->getQueryNode(); // base query is the singe query that this node represents
 
-					return $values->map(function($value) use ($query, $dependency, $values) {
-						$q = clone $query;
-						$successful = $q->applyValue($dependency->input->path, $value); // $successful= were we able to successfully apply that value?
+			$queriesToResolve;
+
+			if($this->dependencies->count() > 0) {
+
+				$queriesToResolve = collect([collect([])]);
+
+				$objectDependencies = $this->dependencies->filter(function($dependency){
+					return gettype($dependency->output->value) == 'array';
+				});
+
+				$queriesToResolve = $objectDependencies->map(function($objectDependency) use ($baseQuery) {
+					$path = $objectDependency->input->path;
+					$values = json_decode($objectDependencyValues->output->value);
+
+					return collect($values)->map(function($value) use ($path, $baseQuery){
+						$q = clone ($baseQuery);
+						$q->applyValue($path, $value);
 						return $q;
 					});
+				});
 
-				})->collapse();
-				return $queriesToResolve;
-			});
+				if($objectDependencies->count() == 0){
+					$queriesToResolve = collect([collect([$baseQuery])]); 
+				}
 
-			$queryResults = $queriesToResolve->map(function($query) use ($server, $authorizations, $user) {
-				$history = new QueryHistory($server->submitQueryString((string) $query, $authorizations));
-				$history->user_id = $user->id;
-				$history->query_structure = json_encode($query);
-				$this->node->history()->save($history);	
-				return $history;
-			});	
+				$scalarDependencies = $this->dependencies->filter(function($dependency){
+					return gettype($dependency->output->value) != 'array';
+				});
+
+				// For each collection of queries
+				$queriesToResolve = $queriesToResolve->map(function($querySet) use ($scalarDependencies) {
+					// for each query in the collection
+					return $querySet->map(function($query) use ($scalarDependencies) {
+
+						// For each scalar dependency of this query node
+						return $scalarDependencies->map(function($dependency) use ($query) {		
+							$inputPath = $dependency->input->path;
+							$values = json_decode($dependency->output->value);
+
+							// For each value of that dependency's output
+							return collect($values)->map(function($v) use ($inputPath, $query) {
+								$q = clone $query;
+								$q->applyValue($inputPath, $v);
+								return  $q;
+							});
+						})->collapse();
+					})->collapse();
+				});
+
+			} else {
+				$queriesToResolve = collect([collect([$baseQuery])]); 
+			}
+
 			
-
-			$this->outputs->each(function($output) use ($queryResults) {
-				$queryResults->each(function($history) use ($output) {
-					$values = $history->getOutput($output->path);
-					$output->value = json_encode($values);
-					$output->save();
+				
+			$results = $queriesToResolve->map(function($querySet) use ($server, $authorizations){
+				return $querySet->map(function($query) use ($server, $authorizations){
+					$history = new QueryHistory($server->submitQueryString((string) $query, $authorizations));
+					$history->query_structure = json_encode($query);	
+					$history->user_id = $this->node->user->id;
+					$this->node->history()->save($history);
+					return $history;
 				});
 			});
+
+
+			$this->outputs->each(function($output) use ($results){
+
+
+
+				$values = $results->map(function($queryResultSet) use ($output){
+					return $queryResultSet->map(function($result) use ($output){
+						return $result->getOutput($output->path);
+					});
+				})->collapse();
+
+
+				if($values->count() == 1) {
+					$values = $values->collapse();
+				}
+				$output->value = json_encode($values);
+				$output->save();
+			});
+
 
 			$this->resolved = true;
 			$this->save();
