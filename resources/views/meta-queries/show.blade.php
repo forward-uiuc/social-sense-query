@@ -4,6 +4,6 @@
 
     {!! Form::open(['url' => 'meta-queries/' . $query->id . '/submit', 'id' => 'submitMetaQuery', 'method' => 'GET']) !!}
 
-<meta-query-viewer :query="{{ json_encode($query) }}" :formId="submitMetaQuery"></meta-query-viewer>
+<meta-query-viewer :query="{{ json_encode($query) }}"></meta-query-viewer>
 		{!! Form::close() !!}
 @endsection

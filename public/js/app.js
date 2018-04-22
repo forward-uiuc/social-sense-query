@@ -85480,8 +85480,9 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 						for (var _iterator = queryInputs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 							var input = _step.value;
 
-							var inputType = input.split(':')[1];
+							var inputType = input.split(':')[1].split('*')[0];
 							var inputPath = input.split(':')[0];
+
 							var d3Input = new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Input"](inputType + ':' + inputPath, sockets[inputType]);
 							node.addInput(d3Input);
 						}
@@ -85555,7 +85556,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 							var input = _step3.value;
 
 
-							var inputType = input.split(':')[1];
+							var inputType = input.split(':')[1].split('*')[0];
 							var inputPath = input.split(':')[0];
 
 							var d3Input = new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Input"](inputType + ':' + inputPath, sockets[inputType]);
@@ -85584,7 +85585,8 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 						for (var _iterator4 = outputs[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
 							var output = _step4.value;
 
-							var outputType = output.split(':')[1];
+							var outputType = output.split(':')[1].split('*')[0];
+							console.log(outputType);
 							node.addOutput(new __WEBPACK_IMPORTED_MODULE_1_d3_node_editor__["Output"](output, sockets[outputType]));
 						}
 					} catch (err) {
@@ -105198,7 +105200,7 @@ exports = module.exports = __webpack_require__(18)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -105285,10 +105287,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			this.$refs.canvas.addFunction(func);
 		},
 		saveQuery: function saveQuery(e) {
+
 			e.preventDefault();
 			this.$refs.canvasValue.value = JSON.stringify(this.$refs.canvas.getSerliazedCanvas());
 			this.$refs.topology.value = JSON.stringify(this.$refs.canvas.getSerializedQuery());
-			document.getElementById(this.formId).submit();
+			if (this.$refs.queryName.value) {
+				document.getElementById(this.formId).submit();
+			} else {
+				alert("Please give your meta query a name.");
+			}
 		}
 	},
 	components: {
@@ -105414,7 +105421,17 @@ var render = function() {
           attrs: { type: "hidden", name: "canvas", value: "foobar" }
         }),
         _vm._v(" "),
-        _vm._m(0),
+        _c("div", { staticClass: "form-group col-5 form-inline" }, [
+          _c("label", { staticClass: "col-md-2", attrs: { for: "name" } }, [
+            _vm._v(" Meta Query Name")
+          ]),
+          _vm._v(" "),
+          _c("input", {
+            ref: "queryName",
+            staticClass: "form-control",
+            attrs: { name: "name", type: "text", required: "" }
+          })
+        ]),
         _vm._v(" "),
         _c("input", {
           ref: "topology",
@@ -105442,23 +105459,7 @@ var render = function() {
     1
   )
 }
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group col-5 form-inline" }, [
-      _c("label", { staticClass: "col-md-2", attrs: { for: "name" } }, [
-        _vm._v(" Meta Query Name")
-      ]),
-      _vm._v(" "),
-      _c("input", {
-        staticClass: "form-control",
-        attrs: { id: "name", type: "text" }
-      })
-    ])
-  }
-]
+var staticRenderFns = []
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -105554,7 +105555,7 @@ exports = module.exports = __webpack_require__(18)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -105622,9 +105623,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		};
 	},
 	methods: {
-		submitQuery: function submitQuery() {
-			console.log(this.formId);
-		},
+		submitQuery: function submitQuery() {},
 		view: function view(run) {
 			var _this = this;
 
@@ -105636,15 +105635,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			var stages = [];
 			run.stages.forEach(function (stage) {
 
-				var stageNode = { id: index, name: 'Stage ' + Math.abs(index), _size: 60, _color: 'red', _labelClass: 'btn btn-info', data: stage, type: 'stage' };
-				stages.push(stageNode);
-				_this.nodes.push(stageNode);
+				//let stageNode = {id: index, name: 'Stage ' + Math.abs(index), _size: 60, _color: 'red', _labelClass:'btn btn-info', data: stage, type: 'stage'};
+				//stages.push(stageNode);
+				//this.nodes.push(stageNode);
+
 
 				stage.nodes.forEach(function (node) {
-					_this.nodes.push({ id: node.topology_id, name: node.node.name, data: node, _size: 50, _labelClass: 'btn btn-info', type: 'node' });
-					_this.links.push({ sid: node.topology_id, tid: index }); // Add a link from this node to its stage
+					_this.nodes.push({ id: node.topology_id, name: stage.id - run.stages[0].id + ': ' + node.node.name, data: node, _size: 50, _labelClass: 'btn btn-info', type: 'node' });
+					//this.links.push({sid: node.topology_id, tid: index}); // Add a link from this node to its stage
 				});
-				index--;
+				//index--;
 			});
 
 			// Add a link from each node to its dependant node
@@ -105656,21 +105656,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				});
 			});
 
-			var _loop = function _loop(i) {
-				var totalOutputs = [];
-
-				stages[i].data.nodes.forEach(function (node) {
-					var outputs = node.outputs.forEach(function (output) {
-						totalOutputs = totalOutputs.concat(JSON.parse(output.value));
-					});
-				});
-
-				_this.links.push({ sid: -1 * i, tid: -1 * (i + 1), data: totalOutputs });
-			};
-
-			for (var i = 0; i < stages.length - 1; i++) {
-				_loop(i);
-			}
+			/*
+   for(let i=0; i < stages.length - 1; i++){
+   	let totalOutputs = [];
+   	
+   	stages[i].data.nodes.forEach( node => {
+   		let outputs = node.outputs.forEach( output => {
+   			totalOutputs = totalOutputs.concat(JSON.parse(output.value));
+   		});
+   	});
+   		this.links.push({sid: -1*i, tid: -1*(i+1), data:totalOutputs});
+   }*/
 		},
 		clickNode: function clickNode(event, node) {
 			if (node.type === 'stage') {
@@ -105708,7 +105704,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		this.sortedRuns = this.query.runs.sort(function (a, b) {
 			return a.created_at < b.created_at;
 		});
-		this.view(this.sortedRuns[0]);
+
+		if (this.sortedRuns.length) {
+			this.view(this.sortedRuns[0]);
+		}
 	}
 });
 

@@ -28,7 +28,7 @@
 
 				<div class="form-group col-5 form-inline">
 					<label for="name" class="col-md-2" > Meta Query Name</label>
-					<input id="name" type="text" class="form-control"> </input>
+					<input ref="queryName" name="name" type="text" class="form-control" required> </input>
 				</div>
 
 				<input ref="topology" type="hidden" name="topology"> </input>
@@ -68,10 +68,15 @@ export default {
 			this.$refs.canvas.addFunction(func);
 		},
 		saveQuery: function(e){
+
 			e.preventDefault();
 			this.$refs.canvasValue.value =JSON.stringify(this.$refs.canvas.getSerliazedCanvas());
 			this.$refs.topology.value = JSON.stringify(this.$refs.canvas.getSerializedQuery());
-			document.getElementById(this.formId).submit();
+			if(this.$refs.queryName.value) {
+				document.getElementById(this.formId).submit();
+			} else {
+				alert("Please give your meta query a name.");
+			}
 		}
 	},
 	components: {

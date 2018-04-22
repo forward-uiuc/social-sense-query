@@ -49,9 +49,10 @@ export default {
 				builder(node) {
 
 					for(let input of queryInputs) {
-						let inputType = input.split(':')[1]
+						let inputType = input.split(':')[1].split('*')[0]
 						let inputPath = input.split(':')[0]
-												let d3Input = new D3NE.Input(inputType + ':' + inputPath, sockets[inputType])
+
+						let d3Input = new D3NE.Input(inputType + ':' + inputPath, sockets[inputType])
 						node.addInput(d3Input)
 					}
 					
@@ -83,16 +84,16 @@ export default {
 				builder(node) {
 					for (let input of inputs) {
 
-						let inputType = input.split(':')[1];
+						let inputType = input.split(':')[1].split('*')[0];
 						let inputPath = input.split(':')[0];
 
-						
 						let d3Input = new D3NE.Input(inputType + ':' + inputPath, sockets[inputType]);
 						node.addInput(d3Input)
 					}
 
 					for (let output of outputs) {
-						let outputType = output.split(':')[1];
+						let outputType = output.split(':')[1].split('*')[0];
+						console.log(outputType);
 						node.addOutput( new D3NE.Output(output, sockets[outputType]));
 					}
 

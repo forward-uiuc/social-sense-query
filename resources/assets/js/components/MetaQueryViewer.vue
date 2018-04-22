@@ -57,7 +57,6 @@ export default {
 	},
 	methods: {
 		submitQuery: function() {
-			console.log(this.formId)
 		},
 		view: function(run) {
 			let id = 0;
@@ -69,16 +68,16 @@ export default {
 			run.stages.forEach( stage => {
 
 
-				let stageNode = {id: index, name: 'Stage ' + Math.abs(index), _size: 60, _color: 'red', _labelClass:'btn btn-info', data: stage, type: 'stage'};
-				stages.push(stageNode);
-				this.nodes.push(stageNode);
+				//let stageNode = {id: index, name: 'Stage ' + Math.abs(index), _size: 60, _color: 'red', _labelClass:'btn btn-info', data: stage, type: 'stage'};
+				//stages.push(stageNode);
+				//this.nodes.push(stageNode);
 
 
 				stage.nodes.forEach( node => {
-					this.nodes.push({id: node.topology_id, name: node.node.name, data:node, _size: 50, _labelClass:'btn btn-info', type:'node'});
-					this.links.push({sid: node.topology_id, tid: index}); // Add a link from this node to its stage
+					this.nodes.push({id: node.topology_id, name: stage.id - run.stages[0].id + ': ' + node.node.name, data:node, _size: 50, _labelClass:'btn btn-info', type:'node'});
+					//this.links.push({sid: node.topology_id, tid: index}); // Add a link from this node to its stage
 				});
-				index--;
+				//index--;
 			});
 
 			// Add a link from each node to its dependant node
@@ -90,6 +89,7 @@ export default {
 				});
 			});
 
+			/*
 			for(let i=0; i < stages.length - 1; i++){
 				let totalOutputs = [];
 				
@@ -100,7 +100,7 @@ export default {
 				});
 
 				this.links.push({sid: -1*i, tid: -1*(i+1), data:totalOutputs});
-			}
+			}*/
 
 		},
 		clickNode: function(event, node) {
@@ -140,7 +140,11 @@ export default {
 		this.sortedRuns = this.query.runs.sort((a,b) => {
 			return a.created_at < b.created_at;
 		});
-		this.view(this.sortedRuns[0]);
+
+		if(this.sortedRuns.length) {
+			this.view(this.sortedRuns[0]);
+		}
+
 	}
 }
 

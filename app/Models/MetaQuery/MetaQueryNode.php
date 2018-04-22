@@ -86,12 +86,14 @@ class MetaQueryNode extends Model
 			
 			$values = $this->dependencies->map(function($dependency) {
 					return json_decode($dependency->output->value);
-			})->collapse();
+			})->collapse()->toArray();
+
 
 			$this->outputs->each(function($output) use ($values) {
 				$output->value = json_encode($this->node->computeOutput($output->path, $values));
 				$output->save();
 			});
+
 
 			$this->resolved = true;
 			$this->save();
