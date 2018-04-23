@@ -136,6 +136,17 @@ class MetaQueryFunction extends Model
 				};
 				break;
 
+
+			case (preg_match('/Convert to lower case.*/', $this->name) ? true : false):
+
+				$f = function(array $v) {
+					$vals = collect($v);
+
+					return $vals->map(function($value) {
+						return strtolower($value);
+					})->toArray();
+				};
+				break;
 		}	
 
 		

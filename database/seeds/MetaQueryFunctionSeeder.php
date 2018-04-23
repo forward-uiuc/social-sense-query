@@ -80,20 +80,11 @@ class MetaQueryFunctionSeeder extends Seeder
 				$f->save();
 			}
 
-			// add some string nicities
-			// Add a remove stop word function
-			$f = new MetaQueryFunction(['name' => 'Remove if stop word']);
-			$f->inputs = json_encode(['value:String']);
-			$f->outputs = json_encode(['NonStopWord:String']);
-			$f->state = json_encode($this->getStopWords());
-			$f->save();
-
 			$f = new MetaQueryFunction(['name' => 'Remove stop words']);
 			$f->inputs = json_encode(['values*:String']);
 			$f->outputs = json_encode(['NonStopWords:String*']);
 			$f->state = json_encode($this->getStopWords());
 			$f->save();
-
 
 			
 			// Add a split by white space function
@@ -107,6 +98,11 @@ class MetaQueryFunctionSeeder extends Seeder
 			$f = new MetaQueryFunction(['name' => 'Order by most frequent']);
 			$f->inputs = json_encode(['values*:String']);
 			$f->outputs = json_encode(['valuesOrderedByMostFrequent:String*']);
+			$f->save();
+
+			$f = new MetaQueryFunction(['name' => 'Convert to lower case']);
+			$f->inputs = json_encode(['values:String']);
+			$f->outputs = json_encode(['lowercaseValues:String']);
 			$f->save();
 
     }
