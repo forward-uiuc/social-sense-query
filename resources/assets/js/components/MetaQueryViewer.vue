@@ -150,5 +150,20 @@ export default {
 
 </script>
 <style scoped>
+	li {
+		border-color: #32383e !important;
+	}
 
+	li:nth-child(odd) { 
+	border-color: #32383e !important;
+	background: black !important; 
+	opacity: .95 !important;
+	color: white;
+}
+	li:nth-child(even) {
+		border-color: #32383e !important;
+		background: black !important;
+		opacity: .8 !important;
+		color: white;
+	}
 </style>

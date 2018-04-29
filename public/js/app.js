@@ -105555,7 +105555,7 @@ exports = module.exports = __webpack_require__(18)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\nli[data-v-c69c9364] {\n\t\tborder-color: #32383e !important;\n}\nli[data-v-c69c9364]:nth-child(odd) { \n\tborder-color: #32383e !important;\n\tbackground: black !important; \n\topacity: .95 !important;\n\tcolor: white;\n}\nli[data-v-c69c9364]:nth-child(even) {\n\t\tborder-color: #32383e !important;\n\t\tbackground: black !important;\n\t\topacity: .8 !important;\n\t\tcolor: white;\n}\n", ""]);
 
 // exports
 
