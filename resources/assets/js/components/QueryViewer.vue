@@ -64,6 +64,7 @@ export default {
 		convertToTree: function(data) {
 			
 			if (this.isScalar(data) ) {
+				console.log(data);
 				throw(data, " is a scalar value friendo");
 				return;
 			}

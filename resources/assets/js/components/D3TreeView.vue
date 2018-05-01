@@ -51,7 +51,7 @@ export default {
 			let nodes = this.tree.nodes(this.data).reverse();
 			let links = this.tree.links(nodes);
 			// Normalize for fixed-depth.
-			nodes.forEach((d) => { d.y = d.depth * 150; });
+			nodes.forEach((d) => { d.y = d.depth * 250; });
 
 			// Update the nodes…
 			let node = this.svg.selectAll("g.node").data(nodes, (d) => { return d.id || (d.id = ++i); });

@@ -57,54 +57,85 @@ export default {
 		isScalar (data) {
 			return typeof(data) !== 'object' && !Array.isArray(data);
 		},
-		convertToTree: function(data) {
-			
-			if (this.isScalar(data) ) {
-				throw(data, " is a scalar value friendo");
-				return;
-			}
+		convertStageToTree: function(stage) {
+			let node = {color: 'white', position: 'right', children: []};
+			if (stage.nodes.length == 0 ) {
+				return  node;
+			}	
 
-			let attributes = Object.keys(data);
-			let node = {position:'left', color: 'lightsteelblue', selected: false};
-			node.children = []; 
+			node.color = 'black';
 
-			for(let attributeName of attributes) {
-				let child = null;
-				if (this.isScalar(data[attributeName])) {
-					child = { text: attributeName + ": " + data[attributeName], color: 'yellow', position: 'right'};
+			node.children = stage.nodes.map( queryNode => {
+				let childNode = {
+					position: 'left',
+					text: '(' + queryNode.topology_id + ') ' + queryNode.node.name
+				}
 
-				} else if (data[attributeName] === null) { 
-					child = { text: attributeName + ": null", position: 'right', color: 'white', selected: false}	
+				if (childNode.node_type === 'function') {
+					childNode.color = 'red'
 				} else {
-					child = this.convertToTree(data[attributeName]);
-					child.text = attributeName;
-
-					if(child.children.length == 0 ){
-						child.text += ' (empty)';	
-						child.position = 'left';
-						child.color = 'white';
+					childNode.color = 'lightsteelblue';
+				}
+				
+				let childNodeDependencyIds = queryNode.dependencies.map( dependency => {
+					return dependency.output.node.topology_id
+				});
+				
+				if (childNodeDependencyIds.length != 0 ){
+					childNode.text += ' *(' + childNodeDependencyIds.join(', ') + ')'
+				}	
+					
+				childNode.children = queryNode.outputs.map( output => {
+					let outputNode = {
+						text: output.path.split('.').pop(),
+						position: 'left',
+						color: 'grey',
+						selected: true
 					}
-				}
 
-				if(Array.isArray(data)) {
-					child.selected = true;
-					child._children = child.children;
-					child.children = [];
-				}
-
-				node.children.push(child);
-			}
-		
+					outputNode._children = JSON.parse(output.value).map((value) => {
+						return {
+							text: value,
+							position: 'right',
+							color: 'yellow'	
+						}
+					});
+					
+					return outputNode;
+				});	
+				
+				return childNode;
+			});
 
 			return node;
 		},
-		show: function(historyItem) {
-/*			let data = JSON.parse(historyItem.data);
-			this.visibleData = this.convertToTree(data);
-			this.visibleData.text = historyItem.created_at;
-			this.visibleData.position = 'left';
-			this.visibleData.color = 'lightsteelblue';
-			this.visibleData.selected = false;*/
+		show: function(run) {
+			this.visibleData =  {
+				text: run.created_at,
+				position: 'left',
+				color: 'lightsteelblue',
+				selected: false,
+				children: [],
+			}
+
+			if(run.stages.length == 0) {
+				return;
+			}	
+			
+			var stages = run.stages.map( stage => {
+				return this.convertStageToTree(stage);
+			});
+		
+			for(let stageIndex in stages) {
+				stages[stageIndex].text = 'Stage ' + stageIndex;
+				stages[stageIndex].position = 'left';	
+				if(stageIndex == 0 ) {
+					this.visibleData.children.push(stages[stageIndex]);
+				} else {
+					stages[stageIndex-1].children.push(stages[stageIndex]);
+				}
+			}	
+				
 		},
 		deleteQuery () {
 			console.log(this.deleteFormId)
@@ -127,8 +158,7 @@ export default {
 		}
 	},
 	mounted () {
-		//this.show(this.history[0]);
-		console.log(this.deleteFormId);
+		this.show(this.runs[0]);
 	}
 }
 
