@@ -69,6 +69,7 @@ export default {
 			
 
 			if(!Array.isArray(value)){
+				console.log(value);
 				throw("Value is not scalar or array");
 			}	
 			
