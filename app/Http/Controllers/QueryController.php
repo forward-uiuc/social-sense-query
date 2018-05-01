@@ -11,7 +11,7 @@ use App\Exceptions\UserQuotaReachedException;
 class QueryController extends Controller
 {
 
-		/**
+	/**
      * Create a new controller instance.
      *
      * @return void

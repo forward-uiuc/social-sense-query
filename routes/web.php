@@ -38,3 +38,7 @@ Route::resource('queries', 'QueryController');
 Route::resource('users', 'UserController');
 Route::get('queries/{id}/submit', 'QueryController@submit');
 
+
+Route::get('/contact/me', 'InterestedPartyController@create');
+Route::get('/contact', 'InterestedPartyController@index')->middleware('admin');
+Route::post('/contact', 'InterestedPartyController@store');

@@ -38,6 +38,9 @@
 												<a class="nav-item nav-link" href=" {{ url('/users') }}">
 													Manage Users
 												</a>
+												<a class="nav-item nav-link" href=" {{ url('/contact') }}">
+													View contact requests
+												</a>
 											@endif
 
 											@endauth
