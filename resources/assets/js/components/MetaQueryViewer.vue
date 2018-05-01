@@ -58,15 +58,14 @@ export default {
 			return typeof(data) !== 'object' && !Array.isArray(data);
 		},
 		convertOutputValueToTree: function(value) {
-			if (this.isScalar(value)) {
+			if (this.isScalar(value) || value === null) {
 				let node = {
 					text: value ? value : 'null',
 					position: 'right',
 					color: 'yellow'	
 				}
 				return node;
-			}
-			
+			} 			
 
 			if(!Array.isArray(value)){
 				console.log(value);
