@@ -105123,7 +105123,7 @@ exports = module.exports = __webpack_require__(11)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -105196,7 +105196,39 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return (typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object' && !Array.isArray(data);
 		},
 
+		convertOutputValueToTree: function convertOutputValueToTree(value) {
+			if (this.isScalar(value)) {
+				var _node = {
+					text: value ? value : 'null',
+					position: 'right',
+					color: 'yellow'
+				};
+				return _node;
+			}
+
+			if (!Array.isArray(value)) {
+				throw "Value is not scalar or array";
+			}
+
+			var node = {
+				text: 'values',
+				position: 'left',
+				color: 'Goldenrod',
+				selected: true,
+				_children: []
+			};
+
+			for (var index in value) {
+				var childNode = this.convertOutputValueToTree(value[index]);
+				childNode.text = index + ": " + childNode.text;
+				node._children.push(childNode);
+			}
+
+			return node;
+		},
 		convertStageToTree: function convertStageToTree(stage) {
+			var _this = this;
+
 			var node = { color: 'white', position: 'right', children: [] };
 			if (stage.nodes.length == 0) {
 				return node;
@@ -105229,16 +105261,16 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						text: output.path.split('.').pop(),
 						position: 'left',
 						color: 'grey',
-						selected: true
+						selected: true,
+						_children: []
 					};
 
-					outputNode._children = JSON.parse(output.value).map(function (value) {
-						return {
-							text: value,
-							position: 'right',
-							color: 'yellow'
-						};
-					});
+					var outputValue = JSON.parse(output.value);
+					for (var childIndex in outputValue) {
+						var valueNode = _this.convertOutputValueToTree(outputValue[childIndex]);
+						valueNode.text = childIndex + ": " + valueNode.text;
+						outputNode._children.push(valueNode);
+					}
 
 					return outputNode;
 				});
@@ -105249,7 +105281,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			return node;
 		},
 		show: function show(run) {
-			var _this = this;
+			var _this2 = this;
 
 			this.visibleData = {
 				text: run.created_at,
@@ -105264,7 +105296,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 
 			var stages = run.stages.map(function (stage) {
-				return _this.convertStageToTree(stage);
+				return _this2.convertStageToTree(stage);
 			});
 
 			for (var stageIndex in stages) {
@@ -105278,8 +105310,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 		},
 		deleteQuery: function deleteQuery() {
-			console.log(this.deleteFormId);
-			console.log(document.getElementById(this.deleteFormId));
 			document.getElementById(this.deleteFormId).submit();
 		},
 		submitQuery: function submitQuery() {
@@ -105291,7 +105321,6 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 	},
 	computed: {
 		runs: function runs() {
-			console.log(this.query.runs[0]);
 			return this.query.runs.sort(function (a, b) {
 				return new Date(b.created_at) - new Date(a.created_at);
 			});

@@ -57,6 +57,37 @@ export default {
 		isScalar (data) {
 			return typeof(data) !== 'object' && !Array.isArray(data);
 		},
+		convertOutputValueToTree: function(value) {
+			if (this.isScalar(value)) {
+				let node = {
+					text: value ? value : 'null',
+					position: 'right',
+					color: 'yellow'	
+				}
+				return node;
+			}
+			
+
+			if(!Array.isArray(value)){
+				throw("Value is not scalar or array");
+			}	
+			
+			let node = {
+				text: 'values',
+				position: 'left',
+				color: 'Goldenrod',
+				selected: true,
+				_children: []
+			}	
+
+			for(let index in value) {
+				let childNode = this.convertOutputValueToTree(value[index]);
+				childNode.text = index + ": " + childNode.text ;
+				node._children.push(childNode);
+			}	
+
+			return node;
+		},
 		convertStageToTree: function(stage) {
 			let node = {color: 'white', position: 'right', children: []};
 			if (stage.nodes.length == 0 ) {
@@ -90,16 +121,16 @@ export default {
 						text: output.path.split('.').pop(),
 						position: 'left',
 						color: 'grey',
-						selected: true
+						selected: true,
+						_children: []
 					}
 
-					outputNode._children = JSON.parse(output.value).map((value) => {
-						return {
-							text: value,
-							position: 'right',
-							color: 'yellow'	
-						}
-					});
+					let outputValue = JSON.parse(output.value);
+					for(let childIndex in outputValue){
+						let valueNode = this.convertOutputValueToTree(outputValue[childIndex]);
+						valueNode.text = childIndex + ": " + valueNode.text;
+						outputNode._children.push(valueNode)
+					}
 					
 					return outputNode;
 				});	
@@ -138,8 +169,6 @@ export default {
 				
 		},
 		deleteQuery () {
-			console.log(this.deleteFormId)
-			console.log(document.getElementById(this.deleteFormId))
 			document.getElementById(this.deleteFormId).submit();
 		},
 		submitQuery () {
@@ -151,7 +180,6 @@ export default {
 	},
 	computed: {
 		runs() {
-			console.log(this.query.runs[0]);
 			return this.query.runs.sort((a,b) => {
 				return new Date(b.created_at) - new Date(a.created_at);
 			});
