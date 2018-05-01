@@ -17,11 +17,6 @@ Route::get('/', function () {
 
 Auth::routes();
 
-use \App\Services\GQLServerService;
-Route::get('/test', function(GQLServerService $server) {
-	\App\MetaQuery::first()->submit();
-});
-
 Route::get('home', 'HomeController@index')->name('home');
 Route::get('about', 'PagesController@about')->name('about');
 Route::get('/', 'PagesController@landing')->name('landing');

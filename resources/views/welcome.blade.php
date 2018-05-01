@@ -7,7 +7,7 @@
 				</div>
 				<div class="links">
 						<a href="{{ url('/about') }}">About</a>
-						<!-- <a href="{{ url('/contact') }}">Contact Us</a> -->
+						<a href="{{ url('/contact/me') }}">Contact Us</a> 
 						<a href="https://github.com/MagnificRogue/social-sense-meta">GitHub</a>
 				</div>
 		</div>
