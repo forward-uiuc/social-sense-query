@@ -40,7 +40,7 @@
 			</div>
 
 			<div class="col-md-8">
-				<d3-tree-view ref="treeView" :data="visibleData"></d3-tree-view>
+				<d3-tree-view ref="treeView" :data="visibleData" v-on:node-clicked="paginateChildren"></d3-tree-view>
 			</div>
 			
 		</div>
@@ -91,11 +91,11 @@ export default {
 					}
 				}
 
-				if(Array.isArray(data)) {
+				/*if(Array.isArray(data)) {
 					child.selected = true;
 					child._children = child.children;
 					child.children = [];
-				}
+				}*/
 
 				node.children.push(child);
 			}
@@ -103,9 +103,60 @@ export default {
 
 			return node;
 		},
+		paginate: function(tree, paginationSize) {
+			// base case
+			if (!tree.children || tree.children.length ==0) {
+				return tree;
+			}
+
+			// case to not apply pagination
+			if(tree.children.length <= paginationSize) {
+				tree.children.forEach( child => {
+					this.paginate(child, paginationSize);
+				});
+				return tree;
+			}
+
+
+			// case to apply pagination
+			tree.pages = [];
+			let totalChildrenCount = tree.children.length;
+			while (tree.children.length > 0) {
+				tree.pages.push(tree.children.splice(0, paginationSize));	
+			}
+
+			tree.pages.forEach( (pageOfChildren, pageIndex) => {
+				pageOfChildren.forEach( child => {
+					child.parent = tree;
+					this.paginate(child, paginationSize);
+				});
+
+				let previousPageIndex = (pageIndex - 1) < 0 ? tree.pages.length - 1 : pageIndex - 1;
+				let nextPageIndex = (pageIndex + 1) % tree.pages.length;
+				pageOfChildren.unshift({
+					text: 'view page ' + previousPageIndex,
+					color: 'red',
+					changeIndex: previousPageIndex,
+					position: 'right',
+					role: 'paginatePrevious'
+				});
+			
+				pageOfChildren.push({
+					text: 'view page ' + nextPageIndex,
+					color: 'red',
+					changeIndex: nextPageIndex,
+					position: 'right',
+					role: 'paginateNext'	
+				});
+			});	
+		
+			// last, but not least, set the children of this tree to the first page
+			tree.children = tree.pages[0];
+			return tree;
+		},
 		show: function(historyItem) {
 			let data = JSON.parse(historyItem.data);
-			this.visibleData = this.convertToTree(data);
+			this.visibleData = this.paginate(this.convertToTree(data), 10);
 			this.visibleData.text = historyItem.created_at;
 			this.visibleData.position = 'left';
 			this.visibleData.color = 'lightsteelblue';
@@ -121,6 +172,12 @@ export default {
 		},
 		editQuery () {
 			location.replace('/queries/' + this.query.id + '/edit')
+		},
+		paginateChildren (childNode) {
+			if( !childNode.role) {
+				return;	
+			}
+			childNode.parent.children = childNode.parent.pages[childNode.changeIndex];
 		}
 	},
 	computed: {

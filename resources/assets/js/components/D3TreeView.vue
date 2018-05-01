@@ -126,6 +126,7 @@ export default {
 			nodes.forEach((d) => { d.x0 = d.x; d.y0 = d.y; });
 		},
 		click: function(d) {
+			this.$emit('node-clicked', d);	
 			d.selected = !d.selected;
 			if(d.selected) {
 				d._children = d.children;
@@ -147,7 +148,7 @@ export default {
       tree: function() {
 				let size = this.getSize();
 				return d3.layout.tree().size([
-						size.height - this.margin.top - this.margin.bottom + 2000,
+						size.height - this.margin.top - this.margin.bottom + 1000,
 						size.width - this.margin.left - this.margin.right + 2000 
 					]);
 			},
@@ -163,7 +164,7 @@ export default {
 	watch: {
 		data: function(newData, oldData) {
 			this.click(newData);
-			this.$refs.container.scrollTop = (this.height + 1250) / 2;
+			this.$refs.container.scrollTop = (this.height + 500) / 2;
 			this.$refs.container.scrollLeft = 0;
 		}
 	},

@@ -105123,7 +105123,7 @@ exports = module.exports = __webpack_require__(11)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -105215,14 +105215,14 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 				text: 'values',
 				position: 'left',
 				color: 'Goldenrod',
-				selected: true,
-				_children: []
+				selected: false,
+				children: []
 			};
 
 			for (var index in value) {
 				var childNode = this.convertOutputValueToTree(value[index]);
 				childNode.text = index + ": " + childNode.text;
-				node._children.push(childNode);
+				node.children.push(childNode);
 			}
 
 			return node;
@@ -105281,8 +105281,70 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			return node;
 		},
-		show: function show(run) {
+		paginate: function paginate(tree, paginationSize) {
 			var _this2 = this;
+
+			// base case
+			var childrenAttrName = tree.children ? 'children' : '_children';
+			var childArray = tree[childrenAttrName];
+
+			if (!childArray || childArray.length == 0) {
+				return tree;
+			}
+
+			// case to not apply pagination
+			if (childArray.length <= paginationSize) {
+				childArray.forEach(function (child) {
+					_this2.paginate(child, paginationSize);
+				});
+				return tree;
+			}
+
+			// case to apply pagination
+			tree.pages = [];
+
+			while (childArray.length > 0) {
+				tree.pages.push(childArray.splice(0, paginationSize));
+			}
+
+			tree.pages.forEach(function (pageOfChildren, pageIndex) {
+				pageOfChildren.forEach(function (child) {
+					child.parent = tree;
+					_this2.paginate(child, paginationSize);
+				});
+
+				var previousPageIndex = pageIndex - 1 < 0 ? tree.pages.length - 1 : pageIndex - 1;
+				var nextPageIndex = (pageIndex + 1) % tree.pages.length;
+				pageOfChildren.unshift({
+					text: 'view page ' + previousPageIndex,
+					color: 'red',
+					changeIndex: previousPageIndex,
+					position: 'right',
+					role: 'paginatePrevious'
+				});
+
+				pageOfChildren.push({
+					text: 'view page ' + nextPageIndex,
+					color: 'red',
+					changeIndex: nextPageIndex,
+					position: 'right',
+					role: 'paginateNext'
+				});
+			});
+
+			// last, but not least, set the children of this tree to the first page
+			tree[childrenAttrName] = tree.pages[0];
+			return tree;
+		},
+		paginateChildren: function paginateChildren(childNode) {
+			if (!childNode.role) {
+				return;
+			}
+			childNode.parent.children = childNode.parent.pages[childNode.changeIndex];
+		},
+
+		show: function show(run) {
+			var _this3 = this;
 
 			this.visibleData = {
 				text: run.created_at,
@@ -105297,7 +105359,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			}
 
 			var stages = run.stages.map(function (stage) {
-				return _this2.convertStageToTree(stage);
+				return _this3.convertStageToTree(stage);
 			});
 
 			for (var stageIndex in stages) {
@@ -105309,6 +105371,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 					stages[stageIndex - 1].children.push(stages[stageIndex]);
 				}
 			}
+
+			this.visibleData = this.paginate(this.visibleData, 10);
 		},
 		deleteQuery: function deleteQuery() {
 			document.getElementById(this.deleteFormId).submit();
@@ -105424,7 +105488,8 @@ var render = function() {
         [
           _c("d3-tree-view", {
             ref: "treeView",
-            attrs: { data: _vm.visibleData }
+            attrs: { data: _vm.visibleData },
+            on: { "node-clicked": _vm.paginateChildren }
           })
         ],
         1
@@ -105541,7 +105606,7 @@ exports = module.exports = __webpack_require__(11)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -105654,11 +105719,11 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 						}
 					}
 
-					if (Array.isArray(data)) {
-						child.selected = true;
-						child._children = child.children;
-						child.children = [];
-					}
+					/*if(Array.isArray(data)) {
+     	child.selected = true;
+     	child._children = child.children;
+     	child.children = [];
+     }*/
 
 					node.children.push(child);
 				}
@@ -105679,9 +105744,61 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 
 			return node;
 		},
+		paginate: function paginate(tree, paginationSize) {
+			var _this = this;
+
+			// base case
+			if (!tree.children || tree.children.length == 0) {
+				return tree;
+			}
+
+			// case to not apply pagination
+			if (tree.children.length <= paginationSize) {
+				tree.children.forEach(function (child) {
+					_this.paginate(child, paginationSize);
+				});
+				return tree;
+			}
+
+			// case to apply pagination
+			tree.pages = [];
+			var totalChildrenCount = tree.children.length;
+			while (tree.children.length > 0) {
+				tree.pages.push(tree.children.splice(0, paginationSize));
+			}
+
+			tree.pages.forEach(function (pageOfChildren, pageIndex) {
+				pageOfChildren.forEach(function (child) {
+					child.parent = tree;
+					_this.paginate(child, paginationSize);
+				});
+
+				var previousPageIndex = pageIndex - 1 < 0 ? tree.pages.length - 1 : pageIndex - 1;
+				var nextPageIndex = (pageIndex + 1) % tree.pages.length;
+				pageOfChildren.unshift({
+					text: 'view page ' + previousPageIndex,
+					color: 'red',
+					changeIndex: previousPageIndex,
+					position: 'right',
+					role: 'paginatePrevious'
+				});
+
+				pageOfChildren.push({
+					text: 'view page ' + nextPageIndex,
+					color: 'red',
+					changeIndex: nextPageIndex,
+					position: 'right',
+					role: 'paginateNext'
+				});
+			});
+
+			// last, but not least, set the children of this tree to the first page
+			tree.children = tree.pages[0];
+			return tree;
+		},
 		show: function show(historyItem) {
 			var data = JSON.parse(historyItem.data);
-			this.visibleData = this.convertToTree(data);
+			this.visibleData = this.paginate(this.convertToTree(data), 10);
 			this.visibleData.text = historyItem.created_at;
 			this.visibleData.position = 'left';
 			this.visibleData.color = 'lightsteelblue';
@@ -105697,6 +105814,12 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 		},
 		editQuery: function editQuery() {
 			location.replace('/queries/' + this.query.id + '/edit');
+		},
+		paginateChildren: function paginateChildren(childNode) {
+			if (!childNode.role) {
+				return;
+			}
+			childNode.parent.children = childNode.parent.pages[childNode.changeIndex];
 		}
 	},
 	computed: {
@@ -105824,7 +105947,8 @@ var render = function() {
         [
           _c("d3-tree-view", {
             ref: "treeView",
-            attrs: { data: _vm.visibleData }
+            attrs: { data: _vm.visibleData },
+            on: { "node-clicked": _vm.paginateChildren }
           })
         ],
         1
@@ -106083,6 +106207,7 @@ var i = 0;
 			});
 		},
 		click: function click(d) {
+			this.$emit('node-clicked', d);
 			d.selected = !d.selected;
 			if (d.selected) {
 				d._children = d.children;
@@ -106105,7 +106230,7 @@ var i = 0;
 		},
 		tree: function tree() {
 			var size = this.getSize();
-			return __WEBPACK_IMPORTED_MODULE_0_d3__["layout"].tree().size([size.height - this.margin.top - this.margin.bottom + 2000, size.width - this.margin.left - this.margin.right + 2000]);
+			return __WEBPACK_IMPORTED_MODULE_0_d3__["layout"].tree().size([size.height - this.margin.top - this.margin.bottom + 1000, size.width - this.margin.left - this.margin.right + 2000]);
 		},
 		width: function width() {
 			return this.getSize().width;
@@ -106118,7 +106243,7 @@ var i = 0;
 	watch: {
 		data: function data(newData, oldData) {
 			this.click(newData);
-			this.$refs.container.scrollTop = (this.height + 1250) / 2;
+			this.$refs.container.scrollTop = (this.height + 500) / 2;
 			this.$refs.container.scrollLeft = 0;
 		}
 	},
