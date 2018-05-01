@@ -1,169 +1,139 @@
 <template>
-	<div> 
+	<div>
+
+		<div class="row" style="margin-left: 10px; margin-top: -20px">
+			<h1> {{ query.name }}  </h1>
+		</div>
+
 		<div class="row">
-			<div class="offset-md-1">
-			<tree-view v-if="dataToExamine" :data="dataToExamine" :options="{maxDepth: 1}"></tree-view> 
+			<div class="col-md-4" style="margin-left: 10px; margin-bottom: 10px">
+				<!-- <button class="btn btn-warning" v-on:click="editQuery"> Edit Query </button> -->
+				<!-- <button class="btn btn-danger" v-on:click="deleteQuery"> Delete Query </button> -->
+				<button class="btn btn-success right" v-on:click="submitQuery"> Submit Meta Query </button>
 			</div>
 		</div>
-		<div class="row">
-			<div class="offset-md-1 col-md-3">
-				<h1> {{ query.name }} </h1>
-				<button  class="btn btn-success" v-on:click="submitQuery"> Run Query </button>
 
-				<h3> Runs </h3>
-				<ul class="list-group" style="overflow-y: scroll; height:800px;">
-					<li class="list-group-item list-group-item-action" v-for="run in sortedRuns" v-on:click="view(run)" style="cursor: pointer">
-						{{ run.created_at }} 
-					</li>
-				</ul>
+		<div class="row">
+			<div class="col-md-3" style="height:80vh; overflow-y: scroll; margin-left: 10px">
+				<table class="table table-striped table-dark">
+					<thead>
+						<tr>
+							<th scope="col"> Time </th>
+							<th scope="col"> Data </th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr v-for="(run, index) in runs">
+							<td>
+									{{ run.created_at }}
+							</td>
+							<td> 
+								<div class="btn btn-secondary" v-on:click="show(run)"> Show data </div>
+							</td>
+						</tr>
+					</tbody>
+			</table>
 			</div>
-				<div class="col-md-8">
-					<d3-network :net-nodes="nodes" :net-links="links" :options="options" v-on:node-click="clickNode" v-on:link-click="clickLink" style="border-style:solid">
-					</d3-network> 
-				</div>
+
+			<div class="col-md-8">
+				<d3-tree-view ref="treeView" :data="visibleData"></d3-tree-view>
+			</div>
+			
 		</div>
 	</div>
 </template>
 
 <script>
 
-import D3Network from "vue-d3-network";
-
 export default {
-	name: 'metaQueryBuilder',
-	props: ['query', 'formId'], 
+	name: 'queryViewer',
+	props: ['query', 'deleteFormId'], 
 	data: () => {
 		return {
-      nodes: [
-      ],
-      links: [
-      ],
-      options:
-      {
-        force: 3000,
-        nodeSize: 30,
-        nodeLabels: true,
-				linkLabels: true,
-        linkWidth:10,
-				size: {
-					h: 915,
-					w: 1000
-				},
-				canvas: false,
-      },
-			sortedRuns: [],
-			dataToExamine:null,
-    }
+			visibleData: {text:'result', children: []}
+		}
 	},
 	methods: {
-		submitQuery: function() {
+		isScalar (data) {
+			return typeof(data) !== 'object' && !Array.isArray(data);
 		},
-		view: function(run) {
-			let id = 0;
-			this.nodes = [];
-			this.links = [];
-
-			let index = 0;
-			let stages = [];
-			run.stages.forEach( stage => {
-
-
-				//let stageNode = {id: index, name: 'Stage ' + Math.abs(index), _size: 60, _color: 'red', _labelClass:'btn btn-info', data: stage, type: 'stage'};
-				//stages.push(stageNode);
-				//this.nodes.push(stageNode);
-
-
-				stage.nodes.forEach( node => {
-					this.nodes.push({id: node.topology_id, name: stage.id - run.stages[0].id + ': ' + node.node.name, data:node, _size: 50, _labelClass:'btn btn-info', type:'node'});
-					//this.links.push({sid: node.topology_id, tid: index}); // Add a link from this node to its stage
-				});
-				//index--;
-			});
-
-			// Add a link from each node to its dependant node
-			run.stages.forEach( stage => {
-				stage.nodes.forEach( node => {
-					node.dependencies.forEach( dependency => {
-						this.links.push({sid: dependency.output.node.topology_id, tid: dependency.input.node.topology_id, data:dependency.output.value});
-					});
-				});
-			});
-
-			/*
-			for(let i=0; i < stages.length - 1; i++){
-				let totalOutputs = [];
-				
-				stages[i].data.nodes.forEach( node => {
-					let outputs = node.outputs.forEach( output => {
-						totalOutputs = totalOutputs.concat(JSON.parse(output.value));
-					});
-				});
-
-				this.links.push({sid: -1*i, tid: -1*(i+1), data:totalOutputs});
-			}*/
-
-		},
-		clickNode: function(event, node) {
-			if(node.type === 'stage') {
-				let data = node.data.nodes.map( node => {
-					console.log(node.outputs);
-					return node.outputs.map( output => {
-						return 	{ 
-							path: output.path,
-							values: JSON.parse(output.value)
-						};
-					});
-				});
-
-				this.dataToExamine = data;
-			} else {
-
-				let display = {};
-				let outputs = node.data.outputs;
-				outputs.forEach( output => {
-					display[output.path] = JSON.parse(output.value);
-				});
-
-				this.dataToExamine = display;
+		convertToTree: function(data) {
+			
+			if (this.isScalar(data) ) {
+				throw(data, " is a scalar value friendo");
+				return;
 			}
+
+			let attributes = Object.keys(data);
+			let node = {position:'left', color: 'lightsteelblue', selected: false};
+			node.children = []; 
+
+			for(let attributeName of attributes) {
+				let child = null;
+				if (this.isScalar(data[attributeName])) {
+					child = { text: attributeName + ": " + data[attributeName], color: 'yellow', position: 'right'};
+
+				} else if (data[attributeName] === null) { 
+					child = { text: attributeName + ": null", position: 'right', color: 'white', selected: false}	
+				} else {
+					child = this.convertToTree(data[attributeName]);
+					child.text = attributeName;
+
+					if(child.children.length == 0 ){
+						child.text += ' (empty)';	
+						child.position = 'left';
+						child.color = 'white';
+					}
+				}
+
+				if(Array.isArray(data)) {
+					child.selected = true;
+					child._children = child.children;
+					child.children = [];
+				}
+
+				node.children.push(child);
+			}
+		
+
+			return node;
 		},
-		clickLink: function(event, link) {
-			this.dataToExamine = link.data
+		show: function(historyItem) {
+/*			let data = JSON.parse(historyItem.data);
+			this.visibleData = this.convertToTree(data);
+			this.visibleData.text = historyItem.created_at;
+			this.visibleData.position = 'left';
+			this.visibleData.color = 'lightsteelblue';
+			this.visibleData.selected = false;*/
 		},
+		deleteQuery () {
+			console.log(this.deleteFormId)
+			console.log(document.getElementById(this.deleteFormId))
+			document.getElementById(this.deleteFormId).submit();
+		},
+		submitQuery () {
+			location.replace('/meta-queries/' + this.query.id + '/submit')
+		},
+		editQuery () {
+			location.replace('/queries/' + this.query.id + '/edit')
+		}
 	},
 	computed: {
-	},
-	components: {
-		D3Network
+		runs() {
+			console.log(this.query.runs[0]);
+			return this.query.runs.sort((a,b) => {
+				return new Date(b.created_at) - new Date(a.created_at);
+			});
+		}
 	},
 	mounted () {
-		this.sortedRuns = this.query.runs.sort((a,b) => {
-			return a.created_at < b.created_at;
-		});
-
-		if(this.sortedRuns.length) {
-			this.view(this.sortedRuns[0]);
-		}
-
+		//this.show(this.history[0]);
+		console.log(this.deleteFormId);
 	}
 }
 
 </script>
-<style scoped>
-	li {
-		border-color: #32383e !important;
-	}
 
-	li:nth-child(odd) { 
-	border-color: #32383e !important;
-	background: black !important; 
-	opacity: .95 !important;
-	color: white;
-}
-	li:nth-child(even) {
-		border-color: #32383e !important;
-		background: black !important;
-		opacity: .8 !important;
-		color: white;
-	}
+<style scoped>
+
 </style>

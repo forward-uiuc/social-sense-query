@@ -105557,7 +105557,7 @@ exports = module.exports = __webpack_require__(11)(false);
 
 
 // module
-exports.push([module.i, "\nli[data-v-c69c9364] {\n\t\tborder-color: #32383e !important;\n}\nli[data-v-c69c9364]:nth-child(odd) { \n\tborder-color: #32383e !important;\n\tbackground: black !important; \n\topacity: .95 !important;\n\tcolor: white;\n}\nli[data-v-c69c9364]:nth-child(even) {\n\t\tborder-color: #32383e !important;\n\t\tbackground: black !important;\n\t\topacity: .8 !important;\n\t\tcolor: white;\n}\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -105568,148 +105568,159 @@ exports.push([module.i, "\nli[data-v-c69c9364] {\n\t\tborder-color: #32383e !imp
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_d3_network__ = __webpack_require__(259);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue_d3_network___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue_d3_network__);
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
-
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
-	name: 'metaQueryBuilder',
-	props: ['query', 'formId'],
+	name: 'queryViewer',
+	props: ['query', 'deleteFormId'],
 	data: function data() {
 		return {
-			nodes: [],
-			links: [],
-			options: {
-				force: 3000,
-				nodeSize: 30,
-				nodeLabels: true,
-				linkLabels: true,
-				linkWidth: 10,
-				size: {
-					h: 915,
-					w: 1000
-				},
-				canvas: false
-			},
-			sortedRuns: [],
-			dataToExamine: null
+			visibleData: { text: 'result', children: [] }
 		};
 	},
 	methods: {
-		submitQuery: function submitQuery() {},
-		view: function view(run) {
-			var _this = this;
-
-			var id = 0;
-			this.nodes = [];
-			this.links = [];
-
-			var index = 0;
-			var stages = [];
-			run.stages.forEach(function (stage) {
-
-				//let stageNode = {id: index, name: 'Stage ' + Math.abs(index), _size: 60, _color: 'red', _labelClass:'btn btn-info', data: stage, type: 'stage'};
-				//stages.push(stageNode);
-				//this.nodes.push(stageNode);
-
-
-				stage.nodes.forEach(function (node) {
-					_this.nodes.push({ id: node.topology_id, name: stage.id - run.stages[0].id + ': ' + node.node.name, data: node, _size: 50, _labelClass: 'btn btn-info', type: 'node' });
-					//this.links.push({sid: node.topology_id, tid: index}); // Add a link from this node to its stage
-				});
-				//index--;
-			});
-
-			// Add a link from each node to its dependant node
-			run.stages.forEach(function (stage) {
-				stage.nodes.forEach(function (node) {
-					node.dependencies.forEach(function (dependency) {
-						_this.links.push({ sid: dependency.output.node.topology_id, tid: dependency.input.node.topology_id, data: dependency.output.value });
-					});
-				});
-			});
-
-			/*
-   for(let i=0; i < stages.length - 1; i++){
-   	let totalOutputs = [];
-   	
-   	stages[i].data.nodes.forEach( node => {
-   		let outputs = node.outputs.forEach( output => {
-   			totalOutputs = totalOutputs.concat(JSON.parse(output.value));
-   		});
-   	});
-   		this.links.push({sid: -1*i, tid: -1*(i+1), data:totalOutputs});
-   }*/
+		isScalar: function isScalar(data) {
+			return (typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object' && !Array.isArray(data);
 		},
-		clickNode: function clickNode(event, node) {
-			if (node.type === 'stage') {
-				var data = node.data.nodes.map(function (node) {
-					console.log(node.outputs);
-					return node.outputs.map(function (output) {
-						return {
-							path: output.path,
-							values: JSON.parse(output.value)
-						};
-					});
-				});
 
-				this.dataToExamine = data;
-			} else {
+		convertToTree: function convertToTree(data) {
 
-				var display = {};
-				var outputs = node.data.outputs;
-				outputs.forEach(function (output) {
-					display[output.path] = JSON.parse(output.value);
-				});
-
-				this.dataToExamine = display;
+			if (this.isScalar(data)) {
+				throw data, " is a scalar value friendo";
+				return;
 			}
+
+			var attributes = Object.keys(data);
+			var node = { position: 'left', color: 'lightsteelblue', selected: false };
+			node.children = [];
+
+			var _iteratorNormalCompletion = true;
+			var _didIteratorError = false;
+			var _iteratorError = undefined;
+
+			try {
+				for (var _iterator = attributes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+					var attributeName = _step.value;
+
+					var child = null;
+					if (this.isScalar(data[attributeName])) {
+						child = { text: attributeName + ": " + data[attributeName], color: 'yellow', position: 'right' };
+					} else if (data[attributeName] === null) {
+						child = { text: attributeName + ": null", position: 'right', color: 'white', selected: false };
+					} else {
+						child = this.convertToTree(data[attributeName]);
+						child.text = attributeName;
+
+						if (child.children.length == 0) {
+							child.text += ' (empty)';
+							child.position = 'left';
+							child.color = 'white';
+						}
+					}
+
+					if (Array.isArray(data)) {
+						child.selected = true;
+						child._children = child.children;
+						child.children = [];
+					}
+
+					node.children.push(child);
+				}
+			} catch (err) {
+				_didIteratorError = true;
+				_iteratorError = err;
+			} finally {
+				try {
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+				} finally {
+					if (_didIteratorError) {
+						throw _iteratorError;
+					}
+				}
+			}
+
+			return node;
 		},
-		clickLink: function clickLink(event, link) {
-			this.dataToExamine = link.data;
+		show: function show(historyItem) {
+			/*			let data = JSON.parse(historyItem.data);
+   			this.visibleData = this.convertToTree(data);
+   			this.visibleData.text = historyItem.created_at;
+   			this.visibleData.position = 'left';
+   			this.visibleData.color = 'lightsteelblue';
+   			this.visibleData.selected = false;*/
+		},
+		deleteQuery: function deleteQuery() {
+			console.log(this.deleteFormId);
+			console.log(document.getElementById(this.deleteFormId));
+			document.getElementById(this.deleteFormId).submit();
+		},
+		submitQuery: function submitQuery() {
+			location.replace('/meta-queries/' + this.query.id + '/submit');
+		},
+		editQuery: function editQuery() {
+			location.replace('/queries/' + this.query.id + '/edit');
 		}
 	},
-	computed: {},
-	components: {
-		D3Network: __WEBPACK_IMPORTED_MODULE_0_vue_d3_network___default.a
+	computed: {
+		runs: function runs() {
+			console.log(this.query.runs[0]);
+			return this.query.runs.sort(function (a, b) {
+				return new Date(b.created_at) - new Date(a.created_at);
+			});
+		}
 	},
 	mounted: function mounted() {
-		this.sortedRuns = this.query.runs.sort(function (a, b) {
-			return a.created_at < b.created_at;
-		});
-
-		if (this.sortedRuns.length) {
-			this.view(this.sortedRuns[0]);
-		}
+		//this.show(this.history[0]);
+		console.log(this.deleteFormId);
 	}
 });
 
@@ -105722,69 +105733,90 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
+    _c(
+      "div",
+      {
+        staticClass: "row",
+        staticStyle: { "margin-left": "10px", "margin-top": "-20px" }
+      },
+      [_c("h1", [_vm._v(" " + _vm._s(_vm.query.name) + "  ")])]
+    ),
+    _vm._v(" "),
     _c("div", { staticClass: "row" }, [
       _c(
         "div",
-        { staticClass: "offset-md-1" },
+        {
+          staticClass: "col-md-4",
+          staticStyle: { "margin-left": "10px", "margin-bottom": "10px" }
+        },
         [
-          _vm.dataToExamine
-            ? _c("tree-view", {
-                attrs: { data: _vm.dataToExamine, options: { maxDepth: 1 } }
-              })
-            : _vm._e()
-        ],
-        1
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-success right",
+              on: { click: _vm.submitQuery }
+            },
+            [_vm._v(" Submit Meta Query ")]
+          )
+        ]
       )
     ]),
     _vm._v(" "),
     _c("div", { staticClass: "row" }, [
-      _c("div", { staticClass: "offset-md-1 col-md-3" }, [
-        _c("h1", [_vm._v(" " + _vm._s(_vm.query.name) + " ")]),
-        _vm._v(" "),
-        _c(
-          "button",
-          { staticClass: "btn btn-success", on: { click: _vm.submitQuery } },
-          [_vm._v(" Run Query ")]
-        ),
-        _vm._v(" "),
-        _c("h3", [_vm._v(" Runs ")]),
-        _vm._v(" "),
-        _c(
-          "ul",
-          {
-            staticClass: "list-group",
-            staticStyle: { "overflow-y": "scroll", height: "800px" }
-          },
-          _vm._l(_vm.sortedRuns, function(run) {
-            return _c(
-              "li",
-              {
-                staticClass: "list-group-item list-group-item-action",
-                staticStyle: { cursor: "pointer" },
-                on: {
-                  click: function($event) {
-                    _vm.view(run)
-                  }
-                }
-              },
-              [_vm._v("\n\t\t\t\t\t" + _vm._s(run.created_at) + " \n\t\t\t\t")]
+      _c(
+        "div",
+        {
+          staticClass: "col-md-3",
+          staticStyle: {
+            height: "80vh",
+            "overflow-y": "scroll",
+            "margin-left": "10px"
+          }
+        },
+        [
+          _c("table", { staticClass: "table table-striped table-dark" }, [
+            _vm._m(0),
+            _vm._v(" "),
+            _c(
+              "tbody",
+              _vm._l(_vm.runs, function(run, index) {
+                return _c("tr", [
+                  _c("td", [
+                    _vm._v(
+                      "\n\t\t\t\t\t\t\t\t" +
+                        _vm._s(run.created_at) +
+                        "\n\t\t\t\t\t\t"
+                    )
+                  ]),
+                  _vm._v(" "),
+                  _c("td", [
+                    _c(
+                      "div",
+                      {
+                        staticClass: "btn btn-secondary",
+                        on: {
+                          click: function($event) {
+                            _vm.show(run)
+                          }
+                        }
+                      },
+                      [_vm._v(" Show data ")]
+                    )
+                  ])
+                ])
+              })
             )
-          })
-        )
-      ]),
+          ])
+        ]
+      ),
       _vm._v(" "),
       _c(
         "div",
         { staticClass: "col-md-8" },
         [
-          _c("d3-network", {
-            staticStyle: { "border-style": "solid" },
-            attrs: {
-              "net-nodes": _vm.nodes,
-              "net-links": _vm.links,
-              options: _vm.options
-            },
-            on: { "node-click": _vm.clickNode, "link-click": _vm.clickLink }
+          _c("d3-tree-view", {
+            ref: "treeView",
+            attrs: { data: _vm.visibleData }
           })
         ],
         1
@@ -105792,7 +105824,20 @@ var render = function() {
     ])
   ])
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("thead", [
+      _c("tr", [
+        _c("th", { attrs: { scope: "col" } }, [_vm._v(" Time ")]),
+        _vm._v(" "),
+        _c("th", { attrs: { scope: "col" } }, [_vm._v(" Data ")])
+      ])
+    ])
+  }
+]
 render._withStripped = true
 module.exports = { render: render, staticRenderFns: staticRenderFns }
 if (false) {
@@ -105888,7 +105933,7 @@ exports = module.exports = __webpack_require__(11)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -106032,15 +106077,29 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 			this.visibleData.position = 'left';
 			this.visibleData.color = 'lightsteelblue';
 			this.visibleData.selected = false;
+		},
+		deleteQuery: function deleteQuery() {
+			console.log(this.deleteFormId);
+			console.log(document.getElementById(this.deleteFormId));
+			document.getElementById(this.deleteFormId).submit();
+		},
+		submitQuery: function submitQuery() {
+			location.replace('/queries/' + this.query.id + '/submit');
+		},
+		editQuery: function editQuery() {
+			location.replace('/queries/' + this.query.id + '/edit');
 		}
 	},
 	computed: {
 		history: function history() {
-			return this.query.history;
+			return this.query.history.sort(function (a, b) {
+				return new Date(b.created_at) - new Date(a.created_at);
+			});
 		}
 	},
 	mounted: function mounted() {
 		this.show(this.history[0]);
+		console.log(this.deleteFormId);
 	}
 });
 
@@ -106062,7 +106121,37 @@ var render = function() {
       [_c("h1", [_vm._v(" " + _vm._s(_vm.query.name) + "  ")])]
     ),
     _vm._v(" "),
-    _vm._m(0),
+    _c("div", { staticClass: "row" }, [
+      _c(
+        "div",
+        {
+          staticClass: "col-md-4",
+          staticStyle: { "margin-left": "10px", "margin-bottom": "10px" }
+        },
+        [
+          _c(
+            "button",
+            { staticClass: "btn btn-warning", on: { click: _vm.editQuery } },
+            [_vm._v(" Edit Query ")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            { staticClass: "btn btn-danger", on: { click: _vm.deleteQuery } },
+            [_vm._v(" Delete Query ")]
+          ),
+          _vm._v(" "),
+          _c(
+            "button",
+            {
+              staticClass: "btn btn-success float-right",
+              on: { click: _vm.submitQuery }
+            },
+            [_vm._v(" Submit Query ")]
+          )
+        ]
+      )
+    ]),
     _vm._v(" "),
     _c("div", { staticClass: "row" }, [
       _c(
@@ -106077,7 +106166,7 @@ var render = function() {
         },
         [
           _c("table", { staticClass: "table table-striped table-dark" }, [
-            _vm._m(1),
+            _vm._m(0),
             _vm._v(" "),
             _c(
               "tbody",
@@ -106135,33 +106224,6 @@ var render = function() {
   ])
 }
 var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "row" }, [
-      _c(
-        "div",
-        {
-          staticClass: "col-md-4",
-          staticStyle: { "margin-left": "10px", "margin-bottom": "10px" }
-        },
-        [
-          _c("button", { staticClass: "btn btn-warning" }, [
-            _vm._v(" Edit Query ")
-          ]),
-          _vm._v(" "),
-          _c("button", { staticClass: "btn btn-danger" }, [
-            _vm._v(" Delete Query ")
-          ]),
-          _vm._v(" "),
-          _c("button", { staticClass: "btn btn-success float-right" }, [
-            _vm._v(" Submit Query ")
-          ])
-        ]
-      )
-    ])
-  },
   function() {
     var _vm = this
     var _h = _vm.$createElement

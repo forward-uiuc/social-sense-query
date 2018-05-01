@@ -1,9 +1,10 @@
 @extends('layouts.app')
 @section('content')
 
-		{!! Form::open(['url' => 'queries/'.$query->id, 'id' => 'deleteQuery', 'method' => 'delete']) !!}
-			@csrf		
-		{!! Form::close() !!}
+		<form  action="{{ route('queries.destroy', ['id' => $query->id]) }}" method="POST" style="display: none;" id='deleteQuery'>
+			@method('delete')
+			@csrf
+	 </form>
 
-		<query-viewer :query="{{ json_encode($query) }}" deleteFormId="deleteQuery"></query-viewer>
+		<query-viewer :query="{{ json_encode($query) }}" delete-form-id="deleteQuery"></query-viewer>
 @endsection

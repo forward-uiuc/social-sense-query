@@ -7,9 +7,9 @@
 
 		<div class="row">
 			<div class="col-md-4" style="margin-left: 10px; margin-bottom: 10px">
-				<button class="btn btn-warning"> Edit Query </button>
-				<button class="btn btn-danger"> Delete Query </button>
-				<button class="btn btn-success float-right"> Submit Query </button>
+				<button class="btn btn-warning" v-on:click="editQuery"> Edit Query </button>
+				<button class="btn btn-danger" v-on:click="deleteQuery"> Delete Query </button>
+				<button class="btn btn-success float-right" v-on:click="submitQuery"> Submit Query </button>
 			</div>
 		</div>
 
@@ -110,14 +110,28 @@ export default {
 			this.visibleData.color = 'lightsteelblue';
 			this.visibleData.selected = false;
 		},
+		deleteQuery () {
+			console.log(this.deleteFormId)
+			console.log(document.getElementById(this.deleteFormId))
+			document.getElementById(this.deleteFormId).submit();
+		},
+		submitQuery () {
+			location.replace('/queries/' + this.query.id + '/submit')
+		},
+		editQuery () {
+			location.replace('/queries/' + this.query.id + '/edit')
+		}
 	},
 	computed: {
 		history () {
-			return this.query.history;
+			return this.query.history.sort((a,b) => {
+				return new Date(b.created_at) - new Date(a.created_at);
+			});
 		}
 	},
 	mounted () {
 		this.show(this.history[0]);
+		console.log(this.deleteFormId);
 	}
 }
 
