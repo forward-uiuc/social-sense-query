@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateQueriesTable extends Migration
+class CreateGraphqlServer extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,14 @@ class CreateQueriesTable extends Migration
      */
     public function up()
     {
-        Schema::create('queries', function (Blueprint $table) {
+        Schema::create('graphql_servers', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
-
 			$table->string('name');
-			$table->string('schedule')->nullable(true);
-			$table->json('structure');
-			$table->longText('description')->nullable(true);
-			$table->string('string');
-
-			$table->integer('user_id')->unsigned();
-    		$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+			$table->string('url');
+			$table->string('slug');
+			$table->string('description');
+			$table->json('schema')->nullable(true);
         });
     }
 
@@ -35,6 +31,6 @@ class CreateQueriesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('queries');
+        Schema::dropIfExists('graphql_servers');
     }
 }

@@ -14,7 +14,7 @@ class AddQueryStructureToQueryHistory extends Migration
     public function up()
     {
         Schema::table('query_histories', function (Blueprint $table) {
-					$table->json('query_structure')->nullable();
+			$table->json('query_structure')->nullable();
         });
     }
 

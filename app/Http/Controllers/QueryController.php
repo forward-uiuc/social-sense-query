@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreQueryRequest;
 use App\Models\Query\Query;
 use App\Models\Query\QueryHistory;
+use App\Models\GraphQLServer;
+
 use App\Exceptions\UserQuotaReachedException;
 
 class QueryController extends Controller
@@ -40,33 +42,31 @@ class QueryController extends Controller
     public function create()
     {
 			$user = \Auth::user();
-			return view('queries.create', ['user' => $user]);
+			$servers = GraphQLServer::all();
+			return view('queries.create', ['user' => $user, 'servers' => $servers]);
     }
 
-		/**
-		 * Submit a query
-		 *
-		 * @param \Illuminate\Http\Request $request
-		 * @param $id
-		 */
-		public function submit(Request $request, $id) 
-		{
-			$query = Query::findOrFail($id);
+	/**
+	 * Submit a query
+	 *
+	 * @param \Illuminate\Http\Request $request
+	 * @param $id
+	 */
+	public function submit(Request $request, $id) 
+	{
+		$query = Query::findOrFail($id);
 
-			try {
+		try {
 
-				$history = new QueryHistory($query->submit());
-				$history->query_structure = $query->structure;
-				$history->user_id = $query->user->id;
-				$query->history()->save($history);
+			$query->submit();
 
-			} catch (UserQuotaReachedException $e) {
-				$request->session()->flash('error', $e->getMessage());
-			} catch (\RuntimeException $e) {
-				$request->session()->flash('error', $e->getMessage());
-			}
-			return back();
-		}
+		} catch (UserQuotaReachedException $e) {
+			$request->session()->flash('error', $e->getMessage());
+		} catch (\RuntimeException $e) {
+			$request->session()->flash('error', $e->getMessage());
+		} 
+		return back();
+	}
 
 
     /**
@@ -78,8 +78,8 @@ class QueryController extends Controller
     public function store(StoreQueryRequest $request)
     {
 			$user = \Auth::user();
-			$user->queries()->save(new Query($request->all()));
-
+			$q = new Query($request->all());
+			$user->queries()->save($q);
 			$request->session()->flash('status', 'Query Stored!');
 			return redirect('home');
     }

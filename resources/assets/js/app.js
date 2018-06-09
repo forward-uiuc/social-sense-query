@@ -17,12 +17,14 @@ window.Vue = require('vue');
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('query-builder', require('./components/QueryBuilder.vue'));
+Vue.component('graphql-query-builder', require('./components/GraphQLQueryBuilder.vue'));
 Vue.component('context-info', require('./components/ContextInformation.vue'));
 Vue.component('meta-query-builder-canvas', require('./components/MetaQueryBuilderCanvas.vue'));
 Vue.component('meta-query-builder', require('./components/MetaQueryBuilder.vue'));
 Vue.component('meta-query-viewer', require('./components/MetaQueryViewer.vue'));
 Vue.component('query-viewer', require('./components/QueryViewer.vue'));
 Vue.component('d3-tree-view', require('./components/D3TreeView.vue'));
+Vue.component('query-editor', require('./components/QueryEditor.vue'));
 
 import TreeView from "vue-json-tree-view";
 import D3Network from "vue-d3-network";

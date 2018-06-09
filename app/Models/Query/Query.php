@@ -21,13 +21,17 @@ use App\Models\MetaQuery\MetaQueryNode;
 class Query extends Model
 {
 
-	protected $fillable = ['name','schedule','structure','description','string'];
+	protected $fillable = ['name','schedule','structure','description','string', 'server_id'];
 
 	/*
 	 * Get the user this query belongs to
 	 */
 	public function user() {
 		return $this->belongsTo('App\Models\User');
+	}
+
+	public function server() {
+		return $this->belongsTo('App\Models\GraphQLServer', 'server_id');
 	}
 
 	/*
@@ -45,6 +49,10 @@ class Query extends Model
 	public function getQueryNode() {
 		$node = json_decode($this->structure);
 		return QueryNode::deserialize(json_decode($this->structure));
+	}
+
+	public function getQueryString() {
+		return (string) $this->getQueryNode();
 	}
 
 
@@ -81,44 +89,24 @@ class Query extends Model
 		
 		$quotaUsed = $this->user->quotaUsed;
 		$quotaAvailable = $this->user->quota;
-		if($quotaUsed >= $quotaAvailable){
+		if ($quotaUsed >= $quotaAvailable) {
 			throw new UserQuotaReachedException("Error, used " . $quotaUsed . " GB of " . $quotaAvailable . " GB quota.");
 
 		}
-
-		$client = new Client([
-			'base_uri' => config('services.graphql.server_uri')
-		]);
-
-
+		
 		$start = microtime(true);
-		try{
+		$body = $this->server->buildRequest($this->getQueryString());
 
-			$response = $client->request('POST', 'graphql', [
-				'headers' => [
-						'Content-Type' => 'application/json'
-				],
-				'query' => ['query' => $this->string],
-				'body' => $this->user->authorizations->toJSON()
-			]);
-			$duration = round(microtime(true) - $start, 3) * 1000;	
-			$body = (string) $response->getBody();
-			$res = json_decode($body);
-			$history = ['data' => $body, 'has_error' => false, 'duration' => $duration];
-			return $history;
+		$duration = round(microtime(true) - $start, 3) * 1000;	
+		$hasError = property_exists(json_decode($body), 'errors');
 
-		} catch (ClientException $e){
-			$duration = round(microtime(true) - $start, 3) * 1000;	
-			$data = (string) $e->getResponse()->getBody(true);
-			return ['data' => $data, 'has_error' => true, 'duration' => $duration];
+		$result  = ['data' => $body, 'has_error' => $hasError, 'duration' => $duration];
+		
+		$history = new QueryHistory($result);
+		$history->query_structure = $this->structure;
+		$history->user_id = $this->user->id;
 
-		} catch (ConnectException $e) {
-			$duration = round(microtime(true) - $start, 3) * 1000;	
-			return ['data' => json_encode($e->getMessage()), 'has_error' => true, 'duration' => $duration];
+		$this->history()->save($history);
 
-		}	catch (ServerException $e) {
-			$duration = round(microtime(true) - $start, 3) * 1000;  
-			return ['data' => json_encode($e->getMessage()), 'has_error' => true, 'duration' => $duration];
-		}
 	}
 }

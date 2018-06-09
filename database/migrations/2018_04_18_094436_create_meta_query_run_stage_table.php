@@ -16,8 +16,8 @@ class CreateMetaQueryRunStageTable extends Migration
         Schema::create('stages', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
-						$table->integer('run_id')->unsigned();
-						$table->foreign('run_id')->references('id')->on('runs')->onDelete('cascade');
+			$table->integer('run_id')->unsigned();
+			$table->foreign('run_id')->references('id')->on('runs')->onDelete('cascade');
         });
     }
 

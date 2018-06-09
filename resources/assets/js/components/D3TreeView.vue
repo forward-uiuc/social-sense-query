@@ -59,8 +59,11 @@ export default {
 			// Enter any new nodes at the parent's previous position.
 			let nodeEnter = node.enter().append("g").attr("class", "node")
 				.attr("transform", (d) => { return "translate(" + source.y0 + "," + source.x0 + ")"; })
-				.on("click", click);
-
+				.on("click", click)
+				.on('contextmenu', (d,i) => {
+					this.$emit('node-right-clicked', d);
+    				d3.event.preventDefault();
+				});
 			nodeEnter.append("circle")
 					.attr("r", 1e-6)
 					.style("fill", this.selectNodeColor)
@@ -126,8 +129,8 @@ export default {
 			nodes.forEach((d) => { d.x0 = d.x; d.y0 = d.y; });
 		},
 		click: function(d) {
-			this.$emit('node-clicked', d);	
 			d.selected = !d.selected;
+			this.$emit('node-clicked', d);
 			if(d.selected) {
 				d._children = d.children;
 				d.children = [];
@@ -137,21 +140,21 @@ export default {
 			}
 			this.update(d);
 		},
-    getSize () {
-      let width = this.$el.clientWidth
-      let height = this.$el.clientHeight
-      return { width, height }
+    	getSize () {
+			let width = this.$el.clientWidth
+			let height = this.$el.clientHeight
+			return { width, height }
 		}
 	},
 	computed: {
-			svg: () => { return d3.select('#treeMount')},
-      tree: function() {
-				let size = this.getSize();
-				return d3.layout.tree().size([
-						size.height - this.margin.top - this.margin.bottom + 1000,
-						size.width - this.margin.left - this.margin.right + 2000 
-					]);
-			},
+		svg: () => { return d3.select('#treeMount')},
+		tree: function() {
+			let size = this.getSize();
+			return d3.layout.tree().size([
+				size.height - this.margin.top - this.margin.bottom ,
+				size.width - this.margin.left - this.margin.right 
+			]);
+		},
 		width () {
 			return this.getSize().width;
 		},
@@ -164,14 +167,14 @@ export default {
 	watch: {
 		data: function(newData, oldData) {
 			this.click(newData);
-			this.$refs.container.scrollTop = (this.height + 500) / 2;
+			this.$refs.container.scrollTop = this.height  / 2;
 			this.$refs.container.scrollLeft = 0;
 		}
 	},
 	mounted () {
-		this.$refs.svg.setAttribute('height', this.height + this.margin.top + this.margin.bottom + 2000)
-		this.$refs.svg.setAttribute('width', this.width + this.margin.left + this.margin.right + 2000)
-		this.$refs.container.scrollTop = (this.height + 1250) / 2;
+		this.$refs.svg.setAttribute('height', this.height )
+		this.$refs.svg.setAttribute('width', this.width )
+		this.$refs.container.scrollTop = this.height  / 2;
 	}
 }
 
@@ -181,7 +184,5 @@ export default {
   .view {
 		border-color: black;
 		border-radius: 25px;
-		overflow: scroll;
-		height: 80vh;
 	}
 </style>

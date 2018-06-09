@@ -38,7 +38,7 @@ class GQLServerService
 						'Content-Type' => 'application/json'
 				],
 				'query' => ['query' => $queryString],
-				'body' => $authorizations->toJSON()
+//				'body' => $authorizations->toJSON()
 			]);
 			$duration = round(microtime(true) - $start, 3) * 1000;	
 			$body = (string) $response->getBody();

@@ -16,8 +16,8 @@ class CreateMetaQueryRunsTable extends Migration
         Schema::create('runs', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
-						$table->integer('meta_query_id')->unsigned();
-    				$table->foreign('meta_query_id')->references('id')->on('meta_queries')->onDelete('cascade');
+			$table->integer('meta_query_id')->unsigned();
+			$table->foreign('meta_query_id')->references('id')->on('meta_queries')->onDelete('cascade');
         });
     }
 

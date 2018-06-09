@@ -131,13 +131,13 @@ class QueryNode
 	 */
 	public static function deserialize($structure) 
 	{
+
 		if(!$structure) {
 			return null;
 		}
-
 		$inputs = [];
 		foreach($structure->inputs as $input) {
-			array_push($inputs, new Input($input->name, $input->description, $input->inputType, $input->value));
+			array_push($inputs, new Input($input->name, $input->description, $input->inputType->name, $input->value));
 		}
 
 		$output = new Output($structure->output);

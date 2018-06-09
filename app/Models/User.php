@@ -27,69 +27,69 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
-		/*
-		 * Get all callbacks for the user
-		 */
-		public function applications() {
-			return $this->hasMany(Application::class);
+	/*
+	 * Get all callbacks for the user
+	 */
+	public function applications() {
+		return $this->hasMany(Application::class);
+	}
+
+	/*
+	 * Get this user's authorizations
+	 */
+	public function authorizations() {
+		return $this->hasMany(Authorization::class);
+	}
+
+	public function getAuthorizedProvidersAttribute() {
+		$authorized = [];
+		$providers = config('services.providers');
+
+		foreach($providers as $provider){
+			$authorization = $this->authorizations()->where('provider', $provider)->first();
+			$authorized[$provider] = ($authorization == True);
+		}
+		return $authorized;
+	}
+
+	/*
+	 * Get all the user's queries
+	 */
+	public function queries() {
+		return $this->hasMany('App\Models\Query\Query');
+	}
+
+	/*
+	 * Get all of this user's meta queries
+	 */
+	public function metaQueries() {
+		return $this->hasMany('App\Models\MetaQuery\MetaQuery');
+	}
+
+	/*
+	 * Get all of this user's history
+	 */
+	public function history() {
+		return $this->hasMany('App\Models\Query\QueryHistory');
+	}
+
+	/*
+	 * Get how many gigabytes of storage this user's data is taking up
+	 */
+	private $cached_quotaUsed = false;
+	public function getQuotaUsedAttribute() {
+		if($this->cached_quotaUsed){
+			return $this->cached_quotaUsed;
 		}
 
-		/*
-		 * Get this user's authorizations
-		 */
-		public function authorizations() {
-			return $this->hasMany(Authorization::class);
-		}
+		$used = $this->history->reduce(function($carry, $queryHistory) {
+			return $carry + $queryHistory->size;
+		},0);
 
-		public function getAuthorizedProvidersAttribute() {
-			$authorized = [];
-			$providers = config('services.providers');
-
-			foreach($providers as $provider){
-				$authorization = $this->authorizations()->where('provider', $provider)->first();
-				$authorized[$provider] = ($authorization == True);
-			}
-			return $authorized;
-		}
-
-		/*
-		 * Get all the user's queries
-		 */
-		public function queries() {
-			return $this->hasMany('App\Models\Query\Query');
-		}
-
-		/*
-		 * Get all of this user's meta queries
-		 */
-		public function metaQueries() {
-			return $this->hasMany('App\Models\MetaQuery\MetaQuery');
-		}
-
-		/*
-		 * Get all of this user's history
-		 */
-		public function history() {
-			return $this->hasMany('App\Models\Query\QueryHistory');
-		}
-	
-		/*
-		 * Get how many gigabytes of storage this user's data is taking up
-		 */
-		private $cached_quotaUsed = false;
-		public function getQuotaUsedAttribute() {
-			if($this->cached_quotaUsed){
-				return $this->cached_quotaUsed;
-			}
-
-			$used = $this->history->reduce(function($carry, $queryHistory) {
-				return $carry + $queryHistory->size;
-			},0);
-
-			$used = $used/(1024 * 1024 * 1024);
-			$used = (int) ($used * 1000);
-			$used = ((float) $used )/ 1000;
-			$this->cached_quotaUsed = $used;
-			return $used;
-		}
+		$used = $used/(1024 * 1024 * 1024);
+		$used = (int) ($used * 1000);
+		$used = ((float) $used )/ 1000;
+		$this->cached_quotaUsed = $used;
+		return $used;
+	}
 }

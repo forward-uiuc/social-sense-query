@@ -15,11 +15,11 @@ class CreateMetaQueryNodeOutputs extends Migration
     {
         Schema::create('meta_query_node_outputs', function (Blueprint $table) {
             $table->increments('id');
-						$table->string('path');
-						$table->json('value')->nullable();
-						$table->integer('meta_query_node_id')->unsigned();
-						$table->foreign('meta_query_node_id')->references('id')->on('meta_query_nodes')->onDelete('cascade');
-        });
+			$table->string('path');
+			$table->json('value')->nullable();
+			$table->integer('meta_query_node_id')->unsigned();
+			$table->foreign('meta_query_node_id')->references('id')->on('meta_query_nodes')->onDelete('cascade');
+		});
     }
 
     /**

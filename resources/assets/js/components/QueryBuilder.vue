@@ -17,7 +17,6 @@
       </b-modal>
 
 			<!-- The modal for getting arbitrary input for a node -->
-      
 			<input type="hidden" ref="name" name="name" id="name"></input>
 			<input type="hidden" ref="schedule" name="schedule" id="schedule"></input>
 			<input type="hidden" ref="structure" name="structure"></input>

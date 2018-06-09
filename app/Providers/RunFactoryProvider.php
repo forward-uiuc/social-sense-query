@@ -24,8 +24,8 @@ class RunFactoryProvider extends ServiceProvider
      */
     public function register()
     {
-			$this->app->singleton(RunFactory::class, function($app) {
-				return new RunFactory();
-			});
+		$this->app->singleton(RunFactory::class, function($app) {
+			return new RunFactory();
+		});
     }
 }

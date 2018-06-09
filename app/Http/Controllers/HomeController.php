@@ -24,7 +24,7 @@ class HomeController extends Controller
     public function index()
     {
 				$user = \Auth::user();
-				$user->load(['authorizations','queries','applications']);
+				$user->load(['queries','applications']);
 
         return view('home', ['user' => $user]);
     }

@@ -34,26 +34,26 @@ return [
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
     ],
-		'providers' => [
-			'reddit','twitter','youtube'	
+	'providers' => [
+		'reddit','twitter','youtube'	
+	],
+	'reddit' => [
+			'client_id' => env('REDDIT_KEY'),
+			'client_secret' => env('REDDIT_SECRET'),
+			'redirect' => env('REDDIT_REDIRECT_URI'),  
+	], 
+	'youtube' => [
+			'client_id' => env('YOUTUBE_KEY'),
+			'client_secret' => env('YOUTUBE_SECRET'),
+			'redirect' => env('YOUTUBE_REDIRECT_URI'),  
+	], 
+	'twitter' => [
+			'client_id' => env('TWITTER_KEY'),
+			'client_secret' => env('TWITTER_SECRET'),
+			'redirect' => env('TWITTER_REDIRECT_URI'),  
 		],
-		'reddit' => [
-				'client_id' => env('REDDIT_KEY'),
-				'client_secret' => env('REDDIT_SECRET'),
-				'redirect' => env('REDDIT_REDIRECT_URI'),  
-		], 
-		'youtube' => [
-				'client_id' => env('YOUTUBE_KEY'),
-				'client_secret' => env('YOUTUBE_SECRET'),
-				'redirect' => env('YOUTUBE_REDIRECT_URI'),  
-		], 
-		'twitter' => [
-				'client_id' => env('TWITTER_KEY'),
-				'client_secret' => env('TWITTER_SECRET'),
-				'redirect' => env('TWITTER_REDIRECT_URI'),  
-			],
-			'graphql' => [
-				'server_uri' => env('GQL_SERVER_URI')
-			]	
+		'graphql' => [
+			'server_uri' => env('GQL_SERVER_URI')
+		]	
 
 ];

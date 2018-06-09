@@ -88,11 +88,11 @@
 				</div>
 				@endif
 
-        <main class="" style="margin-top: 60px;">
+        <main class="" style="margin-top: 60px; margin-left: 10px;">
             @yield('content')
         </main>
-    </div>
 
+		</div>
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}"></script>
 </body>

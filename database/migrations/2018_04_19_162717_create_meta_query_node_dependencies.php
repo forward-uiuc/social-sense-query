@@ -17,15 +17,14 @@ class CreateMetaQueryNodeDependencies extends Migration
             $table->increments('id');
             $table->timestamps();
 
-						$table->integer('meta_query_node_output_id')->unsigned();
-						$table->foreign('meta_query_node_output_id')->references('id')->on('meta_query_node_outputs')->onDelete('cascade');
+			$table->integer('meta_query_node_output_id')->unsigned();
+			$table->foreign('meta_query_node_output_id')->references('id')->on('meta_query_node_outputs')->onDelete('cascade');
 
-						$table->integer('meta_query_node_input_id')->unsigned();
-						$table->foreign('meta_query_node_input_id')->references('id')->on('meta_query_node_inputs')->onDelete('cascade');
+			$table->integer('meta_query_node_input_id')->unsigned();
+			$table->foreign('meta_query_node_input_id')->references('id')->on('meta_query_node_inputs')->onDelete('cascade');
 
-						$table->integer('meta_query_node_id')->unsigned();
-						$table->foreign('meta_query_node_id')->references('id')->on('meta_query_nodes')->onDelete('cascade');
-
+			$table->integer('meta_query_node_id')->unsigned();
+			$table->foreign('meta_query_node_id')->references('id')->on('meta_query_nodes')->onDelete('cascade');
         });
     }
 

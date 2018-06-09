@@ -16,11 +16,11 @@ class CreateMetaQueryFunction extends Migration
         Schema::create('meta_query_functions', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
-						$table->json('inputs'); // The paths of inputs to this function and it's type, ex: value:Int
-						$table->json('outputs'); // The paths of the outputs, ex: sum:Int
-						$table->string('name'); // The name of this function, ex: 'sum'
-						$table->json('state')->nullable(); // The state of this function
-        });
+			$table->json('inputs'); // The paths of inputs to this function and it's type, ex: value:Int
+			$table->json('outputs'); // The paths of the outputs, ex: sum:Int
+			$table->string('name'); // The name of this function, ex: 'sum'
+			$table->json('state')->nullable(); // The state of this function
+		});
     }
 
     /**

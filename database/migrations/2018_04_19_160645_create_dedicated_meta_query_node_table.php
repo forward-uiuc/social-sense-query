@@ -16,15 +16,15 @@ class CreateDedicatedMetaQueryNodeTable extends Migration
         Schema::create('meta_query_nodes', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
-						$table->integer('topology_id');
+			$table->integer('topology_id');
 
-						$table->string('node_type');
-						$table->integer('node_id')->unsigned();
-						$table->boolean('resolved');
+			$table->string('node_type');
+			$table->integer('node_id')->unsigned();
+			$table->boolean('resolved');
 
-						$table->integer('stage_id')->unsigned();
-						$table->foreign('stage_id')->references('id')->on('stages')->onDelete('cascade');
-        });
+			$table->integer('stage_id')->unsigned();
+			$table->foreign('stage_id')->references('id')->on('stages')->onDelete('cascade');
+});
     }
 
     /**

@@ -26,15 +26,9 @@
 						</div>
 						</div>
 						<div class="card-body">
-							@foreach ($user->authorizedProviders as $providerName => $authorized)
-								<a href="{{ url('login/' . $providerName) }}">
-								@include ('providers.' . $providerName, ['size' => 'col-lg-3', 'active' => $authorized])
-								</a>
-							@endforeach
 						</div>
 					</div>
 				</div>
-
 			<div class="col-md-6">
 				<div class="card border-dark mb-3">
 					<div class="card-header bg-dark text-light">  Manage Applications

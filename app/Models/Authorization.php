@@ -19,6 +19,10 @@ class Authorization extends Model
 		return $this->belongsTo('App\Models\User');
 	}
 
+	public function server () {
+		return $this->belongsTo('App\Models\GraphQLServer', 'server_id');
+	}
+
 	public function getMetaAttribute() {
 		return json_decode($this->attributes['meta']);
 	}

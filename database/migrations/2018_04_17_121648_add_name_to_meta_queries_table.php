@@ -14,7 +14,7 @@ class AddNameToMetaQueriesTable extends Migration
     public function up()
     {
         Schema::table('meta_queries', function (Blueprint $table) {
-					$table->string('name')->default('Unnamed');
+			$table->string('name')->default('Unnamed');
         });
     }
 
@@ -26,7 +26,7 @@ class AddNameToMetaQueriesTable extends Migration
     public function down()
     {
         Schema::table('meta_queries', function (Blueprint $table) {
-					$table->dropColumn('name');
+			$table->dropColumn('name');
         });
     }
 }

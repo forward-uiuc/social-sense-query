@@ -14,15 +14,14 @@ class CreateMetaQueriesTable extends Migration
     public function up()
     {
         Schema::create('meta_queries', function (Blueprint $table) {
-					$table->increments('id');
-            $table->timestamps();
-						$table->json('canvas');
-						$table->json('topology');
-						$table->string('schedule')->nullable(true);
+			$table->increments('id');
+			$table->timestamps();
+			$table->json('canvas');
+			$table->json('topology');
+			$table->string('schedule')->nullable(true);
 
-						$table->integer('user_id')->unsigned();
-    				$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-
+			$table->integer('user_id')->unsigned();
+			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

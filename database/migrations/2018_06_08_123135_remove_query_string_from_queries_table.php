@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddUserToQueryHistoryTable extends Migration
+class RemoveQueryStringFromQueriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,8 @@ class AddUserToQueryHistoryTable extends Migration
      */
     public function up()
     {
-        Schema::table('query_histories', function (Blueprint $table) {
-			$table->integer('user_id')->unsigned()->default(0);
-			$table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+        Schema::table('queries', function (Blueprint $table) {
+			$table->dropColumn('string');
         });
     }
 
@@ -26,8 +25,8 @@ class AddUserToQueryHistoryTable extends Migration
      */
     public function down()
     {
-        Schema::table('query_histories', function (Blueprint $table) {
-					$table->dropColumn('user_id');
+        Schema::table('queries', function (Blueprint $table) {
+			$table->string('string');
         });
     }
 }

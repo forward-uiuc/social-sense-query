@@ -15,6 +15,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+use App\Models\GraphQLServer;
+use App\Models\Query\Query;
+Route::get('/test', function() {
+	dd(Query::all()->last());
+});
+
 Auth::routes();
 
 Route::get('home', 'HomeController@index')->name('home');

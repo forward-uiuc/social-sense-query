@@ -26,7 +26,7 @@
 					<tbody>
 						<tr v-for="(historyItem, index) in history">
 							<td>
-									{{ historyItem.created_at }}
+								{{ historyItem.created_at }}
 							</td>
 							<td>
 								{{ historyItem.duration }}
@@ -40,7 +40,7 @@
 			</div>
 
 			<div class="col-md-8">
-				<d3-tree-view ref="treeView" :data="visibleData" v-on:node-clicked="paginateChildren"></d3-tree-view>
+				<d3-tree-view ref="treeView" :data="visibleData" v-on:node-clicked="paginateChildren" style="width:2500px; height:1000px"></d3-tree-view>
 			</div>
 			
 		</div>
@@ -64,7 +64,7 @@ export default {
 		convertToTree: function(data) {
 			
 			if (this.isScalar(data) ) {
-				console.log(data);
+				console.log('Scalar: ', data);
 				throw(data, " is a scalar value friendo");
 				return;
 			}
@@ -90,12 +90,6 @@ export default {
 						child.color = 'white';
 					}
 				}
-
-				/*if(Array.isArray(data)) {
-					child.selected = true;
-					child._children = child.children;
-					child.children = [];
-				}*/
 
 				node.children.push(child);
 			}
@@ -163,8 +157,6 @@ export default {
 			this.visibleData.selected = false;
 		},
 		deleteQuery () {
-			console.log(this.deleteFormId)
-			console.log(document.getElementById(this.deleteFormId))
 			document.getElementById(this.deleteFormId).submit();
 		},
 		submitQuery () {
@@ -188,8 +180,9 @@ export default {
 		}
 	},
 	mounted () {
-		this.show(this.history[0]);
-		console.log(this.deleteFormId);
+		if(this.history.length) {
+			this.show(this.history[0]);
+		}
 	}
 }
 

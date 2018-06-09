@@ -14,7 +14,7 @@ class AddMetaQueryToplogyToRuns extends Migration
     public function up()
     {
         Schema::table('runs', function (Blueprint $table) {
-					$table->json('topology')->nullable();
+			$table->json('topology')->nullable();
         });
     }
 
