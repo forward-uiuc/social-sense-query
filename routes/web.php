@@ -19,7 +19,7 @@ Route::get('/', function () {
 use App\Models\GraphQLServer;
 use App\Models\Query\Query;
 Route::get('/test', function() {
-	dd(Query::all()->last());
+	dd(GraphQLServer::all()->last());
 });
 
 Auth::routes();

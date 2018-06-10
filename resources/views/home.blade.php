@@ -26,6 +26,12 @@
 						</div>
 						</div>
 						<div class="card-body">
+						@foreach($servers as $server)
+							<a href="{{ route('authorizeProvider', ['provider' => $server->slug]) }}"> 
+								<provider-authorization-status provider-slug="{{$server->slug}}" active="{{$server->active}}" icon-size="5"> </provider-authorization-status>
+							</a>
+						@endforeach
+
 						</div>
 					</div>
 				</div>

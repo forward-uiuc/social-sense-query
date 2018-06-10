@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Authorization extends Model
 {
 	protected $fillable = [
-		'access_token', 'refresh_token', 'meta', 'provider'
+		'access_token', 'refresh_token', 'meta', 'server_id'
 	];
 
 	protected $appends = ['client']; 

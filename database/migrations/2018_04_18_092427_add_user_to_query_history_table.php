@@ -27,7 +27,8 @@ class AddUserToQueryHistoryTable extends Migration
     public function down()
     {
         Schema::table('query_histories', function (Blueprint $table) {
-					$table->dropColumn('user_id');
+			$table->dropForeign(['user_id']);
+			$table->dropColumn('user_id');
         });
     }
 }

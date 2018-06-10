@@ -95,7 +95,7 @@ class Query extends Model
 		}
 		
 		$start = microtime(true);
-		$body = $this->server->buildRequest($this->getQueryString());
+		$body = $this->server->buildRequest($this->getQueryString(), $this->user);
 
 		$duration = round(microtime(true) - $start, 3) * 1000;	
 		$hasError = property_exists(json_decode($body), 'errors');

@@ -28,6 +28,6 @@ class CreateMetaQueryRunsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('meta_query_runs');
+        Schema::dropIfExists('runs');
     }
 }

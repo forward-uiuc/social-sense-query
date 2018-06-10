@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\GraphQLServer;
 
 class AuthorizationController extends Controller
 {
@@ -53,9 +54,7 @@ class AuthorizationController extends Controller
 
 	public function createAuthorization(Request $request, $provider) {
 
-		if(!in_array($provider, config('services.providers'))){
-			abort(404);
-		}
+		$server = GraphQLServer::where('slug', $provider)->firstOrFail();
 
 		switch($provider){
 			case "reddit":
@@ -65,11 +64,10 @@ class AuthorizationController extends Controller
 					'access_token' => $user->accessTokenResponseBody['access_token'],
 					'refresh_token' => $user->accessTokenResponseBody['refresh_token'],
 					'meta' => json_encode(['expires_in' => $user->accessTokenResponseBody['expires_in']]),
-					'provider' => $provider
+					'server_id' => $server->id
 				];
 
-				\Auth::user()->authorizations()
-										 ->updateOrCreate(['provider' => $provider], $authorization);
+				\Auth::user()->authorizations()->updateOrCreate(['server_id' => $server->id], $authorization);
 
 				break;
 
@@ -79,11 +77,10 @@ class AuthorizationController extends Controller
 						'access_token'  => $user->accessTokenResponseBody['oauth_token'],
 						'refresh_token' => $user->accessTokenResponseBody['oauth_token_secret'],
 						'meta' => json_encode(['expires_in' => null]),
-						'provider' => $provider
+						'server_id' => $server->id
 					];
 
-				\Auth::user()->authorizations()
-										 ->updateOrCreate(['provider' => $provider], $authorization);
+				\Auth::user()->authorizations()->updateOrCreate(['server_id' => $server->id], $authorization);
 
 					break;
 
@@ -93,11 +90,10 @@ class AuthorizationController extends Controller
 						'access_token'  => $user->accessTokenResponseBody['access_token'],
 						'refresh_token' => $user->accessTokenResponseBody['refresh_token'],
 						'meta' => json_encode(['expires_in' => $user->accessTokenResponseBody['expires_in']]),
-						'provider' => $provider
+						'server_id' => $server->id
 					];
 
-				\Auth::user()->authorizations()
-										 ->updateOrCreate(['provider' => $provider], $authorization);
+				\Auth::user()->authorizations()->updateOrCreate(['server_id' => $server->id], $authorization);
 
 					break;
 			default:

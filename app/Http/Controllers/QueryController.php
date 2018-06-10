@@ -106,7 +106,8 @@ class QueryController extends Controller
     {
 			$user = \Auth::user();
 			$query = Query::findOrFail($id);
-			return view('queries.update', ['user' => $user, 'query' => $query]);
+			$servers = collect([$query->server]);
+			return view('queries.update', ['user' => $user, 'query' => $query, 'servers' => $servers]);
     }
 
     /**

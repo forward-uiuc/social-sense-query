@@ -25,6 +25,8 @@ Vue.component('meta-query-viewer', require('./components/MetaQueryViewer.vue'));
 Vue.component('query-viewer', require('./components/QueryViewer.vue'));
 Vue.component('d3-tree-view', require('./components/D3TreeView.vue'));
 Vue.component('query-editor', require('./components/QueryEditor.vue'));
+Vue.component('provider-authorization-status', require('./components/ProviderAuthorizationStatus.vue'));
+Vue.component('landing-page-headline', require('./components/LandingPageHeadline.vue'));
 
 import TreeView from "vue-json-tree-view";
 import D3Network from "vue-d3-network";

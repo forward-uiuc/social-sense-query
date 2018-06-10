@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\GraphQLServer;
+use App\Models\User;
+
 use Illuminate\Support\Facades\File;
 
 class RefreshGQLServerSchema extends Command
@@ -40,10 +42,12 @@ class RefreshGQLServerSchema extends Command
     public function handle()
     {
 		$introspectionQuery = File::get( resource_path() . '/utils/introspectionQuery.txt');
-
 		$servers = GraphQLServer::all();
-		$servers->each(function($server) use ($introspectionQuery) {
-			$server->schema = $server->buildRequest($introspectionQuery);
+		// @REFACTOR Allow for connections to fail
+		$servers->filter(function($server) { 
+			return $server->schema === null ;
+		})->each(function($server) use ($introspectionQuery) {
+			$server->schema = $server->buildRequest($introspectionQuery, User::first());
 			$server->save();
 		});
     }

@@ -1,11 +1,11 @@
 <template>
 		<div class="row"> 
-			<div class="col-md-2" style="height:80vh; overflow-y: auto;">
+			<div class="col-md-2" style="height:50vh; overflow-y: auto; position:fixed; z-index:1000;">
 				<queryInputForm :inputs="inputs"></queryInputForm>
 			</div>
 
-			<div class="col-md-10" style="border-color-left:black; ">
-				<d3-tree-view :data="tree" v-on:node-clicked="expandQuery" v-on:node-right-clicked="showArguments" style="width:2500px; height:1000px"></d3-tree-view>
+			<div class="col-md-10" style="border-color-left:black; margin-left: 10vw">
+				<d3-tree-view :data="tree" v-on:node-clicked="expandQuery" v-on:node-right-clicked="showArguments" style="width:4000px; height:1250px"></d3-tree-view>
 			</div>
 		 </div> 
 </template>
@@ -55,6 +55,9 @@ export default {
 			return new QueryNode(name, inputs, output, children, selected);
 
 		},
+		restoreFromQueryNode (queryNode) {
+			this.expandQuery(this.tree);
+		},
 		getFieldTypeName(field) {
 			if (field.type.kind === 'LIST') {
 				return field.type.ofType.name;	
@@ -65,12 +68,16 @@ export default {
 			return type.kind === 'SCALAR' || (type.kind === 'LIST' && type.ofType.kind === 'SCALAR')
 		},
 		expandQuery (node) {
-			console.log(node)
 			this.inputs = node.args.length > 0 ? node.args : this.inputs;
 			this.inputs.forEach( input => {
-				input.value = input.value ? input.value : input.defaultValue;
-			});
+				let initialValue = input.value ? input.value : input.defaultValue;
+				if(input.type.name !== 'String') {
+					initialValue = JSON.parse(initialValue)
+				}
 
+				input.value = initialValue;
+			});
+			
 			if (node.children && node.children.length > 0){
 				return;
 			}

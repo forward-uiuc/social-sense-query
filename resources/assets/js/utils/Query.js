@@ -4,6 +4,9 @@ export class Input { // Represents an input to a node
 		this.description = description;
         this.inputType = inputType;
         this.value = value;
+		if (this.inputType.name !== 'String') {
+			this.value = JSON.parse(this.value);
+		} 
     }
 }
 

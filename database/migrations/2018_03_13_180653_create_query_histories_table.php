@@ -17,12 +17,12 @@ class CreateQueryHistoriesTable extends Migration
             $table->increments('id');
             $table->timestamps();
 
-						$table->integer('duration')->unsigned(); // Duration in milliseconds
-						$table->boolean('has_error');
-						$table->json('data');
+			$table->integer('duration')->unsigned(); // Duration in milliseconds
+			$table->boolean('has_error');
+			$table->json('data');
 
-						$table->integer('query_id')->unsigned();
-    				$table->foreign('query_id')->references('id')->on('queries')->onDelete('cascade');
+			$table->integer('query_id')->unsigned();
+    		$table->foreign('query_id')->references('id')->on('queries')->onDelete('cascade');
 
         });
     }
