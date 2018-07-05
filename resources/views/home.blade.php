@@ -69,12 +69,10 @@
 						@if (count($user->queries) > 0)
 						<ul class="list-group" style="height: 400px; overflow-y: scroll">
 
-							@foreach ($user->queries as $query)
+							@foreach ($user->queries->sortByDesc('created_at') as $query)
 							<li class="list-group-item"> 
 									{{ $query->name }} 
-
-									<br>
-
+										<br>
 										<a href="{{ url('queries/'.$query->id) }}" class="btn btn-info">
 											<i class="fas fa-history fa-lg"></i>
 											Manage

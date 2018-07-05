@@ -5,7 +5,7 @@
 			</div>
 
 			<div class="col-md-10" style="border-color-left:black; margin-left: 10vw">
-				<d3-tree-view :data="tree" v-on:node-clicked="expandQuery" v-on:node-right-clicked="showArguments" style="width:4000px; height:1250px"></d3-tree-view>
+				<d3-tree-view ref="treeView" :data="tree" v-on:node-clicked="expandQuery" v-on:node-right-clicked="showArguments" style="width:4000px; height:800px"></d3-tree-view>
 			</div>
 		 </div> 
 </template>
@@ -55,8 +55,55 @@ export default {
 			return new QueryNode(name, inputs, output, children, selected);
 
 		},
+		logObject (obj) {
+			console.log(JSON.parse(JSON.stringify(obj)));
+		},
+		synchronize(localTree, serializedTree) {
+			
+			localTree.selected = true;
+			this.expandQuery(localTree);
+			localTree.children = localTree._children;
+
+			let serializedInputs = {};
+			serializedTree.inputs.forEach( input => {
+				serializedInputs[input.name] = input;
+			});
+
+			localTree.args.forEach( arg => {
+				arg.value = serializedInputs[arg.name].value;
+			});
+
+			
+
+			if (this.isScalar(localTree.type)){
+				localTree.color = 'yellow';
+				return;
+			}
+
+
+
+
+			let attributes = {}
+			serializedTree.children.forEach(child => {
+				attributes[child.name] = child;
+			});
+			
+			localTree.children.forEach( child => {
+				if(attributes[child.text]){
+					this.synchronize(child, attributes[child.text]);
+				}
+			});
+			
+
+		},
 		restoreFromQueryNode (queryNode) {
-			this.expandQuery(this.tree);
+			this.resetSchema();
+			this.synchronize(this.tree, queryNode);
+			/*let restored = this.transformFromObjectRef(queryNode);
+			restored.position = 'left';
+			restored.color = 'lightsteelblue'
+			restored._children = restored.children;
+		  	this.tree = restored;*/
 		},
 		getFieldTypeName(field) {
 			if (field.type.kind === 'LIST') {

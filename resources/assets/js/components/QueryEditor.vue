@@ -83,7 +83,7 @@ export default {
 		return {
 			schedule: this.initialSchedule,
 			name: this.initialName,
-			structure: this.initialStructure,
+			structure: JSON.parse(this.initialStructure),
 			schema: this.servers[0].schema,
 		}	
 	},	
@@ -110,7 +110,6 @@ export default {
 	mounted () {
 		this.$refs.name.value = this.name;
 		this.$refs.schedule.value = this.schedule;
-		
 		if (this.initialStructure) {
 			this.$refs.queryBuilder.restoreFromQueryNode(JSON.parse(this.initialStructure));				
 		}
