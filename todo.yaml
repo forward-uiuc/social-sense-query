@@ -1,0 +1,22 @@
+Tests:
+    - 
+    -
+    -
+    -
+    -
+    -
+    -
+    -
+    -
+
+Meta Query:
+    - "Update to reflect new query structure"
+    - "Allow for edit"
+    - "Inputs and functions showing value" 
+    - "Async"
+    - "Meta Query as node"
+    - "Query History as node"
+Other:
+    - "GraphQL Server"
+    - "Package component as libraries"
+  

@@ -16,11 +16,7 @@ class VerifyUserIsAdmin extends Authenticate
      */
     public function handle($request, Closure $next, ...$guards)
     {
-			// Make sure that the user is authenticated
-			// If they aren't this will throw an error 
-			parent::handle($request, $next, $guards); 
-
-			if($request->user()->isAdmin){
+			if($request->user() && $request->user()->isAdmin){
 			  return $next($request);
 			} else {
 				abort(403);

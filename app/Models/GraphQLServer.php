@@ -24,10 +24,14 @@ class GraphQLServer extends Model
 	 * Returns a guzzlehttp request
 	 */
 	public function buildRequest(String $queryString, User $user) {
-		if (array_key_exists($this->slug, GraphQLServer::$requestBuilders)) {
-			return GraphQLServer::$requestBuilders[$this->slug]::build($this, $user, $queryString);
-		} else {
-			return \App\Builders\GraphQLRequestBuilders\DefaultGQLRequestBuilder::build($this, $user, $queryString);
+		try {
+			if (array_key_exists($this->slug, GraphQLServer::$requestBuilders)) {
+				return GraphQLServer::$requestBuilders[$this->slug]::build($this, $user, $queryString);
+			} else {
+				return \App\Builders\GraphQLRequestBuilders\DefaultGQLRequestBuilder::build($this, $user, $queryString);
+			}
+		} catch (Exception $e) {
+			throw $e;
 		}
 	}
 }

@@ -36,11 +36,12 @@ export default {
 			return QueryNode.isValidQuery(this.getQueryStructure());
 		},
 		map (treeNode) {
+			if(treeNode.invertedSelection){
+				console.log(treeNode.selected);
+			}
 			if(treeNode.selected) {
 				return null;
 			}
-
-
 			let name = treeNode.text;
 			let selected = !treeNode.selected;
 			let output = new Output(treeNode.type)
@@ -51,7 +52,8 @@ export default {
 			let children = treeNode.children? treeNode.children.map( child => { return this.map(child)  }) : [];
 
 			children = children.filter(child => child != null);
-			
+			console.log(children);	
+
 			return new QueryNode(name, inputs, output, children, selected);
 
 		},
@@ -60,7 +62,7 @@ export default {
 		},
 		synchronize(localTree, serializedTree) {
 			
-			localTree.selected = true;
+			localTree.selected = false;
 			this.expandQuery(localTree);
 			localTree.children = localTree._children;
 
@@ -74,13 +76,11 @@ export default {
 			});
 
 			
-
-			if (this.isScalar(localTree.type)){
-				localTree.color = 'yellow';
+			localTree.selected = true;
+			localTree.invertedSelection = true;	
+			if(!localTree.children){
 				return;
 			}
-
-
 
 
 			let attributes = {}
@@ -94,16 +94,10 @@ export default {
 				}
 			});
 			
-
 		},
 		restoreFromQueryNode (queryNode) {
 			this.resetSchema();
 			this.synchronize(this.tree, queryNode);
-			/*let restored = this.transformFromObjectRef(queryNode);
-			restored.position = 'left';
-			restored.color = 'lightsteelblue'
-			restored._children = restored.children;
-		  	this.tree = restored;*/
 		},
 		getFieldTypeName(field) {
 			if (field.type.kind === 'LIST') {

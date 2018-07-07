@@ -38,7 +38,12 @@ Route::get('login/{prodier}/return', 'AuthorizationController@createAuthorizatio
 
 Route::resource('queries', 'QueryController');
 Route::resource('users', 'UserController');
+Route::resource('servers', 'GraphQLServerController')->except(['show']);
+Route::get('servers/{server}/refresh', 'GraphQLServerController@refresh')->name('servers.refresh');
 Route::get('queries/{id}/submit', 'QueryController@submit');
+
+
+
 
 
 Route::get('/contact/me', 'InterestedPartyController@create');

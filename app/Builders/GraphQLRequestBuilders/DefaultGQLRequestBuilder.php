@@ -5,6 +5,7 @@ use App\Models\GraphQLServer;
 use App\Models\User;
 
 use GuzzleHttp\Client;
+use App\Exceptions\ServerDownException;
 
 class DefaultGQLRequestBuilder implements BuildsGraphQLRequests
 {
@@ -31,9 +32,16 @@ class DefaultGQLRequestBuilder implements BuildsGraphQLRequests
 			]);
 		}
 
-		return $client->request('POST', '', [
-			'headers' => $headers,
-			'body' => $queryString
-		])->getBody()->getContents();
+		try {
+			return $client->request('POST', '', [
+				'headers' => $headers,
+				'body' => $queryString
+			])->getBody()->getContents();
+		} catch (\Exception $e) {
+			report($e);
+			throw new ServerDownException($e->getMessage());
+		}
+
+		return null;
 	}
 }

@@ -30,18 +30,23 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
 											@auth		
-											<a class="nav-item nav-link" href=" {{ url('/home') }}">
-												Home			
-											</a>
+												<a class="nav-item nav-link" href=" {{ url('/home') }}">
+													Home			
+												</a>
 
-											@if (Auth::user()->isAdmin)
-												<a class="nav-item nav-link" href=" {{ url('/users') }}">
-													Manage Users
-												</a>
-												<a class="nav-item nav-link" href=" {{ url('/contact') }}">
-													View contact requests
-												</a>
-											@endif
+												@if (Auth::user()->isAdmin)
+													<a class="nav-item nav-link" href=" {{ url('/users') }}">
+														Manage Users
+													</a>
+
+													<a class="nav-item nav-link" href=" {{ url('/contact') }}">
+														View contact requests
+													</a>
+
+													<a class="nav-item nav-link" href="{{ route('servers.index') }}">
+														Manage Servers	
+													</a>
+												@endif
 
 											@endauth
                     </ul>

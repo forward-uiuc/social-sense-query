@@ -86416,10 +86416,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		map: function map(treeNode) {
 			var _this = this;
 
+			if (treeNode.invertedSelection) {
+				console.log(treeNode.selected);
+			}
 			if (treeNode.selected) {
 				return null;
 			}
-
 			var name = treeNode.text;
 			var selected = !treeNode.selected;
 			var output = new __WEBPACK_IMPORTED_MODULE_1__utils_Query__["c" /* Output */](treeNode.type);
@@ -86434,6 +86436,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			children = children.filter(function (child) {
 				return child != null;
 			});
+			console.log(children);
 
 			return new __WEBPACK_IMPORTED_MODULE_1__utils_Query__["d" /* QueryNode */](name, inputs, output, children, selected);
 		},
@@ -86443,7 +86446,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		synchronize: function synchronize(localTree, serializedTree) {
 			var _this2 = this;
 
-			localTree.selected = true;
+			localTree.selected = false;
 			this.expandQuery(localTree);
 			localTree.children = localTree._children;
 
@@ -86456,8 +86459,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 				arg.value = serializedInputs[arg.name].value;
 			});
 
-			if (this.isScalar(localTree.type)) {
-				localTree.color = 'yellow';
+			localTree.selected = true;
+			localTree.invertedSelection = true;
+			if (!localTree.children) {
 				return;
 			}
 
@@ -86475,11 +86479,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		restoreFromQueryNode: function restoreFromQueryNode(queryNode) {
 			this.resetSchema();
 			this.synchronize(this.tree, queryNode);
-			/*let restored = this.transformFromObjectRef(queryNode);
-   restored.position = 'left';
-   restored.color = 'lightsteelblue'
-   restored._children = restored.children;
-    	this.tree = restored;*/
 		},
 		getFieldTypeName: function getFieldTypeName(field) {
 			if (field.type.kind === 'LIST') {
@@ -87031,7 +87030,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 
 			prefix = prefix + queryStructureRoot.name + '.';
 			var levelInputs = queryStructureRoot.inputs.map(function (input) {
-				return prefix + input.name + ':' + input.inputType;
+				return prefix + input.name + ':' + input.inputType.name;
 			});
 
 			var _iteratorNormalCompletion5 = true;
@@ -87063,6 +87062,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 				}
 			}
 
+			console.log(levelInputs);
 			return levelInputs;
 		},
 
