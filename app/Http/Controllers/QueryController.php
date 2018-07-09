@@ -96,7 +96,7 @@ class QueryController extends Controller
 		} catch (\RuntimeException $e) {
 			$request->session()->flash('error', $e->getMessage());
 		} 
-		return back();
+		return $this->show($id);
 	}
 
 
