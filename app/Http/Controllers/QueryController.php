@@ -39,10 +39,41 @@ class QueryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
 			$user = \Auth::user();
-			$servers = GraphQLServer::all();
+			$servers = GraphQLServer::where('schema', '!=', 'null')->get();
+
+			// First, Catch a situation of there being no servers added
+			if ($servers->count() < 1) {
+				$request->session()->flash('error', 'Error! There are no active servers with schema available to query.');
+				return back();
+			}
+
+			// Next, filter on the servers that this user can query.
+			// If they require authorization, the user must provide one. Otherwise they cannot use that server
+			// Likewise if the server doesn't require authorizaiton they can query it
+			$servers = $servers->filter(function($server) use ($user) {
+				if($server->requires_authentication || $server->requires_authorization) {
+					$userAuthorization = $user->authorizations()->where('server_id', $server->id)->first();
+
+					if($userAuthorization){
+						return true; 
+					} else {
+						return false;
+					}
+	
+				}
+				
+				return true;	
+			});
+
+			// At this point, if there are no servers available they need to authorize.
+			if ($servers->count() < 1) {
+				$request->session()->flash('error', 'Error! You need to provide authorization in order to query the servers available.');
+				return back();
+			}
+
 			return view('queries.create', ['user' => $user, 'servers' => $servers]);
     }
 

@@ -73,7 +73,7 @@ export default {
 		initialStructure: {
 			type: String,
 			required: false,
-			default: ""
+			default: "null"
 		}	
 	},
 	components: {
@@ -108,9 +108,10 @@ export default {
 		}
 	},
 	mounted () {
+
 		this.$refs.name.value = this.name;
 		this.$refs.schedule.value = this.schedule;
-		if (this.initialStructure) {
+		if (this.structure) {
 			this.$refs.queryBuilder.restoreFromQueryNode(JSON.parse(this.initialStructure));				
 		}
 	}

@@ -20,6 +20,9 @@ class GraphQLServer extends Model
 		return $this->hasMany('App\Models\Query\Query', 'server_id');
 	}
 
+	public function authorizations() {
+		return $this->hasMany('App\Models\Authorization', 'server_id');
+	}
 	/**
 	 * Returns a guzzlehttp request
 	 */

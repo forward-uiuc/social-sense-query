@@ -109351,7 +109351,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		initialStructure: {
 			type: String,
 			required: false,
-			default: ""
+			default: "null"
 		}
 	},
 	components: {
@@ -109388,9 +109388,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		}
 	},
 	mounted: function mounted() {
+
 		this.$refs.name.value = this.name;
 		this.$refs.schedule.value = this.schedule;
-		if (this.initialStructure) {
+		if (this.structure) {
 			this.$refs.queryBuilder.restoreFromQueryNode(JSON.parse(this.initialStructure));
 		}
 	}

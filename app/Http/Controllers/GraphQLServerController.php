@@ -108,7 +108,7 @@ class GraphQLServerController extends Controller
 			$request->session()->flash('error', 'Ughoh, something went wrong: ' . $e->getMessage());
 		} 
 
-		return back();
+		return $this->index();
 	}
 
     /**
