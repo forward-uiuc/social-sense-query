@@ -93,7 +93,7 @@ export default {
 			if (!this.$refs.queryBuilder.getIsValidQuery()) {
 				alert('Select at least one attribute');
 				return;
-			} else if ( !this.$refs.name) {
+			} else if ( !this.$refs.name.value) {
 				alert('Please give a name to this query')
 				return;
 			}

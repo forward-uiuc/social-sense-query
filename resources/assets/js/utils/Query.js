@@ -54,7 +54,6 @@ export class QueryNode {
     }
 
 	static isValidQuery(queryNode){
-		console.log(queryNode);
 		if(!queryNode || !queryNode.selected){
 			return false;
 		}

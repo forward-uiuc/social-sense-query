@@ -23754,7 +23754,6 @@ var QueryNode = function () {
 	}], [{
 		key: 'isValidQuery',
 		value: function isValidQuery(queryNode) {
-			console.log(queryNode);
 			if (!queryNode || !queryNode.selected) {
 				return false;
 			}
@@ -75049,7 +75048,7 @@ var i = 0;
 						queryNode.output.isScalar = queryNode.output.isScalar == "true" || queryNode.output.isScalar === true;
 
 						var temp = [];
-						node.query = new __WEBPACK_IMPORTED_MODULE_3__utils_Query__["d" /* QueryNode */](queryNode.name, queryNode.inputs, queryNode.output, [], queryNode.selected);
+						node.query = new __WEBPACK_IMPORTED_MODULE_3__utils_Query__["d" /* QueryNode */](queryNode.name, queryNode.inputs, queryNode.output, [], !queryNode.selected);
 
 						if (queryNode.output.isAList) {
 								node = Object.assign(node, this.nodes[queryNode.output.type.ofType.name]);
@@ -86416,14 +86415,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 		map: function map(treeNode) {
 			var _this = this;
 
-			if (treeNode.invertedSelection) {
-				console.log(treeNode.selected);
-			}
 			if (treeNode.selected) {
 				return null;
 			}
+
 			var name = treeNode.text;
 			var selected = !treeNode.selected;
+
 			var output = new __WEBPACK_IMPORTED_MODULE_1__utils_Query__["c" /* Output */](treeNode.type);
 			var inputs = treeNode.args.map(function (arg) {
 				return new __WEBPACK_IMPORTED_MODULE_1__utils_Query__["b" /* Input */](arg.name, arg.description, arg.type, arg.value ? arg.value : arg.defaultValue);
@@ -86436,7 +86434,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			children = children.filter(function (child) {
 				return child != null;
 			});
-			console.log(children);
 
 			return new __WEBPACK_IMPORTED_MODULE_1__utils_Query__["d" /* QueryNode */](name, inputs, output, children, selected);
 		},
@@ -86473,12 +86470,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			localTree.children.forEach(function (child) {
 				if (attributes[child.text]) {
 					_this2.synchronize(child, attributes[child.text]);
+					child.selected = false;
 				}
 			});
 		},
 		restoreFromQueryNode: function restoreFromQueryNode(queryNode) {
 			this.resetSchema();
 			this.synchronize(this.tree, queryNode);
+			this.logObject(this.tree);
 		},
 		getFieldTypeName: function getFieldTypeName(field) {
 			if (field.type.kind === 'LIST') {
@@ -109373,7 +109372,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 			if (!this.$refs.queryBuilder.getIsValidQuery()) {
 				alert('Select at least one attribute');
 				return;
-			} else if (!this.$refs.name) {
+			} else if (!this.$refs.name.value) {
 				alert('Please give a name to this query');
 				return;
 			}

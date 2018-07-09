@@ -346,7 +346,7 @@
 				queryNode.output.isScalar =  queryNode.output.isScalar == "true" || queryNode.output.isScalar === true;
 
 				var temp = []
-				node.query = new QueryNode(queryNode.name, queryNode.inputs, queryNode.output, [], queryNode.selected);
+				node.query = new QueryNode(queryNode.name, queryNode.inputs, queryNode.output, [], !queryNode.selected);
 
 				if(queryNode.output.isAList){
 					node = Object.assign(node, this.nodes[queryNode.output.type.ofType.name]);

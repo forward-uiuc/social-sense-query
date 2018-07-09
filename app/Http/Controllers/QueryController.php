@@ -153,7 +153,7 @@ class QueryController extends Controller
 			$query = Query::findOrFail($id);
 			$query->fill($request->all())->save();
 			$request->session()->flash('status', 'Query Updated!');
-			return view('queries.show', ['query' => $query]);
+			return $this->show($id);
     }
 
     /**

@@ -30,20 +30,20 @@ export default {
 	},	
 	methods: {
 		getQueryStructure: function() {
-			return this.map(this.tree)
+			 return this.map(this.tree)
 		},
 		getIsValidQuery: function() {
 			return QueryNode.isValidQuery(this.getQueryStructure());
 		},
 		map (treeNode) {
-			if(treeNode.invertedSelection){
-				console.log(treeNode.selected);
-			}
 			if(treeNode.selected) {
 				return null;
 			}
+
 			let name = treeNode.text;
 			let selected = !treeNode.selected;
+
+
 			let output = new Output(treeNode.type)
 			let inputs = treeNode.args.map(arg => {
 				return new Input(arg.name, arg.description, arg.type, arg.value ? arg.value : arg.defaultValue)
@@ -52,7 +52,6 @@ export default {
 			let children = treeNode.children? treeNode.children.map( child => { return this.map(child)  }) : [];
 
 			children = children.filter(child => child != null);
-			console.log(children);	
 
 			return new QueryNode(name, inputs, output, children, selected);
 
@@ -87,10 +86,11 @@ export default {
 			serializedTree.children.forEach(child => {
 				attributes[child.name] = child;
 			});
-			
+
 			localTree.children.forEach( child => {
 				if(attributes[child.text]){
 					this.synchronize(child, attributes[child.text]);
+					child.selected = false;
 				}
 			});
 			
@@ -98,6 +98,7 @@ export default {
 		restoreFromQueryNode (queryNode) {
 			this.resetSchema();
 			this.synchronize(this.tree, queryNode);
+			this.logObject(this.tree);
 		},
 		getFieldTypeName(field) {
 			if (field.type.kind === 'LIST') {
