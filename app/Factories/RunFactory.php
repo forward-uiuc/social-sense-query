@@ -19,11 +19,10 @@ class RunFactory {
 		// second, create all the dependencies that the nodes have
 		$this->createDependencies($run, $nodes);
 
-		// last, for each node stage, resolve said node
-		$run->stages->each(function($stage) {
-			$stage->nodes->each(function($node) {
-				$node->resolve();
-			});
+		// last, mark all nodes in the first stage as ready to execute
+		$run->stages->first()->nodes->each(function($node){
+			$node->status = 'ready';
+			$node->save();
 		});
 
 		return $run;
@@ -93,7 +92,6 @@ class RunFactory {
 	/*
 	 * Given an array of topology nodes and a run, generate the 
 	 * stages and meta query nodes at each stage accordingly
-	 *
 	 */
 	private function generateRunStages($nodes, MetaQuery\Run $run) {
 		$stages = collect([]);

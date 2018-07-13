@@ -105,6 +105,8 @@ class QueryNode
 		{
 			$queryString .= "(" . collect($this->inputs)->map(function($input) {
 				return (string) $input;
+			})->reject(function($inputString) {
+				return $inputString === '';
 			})->implode(", ") . ")";			
 		}
 
@@ -135,11 +137,11 @@ class QueryNode
 		if(!$structure) {
 			return null;
 		}
+
 		$inputs = [];
 		foreach($structure->inputs as $input) {
 			array_push($inputs, new Input($input->name, $input->description, $input->inputType->name, $input->value));
 		}
-
 		$output = new Output($structure->output);
 
 		$children = [];
@@ -158,16 +160,20 @@ class Input
 
 	public function __toString() 
 	{
+		if($this->value === null) {
+			return '';
+		}
+
 		switch($this->inputType) {
-		case "String":
-			return $this->name . ': "' . $this->cleanInput($this->value ? $this->value : '') . '"';
-		case "Boolean":
-			return $this->name .': ' . ($this->value ? 'true' : 'false');
-		case "Int":
-		case "Float":
-			return $this->name .': ' . $this->value;
-		default:
-			return $this->inputType;
+			case "String":
+				return $this->name . ': "' . $this->cleanInput($this->value ? $this->value : '') . '"';
+			case "Boolean":
+				return $this->name .': ' . ($this->value ? 'true' : 'false');
+			case "Int":
+			case "Float":
+				return $this->name .': ' . ($this->value ? $this->value : '0');
+			default:
+				return $this->inputType;
 		}
 	}
 

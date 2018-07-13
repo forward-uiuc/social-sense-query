@@ -41,6 +41,7 @@ export default {
 	},
 	methods: {
 		buildQueryComponent: function(query) {
+			console.log(query);
 			let queryInputs = this.getInputs(query.structure, '');
 			let queryOutputs = this.getOutputs(query.structure, '');
 			

@@ -28,7 +28,7 @@
 									{{ run.created_at }}
 							</td>
 							<td> 
-								<div class="btn btn-secondary" v-on:click="show(run)"> Show data </div>
+								<div class="btn btn-secondary" v-on:click="refreshRun(run)"> Show data </div>
 							</td>
 						</tr>
 					</tbody>
@@ -36,7 +36,7 @@
 			</div>
 
 			<div class="col-md-8">
-				<d3-tree-view ref="treeView" :data="visibleData" v-on:node-clicked="paginateChildren"></d3-tree-view>
+				<d3-tree-view ref="treeView" :data="visibleData" v-on:node-clicked="paginateChildren" v-on:node-right-clicked="updateNode"></d3-tree-view>
 			</div>
 			
 		</div>
@@ -44,13 +44,17 @@
 </template>
 
 <script>
+import Vue from 'vue';
 
 export default {
 	name: 'queryViewer',
 	props: ['query', 'deleteFormId'], 
 	data: () => {
 		return {
-			visibleData: {text:'result', children: []}
+			visibleData: {text:'result', children: []},
+			run: null,
+			refreshIntervalId: -1,
+			intervalPeriod: 1000
 		}
 	},
 	methods: {
@@ -58,6 +62,7 @@ export default {
 			return typeof(data) !== 'object' && !Array.isArray(data);
 		},
 		convertOutputValueToTree: function(value) {
+
 			if (this.isScalar(value) || value === null) {
 				let node = {
 					text: value ? value : 'null',
@@ -89,35 +94,47 @@ export default {
 			return node;
 		},
 		convertStageToTree: function(stage) {
-			let node = {color: 'white', position: 'right', children: []};
+			let displayedStage = {color: 'white', position: 'right', children: [], source:stage, type:'stage'};
 			if (stage.nodes.length == 0 ) {
-				return  node;
+				return  displayedStage;
 			}	
 
-			node.color = 'black';
+			displayedStage.color = 'black';
 
-			node.children = stage.nodes.map( queryNode => {
-				let childNode = {
+			displayedStage.children = stage.nodes.map( queryNode => {
+				return this.convertMetaQueryNodeIntoDisplayedTreeNode(queryNode);
+			});
+
+			return displayedStage;
+		},
+		convertMetaQueryNodeIntoDisplayedTreeNode (metaQueryNode) {
+			
+				// First, prepare the node
+				let displayedNode = {
 					position: 'left',
-					text: '(' + queryNode.topology_id + ') ' + queryNode.node.name
-				}
-
-				if (childNode.node_type === 'function') {
-					childNode.color = 'red'
-				} else {
-					childNode.color = 'lightsteelblue';
+					text:  metaQueryNode.node.name + ' [Status: ' + metaQueryNode.status + ']',
+					source: metaQueryNode,
+					type: 'node'
 				}
 				
-				let childNodeDependencyIds = queryNode.dependencies.map( dependency => {
+				if(metaQueryNode.status === 'error'){
+					displayedNode.color = 'red';
+				} else {
+					displayedNode.color = 'lightsteelblue';
+				}
+				
+				let dependentIDs= metaQueryNode.dependencies.map( dependency => {
 					return dependency.output.node.topology_id
 				});
 				
-				if (childNodeDependencyIds.length != 0 ){
-					childNode.text += ' *(' + childNodeDependencyIds.join(', ') + ')'
+				if (dependentIDs.length != 0 ){
+					displayedNode.text += ' *(' + dependentIDs.join(', ') + ')'
 				}	
 					
-				childNode.children = queryNode.outputs.map( output => {
-					let outputNode = {
+
+				// next, prepare its children
+				displayedNode.children = metaQueryNode.outputs.map( output => {
+					let outputNode = { // Create the node
 						text: output.path.split('.').pop(),
 						position: 'left',
 						color: 'grey',
@@ -125,8 +142,9 @@ export default {
 						_children: []
 					}
 
+					
 					let outputValue = JSON.parse(output.value);
-					for(let childIndex in outputValue){
+					for(let childIndex in outputValue){ // add their values
 						let valueNode = this.convertOutputValueToTree(outputValue[childIndex]);
 						valueNode.text = childIndex + ": " + valueNode.text;
 						outputNode._children.push(valueNode)
@@ -135,10 +153,7 @@ export default {
 					return outputNode;
 				});	
 				
-				return childNode;
-			});
-
-			return node;
+				return displayedNode;
 		},
 		paginate: function(tree, paginationSize) {
 			// base case
@@ -201,8 +216,11 @@ export default {
 			childNode.parent.children = childNode.parent.pages[childNode.changeIndex];
 		},
 		show: function(run) {
+			this.run = run;
 			this.visibleData =  {
 				text: run.created_at,
+				source: run,
+				type: 'run',
 				position: 'left',
 				color: 'lightsteelblue',
 				selected: false,
@@ -237,6 +255,23 @@ export default {
 		},
 		editQuery () {
 			location.replace('/queries/' + this.query.id + '/edit')
+		},
+		refreshRun (run) {
+			Vue.$http.get('/api/runs/' + run.id).then( response => {
+				this.show(response.data);
+			}, error => {
+				console.log(error);
+			});
+		},
+		updateNode (displayedNode) {
+			if (displayedNode.type == 'node') {
+				console.log(displayedNode.source.id);
+				Vue.$http.get('/api/meta_query_nodes/' + displayedNode.source.id + '/resolve').then( response => {
+					displayedNode = this.convertMetaQueryNodeIntoDisplayedTreeNode(response.data);
+				}, error => {
+					console.log(error);
+				});
+			} 
 		}
 	},
 	computed: {
@@ -248,7 +283,7 @@ export default {
 	},
 	mounted () {
 		this.show(this.runs[0]);
-	}
+	},
 }
 
 </script>

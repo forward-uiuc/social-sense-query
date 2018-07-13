@@ -34,6 +34,8 @@ import D3Network from "vue-d3-network";
 Vue.use(TreeView)
 Vue.use(D3Network)
 
+Vue.$http = window.axios;
+
 const app = new Vue({
     el: '#app',
 		methods: {

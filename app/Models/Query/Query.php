@@ -107,6 +107,5 @@ class Query extends Model
 		$history->user_id = $this->user->id;
 
 		$this->history()->save($history);
-
 	}
 }

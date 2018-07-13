@@ -16,3 +16,32 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/runs/{id}', function($id) {
+		$withProperties = [
+			'stages.nodes.inputs',
+			'stages.nodes.outputs',
+			'stages.nodes.node',
+			'stages.nodes.dependencies',
+			'stages.nodes.dependencies.input.node',
+			'stages.nodes.dependencies.output.node',
+		];
+
+	return App\Models\MetaQuery\Run::with($withProperties)->findOrFail($id);
+});
+
+Route::get('/meta_query_nodes/{id}', function($id) {
+	$withProperties = ['inputs','outputs','dependencies', 'node', 'dependencies.input.node', 'dependencies.output.node'];
+	return App\Models\MetaQuery\MetaQueryNode::with($withProperties)->findOrFail($id);
+});
+
+Route::get('/meta_query_nodes/{id}/resolve', function($id) {
+	$withProperties = ['inputs','outputs','dependencies', 'node', 'dependencies.input.node', 'dependencies.output.node'];
+	$node = App\Models\MetaQuery\MetaQueryNode::with($withProperties)->findOrFail($id);
+	try { 
+		$node->resolve();
+	} catch (\Exception $e) {
+		report($e);
+	}
+	return $node;
+});

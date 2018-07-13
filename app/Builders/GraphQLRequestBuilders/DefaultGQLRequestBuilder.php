@@ -5,6 +5,7 @@ use App\Models\GraphQLServer;
 use App\Models\User;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use App\Exceptions\ServerDownException;
 
 class DefaultGQLRequestBuilder implements BuildsGraphQLRequests
@@ -37,7 +38,9 @@ class DefaultGQLRequestBuilder implements BuildsGraphQLRequests
 				'headers' => $headers,
 				'body' => $queryString
 			])->getBody()->getContents();
-		} catch (\Exception $e) {
+		} catch (ClientException $e) { // If the request results in a client error, return that
+			return $e->getResponse()->getBody()->getContents();
+		} catch (\Exception $e) { // If it's any other kind of error then it's not the user's fault and, thus, let them know something sad happend
 			report($e);
 			throw new ServerDownException($e->getMessage());
 		}

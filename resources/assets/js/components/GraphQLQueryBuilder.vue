@@ -46,6 +46,7 @@ export default {
 
 			let output = new Output(treeNode.type)
 			let inputs = treeNode.args.map(arg => {
+
 				return new Input(arg.name, arg.description, arg.type, arg.value ? arg.value : arg.defaultValue)
 			})
 				

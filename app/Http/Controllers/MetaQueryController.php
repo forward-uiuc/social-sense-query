@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Jobs\SubmitMetaQueryRun;
 use App\Models\MetaQuery\MetaQuery;
 use App\Models\MetaQuery\Run;
 use App\Models\MetaQuery\Stage;
@@ -56,8 +57,9 @@ class MetaQueryController extends Controller
 
 		try{ 
 
-			$query->runs()->save($runFactory->createRun($query));
-
+			$run = $runFactory->createRun($query);
+			$query->runs()->save($run);
+			SubmitMetaQueryRun::dispatch($run);
 		} catch (UserQuotaReachedException $e) {
 			$request->session()->flash('error', $e->getMessage());
 		} catch (\RuntimeException $e) {
