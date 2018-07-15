@@ -29,13 +29,24 @@ class FunctionResolver implements ResolvesMetaQueryNode
 		
 		// retrieve all the values
 		$values = $dependencies->map(function($dependency) {
-			return $dependency->output->value;
+			return json_decode($dependency->output->value);
 		})->collapse();
-		
+
+                
 		$output = $this->node->outputs->first();
 		// compute the output value
-		$output->value = json_encode($this->node->node->computeOutput("", $values->toArray()));
+	  	$calculatedValue = $this->node->node->computeOutput("", $values->toArray());
+
+		// If the calculated value increases the dimension
+		if(count($calculatedValue) > 0 && gettype($calculatedValue[0]) === 'array') {
+			   $calculatedValue = collect($calculatedValue)->collapse()->toArray();
+		} else if (gettype($calculatedValue)  !== 'array'){
+			   $calculatedValue = [$calculatedValue];
+		}
+
+		$output->value = json_encode($calculatedValue);
 		$output->save();
+
 
 		$this->setNodeStatus('completed');
 

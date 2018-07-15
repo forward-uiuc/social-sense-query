@@ -94,12 +94,15 @@ class QueryResolver implements ResolvesMetaQueryNode
 		});
 
 		$outputs->each(function($output) use ($values){
-			$allOutputValues = $values->map(function($value) {
-				return $this->getOutput($output->path, $value);
-			})->collapse();	
+		   $allOutputValues = $values->map(function($value) use ($output){
+				   return $this->getOutput($output->path, $value)->toArray();
+		   })->collapse()->toArray();      
 
 			$output->value = json_encode($allOutputValues);
+			$output->save();
 		});
+
+
 	}
 
 
@@ -170,48 +173,48 @@ class QueryResolver implements ResolvesMetaQueryNode
 
 
 
-   /*
+	/*
 	 *  Given a query path, get the out value 
 	 */
 	public function getOutput($path, $response) {
 
 		// Example of a $path:
 		// query.reddit.searchSubredditNames:String*
-		//  '*' can be at any level (ex query.reddit*.searchSubredditNames:String*)
-		//  a '*' denotes that output at that level can be a list
-		$attributes = explode('.', $path);	
+		// so what we do is get all the elements and remove the 'query' part
+		$attributes = explode('.', $path);
+		array_shift($attributes);
 
 		$data = collect([$response->data]);
 
-		foreach($attributes as $currentLevel) {
-			// Remove the first attribute, always guarenteed to be 'query'
-			if(array_search($currentLevel, $attributes) === 0) {
-				continue;
-			} 
-			
-			$isAttribute = array_search($currentLevel, $attributes) === count($attributes) -1; // whether we're at the last level
 
-			$isList = QueryResolver::getEndOfString($currentLevel) == '*';
-			if ($isList) {
-				$currentLevel = explode('*', $currentLevel)[0];
-			}
+		// for each ['query', 'tweet*', 'user', 'timeline*','id']
+		foreach($attributes as $index => $attribute) {
+				// First, remove the '*' from the string as we can just test the response if it's a list
 
-			// The last attribute will have a ':', which we don't want and we have to handle as a special case
-			if ($isAttribute) {
-				$currentLevel = explode(':', $currentLevel)[0];
-			}
+				$attribute = str_replace('*','', $attribute);
 
-					
-			$data = $data->map(function($value) use ($currentLevel, $data){
-				// If we have a null response, continue the chain of nulls
-				if ($value === null) {
-					return $value;	
+				// If it's the last attribute, remove the ':Type' from the end
+				if($index == count($attributes) - 1) {
+						$attribute = explode(':', $attribute)[0];
 				}
-				return $value->$currentLevel;
-			});
-			if($isList) {
-				$data = $data->flatten();
-			}
+
+				$isList = gettype($data->first()) == 'array';
+				$data = $data->map(function($responseField) use ($isList, $attribute){
+						if($isList) {
+
+								return collect($responseField)->map(function($element) use ($attribute){
+										return $element->$attribute;
+								});
+
+						} else {
+								return $responseField->$attribute;
+						}
+				});
+
+				if($isList) {
+						$data = $data->collapse();
+				}
+
 		}
 
 		return $data;
