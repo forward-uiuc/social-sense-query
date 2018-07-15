@@ -53,6 +53,45 @@ class MetaQueryNode extends Model
 	}
 
 
+	public static $statuses = [
+		'ready', 'not_ready', 'waiting', 'error', 'paused', 'completed', 'running'
+	];
+
+	public function setStatus(string $status) {
+		if(!in_array($status, MetaQueryNode::$statuses)){
+			throw new \Exception("Error, attempting to set node to status of ".$status);
+		}
+			
+		switch ($status) {
+			// Check if this node is actually ready
+			case 'ready':
+				$dependenciesResolved = $this->dependencies()->with('output.node')->get()->reduce(function($carry, $dependency){
+					return $carry && ($dependency->output->node->status == 'completed');
+				}, true);
+
+				if(!$dependenciesResolved) {
+					$this->setStatus('waiting');
+					throw new \Exception("Node is waiting for dependencies and is being told to resolve");
+				}
+
+				break;
+
+			// Check if this node was actually completed
+			case 'completed':
+				$nodeHasOutput = $this->outputs->reduce(function($carry, $output) {
+					return $carry && ($output->value !== null);	
+				}, true);
+
+				if(!$nodeHasOutput){
+					$this->setStatus('error');
+					throw new \Exception("Error, node is not completed");	
+				}
+				break;
+		}
+
+		$this->status = $status;
+		$this->save();
+	}
 
 	public static function fromTopologyNode(Stage $stage, $topologyNode) {
 		

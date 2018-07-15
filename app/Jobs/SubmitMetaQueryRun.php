@@ -40,11 +40,20 @@ class SubmitMetaQueryRun implements ShouldQueue
     public function handle()
     {
 		try {
-			$this->run->stages->each(function($stage) {
+			foreach ($this->run->stages as $stageIndex => $stage) {
 				$stage->nodes->each(function($node) {
 					$node->resolve();
 				});
-			});
+
+				if($stageIndex < ($this->run->stages->count() - 1)) {
+					$nextStage = $this->run->stages[++$stageIndex];
+				
+					$nextStage->nodes->each(function($node){ 
+						$node->setStatus('ready');
+					});	
+				
+				}
+			}
 		} catch (\Exception $e) {
 			$this->release(60*5); // Try again in 5 minutes
 			throw $e; // Throw the exception so that this job can eventually fail;

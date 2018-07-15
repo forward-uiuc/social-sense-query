@@ -10,58 +10,39 @@ class FunctionResolver implements ResolvesMetaQueryNode
 {
 	public function __construct(MetaQueryNode $node) {
 		$this->node = $node;
+
+		if ($this->node->status === 'running') {
+			throw new \Exception("Attempting to instantiate a resolver for a node that is already resolving");
+		}
+	}
+
+	private function setNodeStatus(string $status) {
+		if(!in_array($status, ['ready','running','waiting','error','paused', 'completed'])){
+			throw new \Exception('Attempting to set a status incorrectly');	
+		}
+		$this->node->status = $status;
+		$this->node->save();	
 	}
 
 	public function resolve(): bool {
-		if($this->getStatus() != ResolverStatus::READY) {
-			return false;
-		}
+		$dependencies = $this->node->dependencies;
+		
+		// retrieve all the values
+		$values = $dependencies->map(function($dependency) {
+			return $dependency->output->value;
+		})->collapse();
+		
+		$output = $this->node->outputs->first();
+		// compute the output value
+		$output->value = json_encode($this->node->node->computeOutput("", $values->toArray()));
+		$output->save();
 
+		$this->setNodeStatus('completed');
 
-		if($dependencies->count() > 0) {
-			dd("TRUE?");	
-			// For each dependency, multiply the queries 
-			// thus far by the values for each dependency
-			while($dependency = $dependencies->shift()) {
-				$queries = $queries->map(function($queryNode) use ($dependency) {
-					return $this->applyValuesToQueryNode($dependency, $queryNode);
-				})->flatten();
-			}
-			
-		dd($queries->map(function($query) {
-			return (string) $query;	
-			}));	
-
-		}
-
-
-		$values = $queries->map(function($queryNode) use ($server, $user){
-			return $server->buildRequest((string) $queryNode, $user);
-		}); 
-	
 		return true;
 	}
 	
 	
-	public function getStatus(): int {
-		if($this->node->dependencies->count() == 0) {
-			return ResolverStatus::READY;
-		}
-
-		$isWaitingOnDependencies = $this->node->dependencies->map(function($dependency){
-			return $dependency->output->value; // First, collect all the outputs
-		})->reduce(function($carry, $value){
-			return $carry || ($value == null); // Then compare them 
-		}, false);
-
-
-		if($isWaitingOnDependencies) {
-			return ResolverStatus::WAITING_FOR_DEPENDENCIES;
-		} else {
-			return ResolverStatus::READY;
-		}
-	}
-
 	public function pause() {
 		throw new \RuntimeError("Pause Not Yet Implemented");
 	}
@@ -69,11 +50,5 @@ class FunctionResolver implements ResolvesMetaQueryNode
 	public function resume() {
 		throw new \RuntimeError("Reusme Not Yet Implemented");
 	} 
-
-	public function start() {
-		throw new \RuntimeError("Start Not Yet Implemented");
-	}
-
-
 }
 

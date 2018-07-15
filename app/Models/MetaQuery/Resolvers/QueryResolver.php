@@ -2,6 +2,7 @@
 
 namespace App\Models\MetaQuery\Resolvers;
 
+use App\Models\Query\QueryHistory;
 use App\Exceptions\QueryFailedToResolveException;
 use App\Models\MetaQuery\MetaQueryNode;
 use App\Models\MetaQuery\MetaQueryNodeDependency;
@@ -27,32 +28,25 @@ class QueryResolver implements ResolvesMetaQueryNode
 	}
 
 
-	private function setNodeStatus(string $status) {
-		if(!in_array($status, ['ready','running','waiting','error','paused'])){
-			throw new \Exception('Attempting to set a status incorrectly');	
-		}
-		$this->node->status = $status;
-		$this->node->save();	
-	}
-
-
 
 	public function resolve(): bool {
 		
 		if($this->node->status !== 'ready' && $this->node->status !== 'error') {
+			dd($this->node->toJson());
 			throw new \Exception("Attempting to resolve a node that isn't ready");
 		} else if ($this->nodeIsWaitingForDependencies()) {
-			$this->setNodeStatus('waiting');
+			$this->node->setStatus('waiting');
 			throw new \Exception("Node is waiting for dependencies and is being told to resolve");
 		}
 
 		
-		$this->setNodeStatus('running');
+		$this->node->setStatus('running');
 			
 		$this->buildQueriesToResolve();
 		$this->resolveQueries();
 		$this->populateOutputValues();		
-
+		
+		$this->node->setStatus('completed');
 		return true;
 	}
 
@@ -70,7 +64,7 @@ class QueryResolver implements ResolvesMetaQueryNode
 				
 				// If this fails, throw an exception and let the job handle this problem
 				if( $this->queryFailed($query->value)){
-					$this->setNodeStatus('error');
+					$this->node->setStatus('error');
 					
 					throw new \Exception(json_encode($query));
 				}
@@ -93,10 +87,21 @@ class QueryResolver implements ResolvesMetaQueryNode
 
 
 	private function populateOutputValues() {
+		$outputs = $this->node->outputs; 
+
+		$values = $this->queriesToResolve->map(function($result) {
+			return $result->value;
+		});
+
+		$outputs->each(function($output) use ($values){
+			$allOutputValues = $values->map(function($value) {
+				return $this->getOutput($output->path, $value);
+			})->collapse();	
+
+			$output->value = json_encode($allOutputValues);
+		});
 	}
 
-
-	
 
 	private function buildQueriesToResolve() {
 		if($this->queriesToResolve) {
@@ -132,7 +137,8 @@ class QueryResolver implements ResolvesMetaQueryNode
 	}	
 
 	private function applyValuesToQueryNode(MetaQueryNodeDependency $dependency, QueryNode $queryNode): Collection/* Of QueryNode */{
-		$values = $dependency->output->values;
+		$values = json_decode($dependency->output->value);
+
 		if(gettype($values) != 'array') {
 			throw new \Error("Error, the output of a node must be an array of values");
 		}
@@ -154,27 +160,6 @@ class QueryResolver implements ResolvesMetaQueryNode
 		return $isWaitingOnDependencies;
 	}
 	
-	public function getStatus(): int {
-		return ResolverStatus::READY;
-
-		if($this->node->dependencies->count() == 0) {
-			return ResolverStatus::READY;
-		}
-
-		$isWaitingOnDependencies = $this->node->dependencies->map(function($dependency){
-			return $dependency->output->value; // First, collect all the outputs
-		})->reduce(function($carry, $value){
-			return $carry || ($value == null); // Then compare them 
-		}, false);
-
-
-		if($isWaitingOnDependencies) {
-			return ResolverStatus::WAITING_FOR_DEPENDENCIES;
-		} else {
-			return ResolverStatus::READY;
-		}
-	}
-
 	public function pause() {
 		throw new \RuntimeError("Pause Not Yet Implemented");
 	}
@@ -183,10 +168,56 @@ class QueryResolver implements ResolvesMetaQueryNode
 		throw new \RuntimeError("Reusme Not Yet Implemented");
 	} 
 
-	public function start() {
-		throw new \RuntimeError("Start Not Yet Implemented");
+
+
+   /*
+	 *  Given a query path, get the out value 
+	 */
+	public function getOutput($path, $response) {
+
+		// Example of a $path:
+		// query.reddit.searchSubredditNames:String*
+		//  '*' can be at any level (ex query.reddit*.searchSubredditNames:String*)
+		//  a '*' denotes that output at that level can be a list
+		$attributes = explode('.', $path);	
+
+		$data = collect([$response->data]);
+
+		foreach($attributes as $currentLevel) {
+			// Remove the first attribute, always guarenteed to be 'query'
+			if(array_search($currentLevel, $attributes) === 0) {
+				continue;
+			} 
+			
+			$isAttribute = array_search($currentLevel, $attributes) === count($attributes) -1; // whether we're at the last level
+
+			$isList = QueryResolver::getEndOfString($currentLevel) == '*';
+			if ($isList) {
+				$currentLevel = explode('*', $currentLevel)[0];
+			}
+
+			// The last attribute will have a ':', which we don't want and we have to handle as a special case
+			if ($isAttribute) {
+				$currentLevel = explode(':', $currentLevel)[0];
+			}
+
+					
+			$data = $data->map(function($value) use ($currentLevel, $data){
+				// If we have a null response, continue the chain of nulls
+				if ($value === null) {
+					return $value;	
+				}
+				return $value->$currentLevel;
+			});
+			if($isList) {
+				$data = $data->flatten();
+			}
+		}
+
+		return $data;
 	}
 
-
+	private static function getEndOfString($string) {
+		return substr($string, strlen($string)-1, strlen($string));
+	}
 }
-
