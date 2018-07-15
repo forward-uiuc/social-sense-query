@@ -36,7 +36,7 @@
 			</div>
 
 			<div class="col-md-8">
-				<d3-tree-view ref="treeView" :data="visibleData" v-on:node-clicked="paginateChildren" v-on:node-right-clicked="updateNode"></d3-tree-view>
+				<d3-tree-view ref="treeView" :data="visibleData" v-on:node-clicked="paginateChildren" v-on:node-right-clicked="updateNode"style="width:4000px; height:800px"></d3-tree-view>
 			</div>
 			
 		</div>
