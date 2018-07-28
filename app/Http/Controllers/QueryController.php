@@ -66,7 +66,7 @@ class QueryController extends Controller
 				}
 				
 				return true;	
-			});
+			})->values();
 
 			// At this point, if there are no servers available they need to authorize.
 			if ($servers->count() < 1) {
