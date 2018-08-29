@@ -3,7 +3,6 @@ namespace App\Models\MetaQuery;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Query\Query;
-use App\Services\GQLServerService;
 use App\Models\Query\QueryHistory;
 
 use App\Models\MetaQuery\Resolvers\FunctionResolver;
@@ -13,6 +12,19 @@ use App\Models\MetaQuery\Resolvers\ResolvedNodeResolver;
 
 class MetaQueryNode extends Model
 {
+
+	protected $fillable = [
+		'state',
+		'topology_id',
+		'node_type',
+		'node_id',
+		'resolved',
+		'node_state'
+	];
+
+	protected $appends = [
+		'node_name'
+	];
 
 	private static $resolvers = [
 		'query' => QueryResolver::class,
@@ -27,6 +39,15 @@ class MetaQueryNode extends Model
 	 */
 	public function node() {
 		return $this->morphTo();
+	}
+
+	public function getNodeNameAttribute() {
+		if ($this->node_type === 'function') {
+			$function = app()->make('App\Repositories\Contracts\MetaQueryFunctionRepositoryInterface')->findById($this->node_id);
+			return $function->name;
+		} else {
+			return $this->node->name;
+		}
 	}
 
 	public function stage() {
@@ -113,4 +134,3 @@ class MetaQueryNode extends Model
 		return $node;
 	}
 }
-

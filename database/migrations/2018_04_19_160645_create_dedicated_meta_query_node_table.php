@@ -24,7 +24,7 @@ class CreateDedicatedMetaQueryNodeTable extends Migration
 
 			$table->integer('stage_id')->unsigned();
 			$table->foreign('stage_id')->references('id')->on('stages')->onDelete('cascade');
-});
+		});
     }
 
     /**

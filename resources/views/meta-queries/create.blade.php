@@ -7,6 +7,7 @@
 			<meta-query-builder form-id='createMetaQuery' 
 													:queries='{{ $queries->map(function($q){ return ["name" => $q->name, "id" => $q->id, "structure" => json_decode($q->structure)]; }) }} '
 													:functions='{{ $functions->toJson() }}'
+													:meta-queries='{{ $metaQueries->toJson() }}'
 			> </meta-query-builder>
 		{!! Form::close() !!}
 </div>

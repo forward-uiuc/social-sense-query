@@ -21,5 +21,24 @@ class Run extends Model
 	public function stages() {
 		return $this->hasMany(Stage::class);
 	}
+
+	/* 
+	* Resolve all the nodes in this run
+	*/
+	public function resolve() {
+		foreach ($this->stages as $stageIndex => $stage) {
+			$stage->nodes->each(function($node) {
+				$node->resolve();
+			});
+
+			if($stageIndex < ($this->stages->count() - 1)) {
+				$nextStage = $this->stages[++$stageIndex];
+			
+				$nextStage->nodes->each(function($node){ 
+					$node->setStatus('ready');
+				});	
+			}
+		}
+	}
 }
 

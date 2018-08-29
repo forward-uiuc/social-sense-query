@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Model;
 */
 class MetaQueryNodeDependency extends Model
 {
+	protected $fillable = ['meta_query_node_input_id', 'meta_query_node_output_id'];
+
 	/*
 	 * Which Input does this dependency go to
 	**/
