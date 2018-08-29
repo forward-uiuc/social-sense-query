@@ -90,6 +90,7 @@ class MetaQueryResolver implements ResolvesMetaQueryNode
 			$output->save();
 		});
 
+		$this->setNodeStatus('completed');
 		return true;
 	}
 	

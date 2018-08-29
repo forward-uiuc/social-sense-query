@@ -36,7 +36,7 @@ class FunctionResolver implements ResolvesMetaQueryNode
 		// Assemble the value object for the function
 		$values = (object) $values->collapse()->toArray();
 
-
+		
 		$output = $this->node->outputs->first();
 		// compute the output value
 		$function = app()->make('App\Repositories\Contracts\MetaQueryFunctionRepositoryInterface')->findById($this->node->node_id);

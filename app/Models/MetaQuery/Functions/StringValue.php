@@ -12,7 +12,12 @@ class StringValue extends ValueFunction
 	}
 
 	public function evaluate($input): array {
-		return [(string) $this->state->value];
+		$val = $this->state->value != null ? $this->state->value : $this->state->control->value;
+		if($val== null) {
+			throw new \Exception("Attempting to evaluate value function with no value in state");
+		} 
+
+		return [(string) $val];
 	}
 
 }

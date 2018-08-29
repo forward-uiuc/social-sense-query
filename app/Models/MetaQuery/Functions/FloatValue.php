@@ -12,7 +12,12 @@ class FloatValue extends ValueFunction
 	}
 
 	public function evaluate($input): array {
-		return [(float) $this->state->value];
+		$val = $this->state->value != null ? $this->state->value : $this->state->control->value;
+		if($val== null) {
+			throw new \Exception("Attempting to evaluate value function with no value in state");
+		} 
+
+		return [(float) $val];
 	}
 
 }
