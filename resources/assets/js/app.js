@@ -16,7 +16,6 @@ window.Vue = require('vue');
  */
 
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
-Vue.component('query-builder', require('./components/QueryBuilder.vue'));
 Vue.component('graphql-query-builder', require('./components/GraphQLQueryBuilder.vue'));
 Vue.component('context-info', require('./components/ContextInformation.vue'));
 Vue.component('meta-query-builder-canvas', require('./components/MetaQueryBuilderCanvas.vue'));

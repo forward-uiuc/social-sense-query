@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\GraphQLServer;
-
+use App\Repositories\Contracts\MetaQueryFunctionRepositoryInterface; 
 class HomeController extends Controller
 {
+	protected $functions;
     /**
      * Create a new controller instance.
      *

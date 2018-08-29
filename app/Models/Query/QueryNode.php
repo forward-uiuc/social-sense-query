@@ -85,11 +85,6 @@ class QueryNode
 		}
 
 		return $toReturn;
-
-
-	
-		
-		
 	}
 
 

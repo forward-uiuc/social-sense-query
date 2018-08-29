@@ -159,10 +159,10 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-    		\SocialiteProviders\Manager\ServiceProvider::class, // add
-				Collective\Html\HtmlServiceProvider::class,
-				App\Providers\GQLServerServiceProvider::class,
-				App\Providers\RunFactoryProvider::class,
+
+    	\SocialiteProviders\Manager\ServiceProvider::class, // add
+		Collective\Html\HtmlServiceProvider::class,
+		App\Providers\RunFactoryProvider::class,
     ],
 
     /*

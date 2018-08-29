@@ -9,19 +9,22 @@ use App\Models\MetaQuery\Run;
 use App\Models\MetaQuery\Stage;
 use App\Models\Query\QueryHistory;
 use App\Factories\RunFactory; 
-use App\Models\MetaQuery\MetaQueryFunction;
+use App\Repositories\Contracts\MetaQueryFunctionRepositoryInterface;
 
 class MetaQueryController extends Controller
 {
-		/**
+	protected $functions;
+
+	/**
      * Create a new controller instance.
      *
      * @return void
      */
- 	public function __construct()
-  {
-  	$this->middleware('auth');
-  }
+ 	public function __construct(MetaQueryFunctionRepositoryInterface $functions)
+  	{
+		$this->functions = $functions;
+  		$this->middleware('auth');
+  	}
 
 	/**
 	 * Return a view to create new meta queries
@@ -31,8 +34,8 @@ class MetaQueryController extends Controller
 	{
 		$user = \Auth::user();
 		$queries = $user->queries;
-		$functions = MetaQueryFunction::all();
-		return view('meta-queries.create', ['queries' => $queries, 'functions' => $functions]);
+		$metaQueries = $user->metaQueries;
+		return view('meta-queries.create', ['queries' => $queries, 'functions' => $this->functions->all(), 'metaQueries' => $metaQueries]);
 	}
 
 
@@ -85,4 +88,24 @@ class MetaQueryController extends Controller
 		$query = MetaQuery::where('id', $id)->with($withProperties)->first();
 		return view('meta-queries.show', ['query' => $query]);
 	}
+
+	public function edit(Request $request, $id) {
+		$withProperties = [
+			'runs.stages.nodes.inputs',
+			'runs.stages.nodes.outputs',
+			'runs.stages.nodes.node',
+			'runs.stages.nodes.dependencies',
+			'runs.stages.nodes.dependencies.input.node',
+			'runs.stages.nodes.dependencies.output.node',
+		];
+
+		$query = MetaQuery::where('id', $id)->with($withProperties)->first();
+
+		$user = \Auth::user();
+		$queries = $user->queries;
+		$functions = $this->functions->all();
+		$metaQueries = $user->metaQueries;
+		return view('meta-queries.edit', ['query' => $query, 'queries' => $queries, 'functions' => $functions, 'metaQueries' => $metaQueries]);
+	}
+
 }

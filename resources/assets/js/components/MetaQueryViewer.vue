@@ -7,9 +7,9 @@
 
 		<div class="row">
 			<div class="col-md-4" style="margin-left: 10px; margin-bottom: 10px">
-				<!-- <button class="btn btn-warning" v-on:click="editQuery"> Edit Query </button> -->
-				<!-- <button class="btn btn-danger" v-on:click="deleteQuery"> Delete Query </button> -->
 				<button class="btn btn-success right" v-on:click="submitQuery"> Submit Meta Query </button>
+				<a href="#" class="btn btn-warning" v-on:click="editQuery"> Edit Query </a>
+				<!-- <button class="btn btn-danger" v-on:click="deleteQuery"> Delete Query </button> -->
 			</div>
 		</div>
 
@@ -110,9 +110,10 @@ export default {
 		convertMetaQueryNodeIntoDisplayedTreeNode (metaQueryNode) {
 			
 				// First, prepare the node
+				console.log(JSON.parse(JSON.stringify(metaQueryNode)));
 				let displayedNode = {
 					position: 'left',
-					text:  metaQueryNode.node.name + ' [Status: ' + metaQueryNode.status + ']',
+					text:  metaQueryNode.node_name + ' [Status: ' + metaQueryNode.status + ']',
 					source: metaQueryNode,
 					type: 'node'
 				}
@@ -217,6 +218,7 @@ export default {
 		},
 		show: function(run) {
 			this.run = run;
+			window.run = run;
 			this.visibleData =  {
 				text: run.created_at,
 				source: run,
@@ -254,7 +256,7 @@ export default {
 			location.replace('/meta-queries/' + this.query.id + '/submit')
 		},
 		editQuery () {
-			location.replace('/queries/' + this.query.id + '/edit')
+			location.replace('/meta-queries/' + this.query.id + '/edit')
 		},
 		refreshRun (run) {
 			Vue.$http.get('/api/runs/' + run.id).then( response => {

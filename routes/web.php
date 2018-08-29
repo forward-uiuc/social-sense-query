@@ -31,6 +31,8 @@ Route::get('/', 'PagesController@landing')->name('landing');
 Route::get('/meta-queries/create', 'MetaQueryController@create');
 Route::post('meta-queries', 'MetaQueryController@store');
 Route::get('/meta-queries/{id}', 'MetaQueryController@show');
+Route::get('/meta-queries/{id}/edit', 'MetaQueryController@edit');
+
 Route::get('/meta-queries/{id}/submit', 'MetaQueryController@submit');
 
 Route::get('login/{provider}', 'AuthorizationController@authorizeProvider')->name('authorizeProvider');
