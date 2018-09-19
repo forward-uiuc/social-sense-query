@@ -96,7 +96,11 @@ class QueryResolver implements ResolvesMetaQueryNode
 		$outputs->each(function($output) use ($values){
 		   $allOutputValues = $values->map(function($value) use ($output){
 				   return $this->getOutput($output->path, $value)->toArray();
-		   })->collapse()->toArray();      
+		   })->collapse()->toArray();
+
+			while(count($allOutputValues) > 0 && gettype($allOutputValues[0] === 'array') {
+				$allOutputValues = $allOutputValues->collapse()->toArray();
+			}
 
 			$output->value = json_encode($allOutputValues);
 			$output->save();
