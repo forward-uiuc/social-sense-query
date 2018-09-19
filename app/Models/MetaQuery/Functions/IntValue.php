@@ -12,7 +12,7 @@ class IntValue extends ValueFunction
 	}
 
 	public function evaluate($input): array {
-		$val = $this->state->value != null ? $this->state->value : $this->state->control->value;
+		$val = $this->getStateValue();
 		if($val== null) {
 			throw new \Exception("Attempting to evaluate value function with no value in state");
 		} 
