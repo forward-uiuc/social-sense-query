@@ -98,7 +98,7 @@ class QueryResolver implements ResolvesMetaQueryNode
 				   return $this->getOutput($output->path, $value)->toArray();
 		   })->collapse()->toArray();
 
-			while(count($allOutputValues) > 0 && gettype($allOutputValues[0] === 'array') {
+			while(count($allOutputValues) > 0 && gettype($allOutputValues[0] === 'array')) {
 				$allOutputValues = $allOutputValues->collapse()->toArray();
 			}
 
