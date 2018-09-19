@@ -11,7 +11,7 @@ abstract class ValueFunction extends AbstractFunction
 	protected function getStateValue() {
 		if(property_exists($this->state, 'value')) {
 			return $this->state->value;
-		} else if(property_exists($this->state->control, 'value'){
+		} else if(property_exists($this->state->control, 'value')){
 			return $this->state->control->value;	
 		} else {
 			return null;
