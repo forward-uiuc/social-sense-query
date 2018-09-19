@@ -99,7 +99,7 @@ class QueryResolver implements ResolvesMetaQueryNode
 		   })->collapse()->toArray();
 
 			while(count($allOutputValues) > 0 && gettype($allOutputValues[0] === 'array')) {
-				$allOutputValues = $allOutputValues->collapse()->toArray();
+				$allOutputValues = collect($allOutputValues)->collapse()->toArray();
 			}
 
 			$output->value = json_encode($allOutputValues);
