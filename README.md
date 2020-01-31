@@ -71,9 +71,14 @@ WIP
 
 ## Deployment
 
+```git clone https://github.com/laradock/laradock.git laradock```
+
 https://laradock.io/
 
 https://medium.com/@madhusudhansubedi/it-is-easy-to-set-up-environment-for-laravel-using-laradock-69cdc4e64b08
+
+
+Note: Set mysql to 5.7 in laradock .env file
 
 ## Built With
 
