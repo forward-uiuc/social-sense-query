@@ -71,7 +71,9 @@ WIP
 
 ## Deployment
 
-WIP (Need to figure out Laradock)
+https://laradock.io/
+
+https://medium.com/@madhusudhansubedi/it-is-easy-to-set-up-environment-for-laravel-using-laradock-69cdc4e64b08
 
 ## Built With
 
