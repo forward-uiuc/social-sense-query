@@ -19,6 +19,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 4. Install mongodb
 
+5. Install a mysql gui tool (SequelPro, phpmyadmin, etc.)
+
 ## Logging into third-party services
  
 ## Adding GraphQL servers

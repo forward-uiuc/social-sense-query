@@ -342,6 +342,7 @@ app.put('/app/api/application/update', validator.applicationValidationRules(), v
   res.send(makeSuccess(data));
 }));
 
+/* Translation tool endpoint */
 app.get('/app/api/files', asyncHandler(async (req, res) => {
   let swaggerFiles = await req.db.collection('swagger_files').find({}, { _id: 0, swagger: 0 }).toArray();
 
