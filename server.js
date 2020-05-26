@@ -32,7 +32,9 @@ const {
   makeGeneralError, makeSuccess, checkUser, getCronPattern, getSwaggerFile,
 } = require('./util');
 
-app.use(express.static(path.join(__dirname, 'build'), { index: false }));
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, 'build'), { index: false }));
+}
 
 app.use(express.json());
 app.use(passport.initialize());
@@ -407,13 +409,15 @@ app.put('/app/api/translation', asyncHandler(async (req, res) => {
   res.send(makeSuccess({ translationFile, name }));
 }));
 
-app.get(['/app', '/app/*'], (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-});
+if (process.env.NODE_ENV === 'production') {
+  app.get(['/app', '/app/*'], (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+  });
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'build', 'home.html'));
-});
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'home.html'));
+  });
+}
 
 // eslint-disable-next-line no-unused-vars
 app.use((error, _req, res, next) => {
