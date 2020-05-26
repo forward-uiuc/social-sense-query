@@ -30,8 +30,7 @@ const init = async () => {
     } catch (error) {
       console.log(error);
     } finally {
-      con.end();
-      client.close();
+      console.log('Inserted into db. Press ctrl+c to exit.');
     }
   });
 };
