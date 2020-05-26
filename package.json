@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "dev": "nodemon server.js",
-    "start": "node server",
+    "prod": "NODE_ENV=production node server",
     "init": "node init_db"
   },
   "author": "",
