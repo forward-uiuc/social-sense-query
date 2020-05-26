@@ -1,6 +1,6 @@
 const { body, validationResult } = require('express-validator');
 const { makeFieldError } = require('./util');
-const query = require('./sql');
+const { query } = require('./sql');
 
 const findUserByEmail = async (email) => {
   const user = await query('SELECT * FROM users WHERE email=?', [email]);

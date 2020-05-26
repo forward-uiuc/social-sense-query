@@ -13,4 +13,7 @@ con.connect((err) => {
   console.log('Connected correctly to SQL');
 });
 
-module.exports = util.promisify(con.query).bind(con);
+module.exports = {
+  query: util.promisify(con.query).bind(con),
+  con,
+};

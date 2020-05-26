@@ -11,6 +11,16 @@ module.exports = {
     return scheduleConversion[scheduleStr];
   },
 
+  escape: (str) => str.replace(/\$/g, '\uFF04').replace(/\./g, '\uFF0E'),
+
+  unescape: (str) => str.replace(/\uFF04/g, '$').replace(/\uFF0E/g, '.'),
+
+  getSwaggerFile: async (slug, db) => {
+    const { swagger } = await db.collection('swagger_files').findOne({ slug });
+    // console.log(JSON.parse((JSON.stringify(swagger))));
+    return JSON.parse(module.exports.unescape(JSON.stringify(swagger)));
+  },
+
   makeGeneralError: (err) => ({ data: null, error: { generalError: err } }),
 
   makeFieldError: (err) => ({ data: null, error: { fieldError: err } }),

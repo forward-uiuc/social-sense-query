@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "dev": "nodemon server.js",
-    "start": "node server"
+    "start": "node server",
+    "init": "node init_db"
   },
   "author": "",
   "license": "ISC",
@@ -37,6 +38,7 @@
     "passport-youtube-v3": "^2.1.0",
     "querystring": "^0.2.0",
     "socket.io": "^2.3.0",
+    "translation-to-graphql": "^1.32.99",
     "util": "^0.12.3",
     "uuid": "^8.1.0"
   },

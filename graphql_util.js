@@ -1,7 +1,7 @@
 const axios = require('axios').default;
 const qs = require('querystring');
 const perf = require('execution-time')();
-const query = require('./sql');
+const { query } = require('./sql');
 const { calculateQuotaUsed } = require('./mongodb_util');
 
 const toGraphQLQueryString = (node) => {

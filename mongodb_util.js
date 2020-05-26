@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb');
-const jsonSize = require('json-size')
+const jsonSize = require('json-size');
 
 module.exports = {
   getNextSequenceValue: async (sequenceName, db) => {

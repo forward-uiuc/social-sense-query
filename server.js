@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 // @ts-nocheck
+
 require('dotenv').config();
 require('express-async-errors');
 
@@ -17,18 +18,20 @@ const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const { CronJob } = require('cron');
 const expressMongoDb = require('express-mongo-db');
-const { introspectionQuery } = require('graphql');
+const { introspectionQuery, printSchema } = require('graphql');
 const MongoStore = require('connect-mongo')(session);
 const asyncHandler = require('express-async-handler');
+const { getGraphqlSchema } = require('translation-to-graphql');
 const validator = require('./validator.js');
 const { getNextSequenceValue, client, calculateQuotaUsed } = require('./mongodb_util');
 const { executeQuery } = require('./graphql_util');
-const query = require('./sql');
+const { query } = require('./sql');
 const authController = require('./lib/auth.controller');
 const passportInit = require('./lib/passport.init');
 const {
-  makeGeneralError, makeSuccess, checkUser, getCronPattern,
+  makeGeneralError, makeSuccess, checkUser, getCronPattern, getSwaggerFile,
 } = require('./util');
+
 
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, 'build'), { index: false }));
@@ -51,7 +54,7 @@ app.use(session({
   store: new MongoStore({ client }),
 }));
 
-app.all('*', checkUser);
+// app.all('*', checkUser);
 
 client.connect(async () => {
   const db = client.db('listenonline');
@@ -337,6 +340,73 @@ app.put('/app/api/application/update', validator.applicationValidationRules(), v
   }
 
   res.send(makeSuccess(data));
+}));
+
+app.get('/app/api/files', asyncHandler(async (req, res) => {
+  let swaggerFiles = await req.db.collection('swagger_files').find({}, { _id: 0, swagger: 0 }).toArray();
+
+  swaggerFiles = await Promise.all(swaggerFiles.map(async (swaggerFile) => {
+    const results = await req.db.collection('translation_files').find({ slug: swaggerFile.slug },
+      { _id: 0, translationFile: 0, slug: 0 }).toArray();
+    return { ...swaggerFile, translationFiles: results };
+  }));
+
+  res.send(makeSuccess(swaggerFiles));
+}));
+
+// endpoints for viewing
+
+app.get('/app/api/swagger_files', asyncHandler(async (req, res) => {
+  const swaggerFiles = await req.db.collection('swagger_files').find({}, { _id: 0, slug: 1 }).toArray();
+  res.send(makeSuccess(swaggerFiles.map((swaggerFile) => swaggerFile.slug)));
+}));
+
+app.get('/app/api/swagger', asyncHandler(async (req, res) => {
+  const { slug } = req.body.data;
+  const swaggerFile = JSON.parse(await getSwaggerFile(slug, req.db));
+  res.send(makeSuccess(swaggerFile));
+}));
+
+app.post('/app/api/swagger', asyncHandler(async (req, res) => {
+}));
+
+app.delete('/app/api/swagger', asyncHandler(async (req, res) => {
+
+}));
+
+app.get('/app/api/translation', asyncHandler(async (req, res) => {
+
+}));
+
+app.post('/app/api/translation', asyncHandler(async (req, res) => {
+  const { translationFile, name, slug } = req.body.data;
+  const swaggerFile = JSON.parse(await getSwaggerFile(slug, req.db));
+
+  const schema = printSchema(await getGraphqlSchema(swaggerFile, translationFile));
+
+  // const result = graphqlSync(schema, introspectionQuery).data;
+
+  await req.db.collection('translation_files').insertOne({
+    translationFile, name, slug, schema,
+  });
+
+  res.send(makeSuccess(req.body.data));
+}));
+
+app.delete('/app/api/translation', asyncHandler(async (req, res) => {
+  const { name } = req.body.data;
+
+  await req.db.collection('translation_files').removeOne({ name });
+
+  res.send(makeSuccess(name));
+}));
+
+app.put('/app/api/translation', asyncHandler(async (req, res) => {
+  const { translationFile, name, previousName } = req.body.data;
+
+  await req.db.collection('translation_files').updateOne({ name: previousName }, { name, translationFile });
+
+  res.send(makeSuccess({ translationFile, name }));
 }));
 
 if (process.env.NODE_ENV === 'production') {
