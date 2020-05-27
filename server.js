@@ -1,5 +1,4 @@
 /* eslint-disable no-underscore-dangle */
-// @ts-nocheck
 
 require('dotenv').config();
 require('express-async-errors');
@@ -367,15 +366,19 @@ app.get('/app/api/swagger', asyncHandler(async (req, res) => {
   res.send(makeSuccess(swaggerFile));
 }));
 
-app.post('/app/api/swagger', asyncHandler(async (req, res) => {
-}));
+// app.post('/app/api/swagger', asyncHandler(async (req, res) => {
+// }));
 
-app.delete('/app/api/swagger', asyncHandler(async (req, res) => {
+// app.delete('/app/api/swagger', asyncHandler(async (req, res) => {
 
-}));
+// }));
 
 app.get('/app/api/translation', asyncHandler(async (req, res) => {
+  const { name } = req.body.data;
 
+  const { translationFile } = await req.db.collection('translation_files').findOne({ name });
+
+  res.send(makeSuccess(translationFile));
 }));
 
 app.post('/app/api/translation', asyncHandler(async (req, res) => {
