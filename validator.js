@@ -31,6 +31,15 @@ const findQueryByName = async (name, req) => {
 };
 
 module.exports = {
+  contactValidationRules: () => [
+    body('email').not().isEmpty().normalizeEmail()
+      .withMessage('Email must not be empty')
+      .isEmail()
+      .withMessage('Must be an email address'),
+    body('name').not().isEmpty().withMessage('Name must not be empty'),
+    body('content').not().isEmpty().withMessage('Content must not be empty'),
+  ],
+
   loginValidationRules: () => [
     body('email').not().isEmpty().normalizeEmail()
       .withMessage('Email must not be empty')
