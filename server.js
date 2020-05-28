@@ -87,10 +87,8 @@ app.get('/app/api/social-media-socket/:name', asyncHandler(async (req, res, next
   }
 }));
 
-app.post('/app/app/home/contact', validator.contactValidationRules(), validator.validate, asyncHandler(async (req, res) => {
+app.post('/app/api/home/contact', asyncHandler(async (req, res) => {
   const { email, name, content } = req.body;
-
-  console.log('contact info submitted');
 
   await query('insert into interested_parties(name, email, about) values (?,?,?)',
     [name, email, content]);

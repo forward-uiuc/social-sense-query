@@ -15,5 +15,4 @@ con.connect((err) => {
 
 module.exports = {
   query: util.promisify(con.query).bind(con),
-  con,
 };

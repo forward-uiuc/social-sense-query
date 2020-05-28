@@ -3,7 +3,7 @@ require('dotenv').config();
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const bcrypt = require('bcryptjs');
-const { con, query } = require('./sql');
+const { query } = require('./sql');
 const { client } = require('./mongodb_util');
 const { escape } = require('./util');
 
