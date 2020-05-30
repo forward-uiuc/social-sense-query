@@ -169,8 +169,8 @@ app.put('/app/api/server/update', validator.serverValidationRules(), validator.v
     await req.db.collection('queries').remove({ source: data.name });
   } else if (type === 2) {
     // UPDATE
-    await req.db.collection('graphql_servers').updateOne({ name: data.name }, { ...data, schema });
-    await req.db.collection('graphql_servers').update({ name: previousServerName }, { $set: { name: data.name } });
+    await req.db.collection('graphql_servers').updateOne({ name: previousServerName }, { ...data, schema });
+    // await req.db.collection('graphql_servers').update({ name: previousServerName }, { $set: { name: data.name } });
   }
 
   res.send(makeSuccess(data));
