@@ -87,13 +87,10 @@ app.get('/app/api/social-media-socket/:name', asyncHandler(async (req, res, next
   }
 }));
 
-app.post('/app/app/home/contact', validator.contactValidationRules(), validator.validate, asyncHandler(async (req, res) => {
+app.post('/app/api/home/contact', asyncHandler(async (req, res) => {
   const { email, name, content } = req.body;
 
-  console.log('contact info submitted');
-
-  await query('insert into interested_parties(name, email, about) values (?,?,?)',
-    [name, email, content]);
+  await query('insert into interested_parties(name, email, about) values (?,?,?)', [name, email, content]);
 
   res.send(makeSuccess('Contact Submitted!'));
 }));
@@ -160,7 +157,7 @@ app.get('/app/api/servers', asyncHandler(async (req, res) => {
 }));
 
 app.put('/app/api/server/update', validator.serverValidationRules(), validator.validate, asyncHandler(async (req, res) => {
-  const { data, type } = req.body;
+  const { data, type, previousServerName } = req.body;
   const schema = (await axios.post(data.url, { query: introspectionQuery })).data;
 
   if (type === 0) {
@@ -173,6 +170,7 @@ app.put('/app/api/server/update', validator.serverValidationRules(), validator.v
   } else if (type === 2) {
     // UPDATE
     await req.db.collection('graphql_servers').updateOne({ name: data.name }, { ...data, schema });
+    await req.db.collection('graphql_servers').update({ name: previousServerName }, { $set: { name: data.name } });
   }
 
   res.send(makeSuccess(data));
@@ -287,6 +285,16 @@ app.put('/app/api/query/update', validator.queryValidationRules(), validator.val
   res.send(makeSuccess(data));
 }));
 
+app.put('/app/api/query/execute', validator.queryValidationRules(), validator.validate, asyncHandler(async (req, res) => {
+  const { data } = req.body;
+  const { _id, url, slug } = await req.db.collection('graphql_servers').findOne({ name: data.source }, { url: 1, slug: 1 });
+  const serverId = _id;
+
+  await executeQuery(url, slug, data.schema, serverId, req, data.name);
+
+  res.send(makeSuccess(data));
+}));
+
 app.get('/app/api/query/history-records', asyncHandler(async (req, res) => {
   const { queryName } = req.query;
 
@@ -333,12 +341,12 @@ app.get('/app/api/applications', asyncHandler(async (req, res) => {
 }));
 
 app.put('/app/api/application/update', validator.applicationValidationRules(), validator.validate, asyncHandler(async (req, res) => {
-  const { data, type } = req.body;
+  const { data, type, previousApplicationName } = req.body;
 
   if (type === 0) {
     // UPDATE
-    query('update applications set name = ?, callback = ?, home = ?, description = ? WHERE name = ?',
-      [data.name, data.callbackURL, data.home, data.description, parseInt(data.id, 10)]);
+    await query('update applications set name = ?, callback = ?, home = ?, description = ? WHERE name = ?',
+      [data.name, data.callbackURL, data.home, data.description, previousApplicationName]);
   } else if (type === 1) {
     // DELETE
     await query('delete from applications where id = ?', [parseInt(data.id, 10)]);
