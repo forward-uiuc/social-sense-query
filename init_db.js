@@ -7,23 +7,86 @@ const { query } = require('./sql');
 const { client } = require('./mongodb_util');
 const { escape } = require('./util');
 
-const swaggerFiles = ['nytimes.json', 'reddit.json', 'stackexchange.json', 'twitter.json', 'youtube.json'];
+// const nodes = {
+//   '/': [
+//     {
+//       name: 'reddit',
+//       children: [
+//         {
+//           name: 'reddit_sub',
+//           children: [
+//             {
+//               name: 'reddit_sub_sub',
+//               children: [{
+//                 name: 'reddit.json',
+//               }],
+//             },
+//             {
+//               name: 'reddit_translation.json',
+//             },
+//           ],
+//         },
+//         {
+//           name: 'reddit_sub_2',
+//           children: [{
+//             'reddit_translation.json',
+//           }],
+//         },
+//       ],
+//     },
+//     {
+//       value: '/config',
+//       label: 'config',
+//       children: [
+//         {
+//           value: '/config/app.js',
+//           label: 'app.js',
+//         },
+//         {
+//           value: '/config/database.js',
+//           label: 'database.js',
+//         },
+//       ],
+//     },
+//     {
+//       value: '/public',
+//       label: 'public',
+//       children: [
+//         {
+//           value: '/public/assets/',
+//           label: 'assets',
+//           children: [{
+//             value: '/public/assets/style.css',
+//             label: 'style.css',
+//           }],
+//         },
+//         {
+//           value: '/public/index.html',
+//           label: 'index.html',
+//         },
+//       ],
+//     },
+//     {
+//       value: '/.env',
+//       label: '.env',
+//     },
+//     {
+//       value: '/.gitignore',
+//       label: '.gitignore',
+//     },
+//     {
+//       value: '/README.md',
+//       label: 'README.md',
+//     },
+//   ],
+// };
 
 const init = async () => {
   client.connect(async () => {
     try {
       const db = client.db('listenonline');
 
-      swaggerFiles.forEach((swaggerFile) => {
-        fs.readFile(`swagger/${swaggerFile}`, 'utf8', async (err, data) => {
-          if (err) throw err;
-          const json = JSON.parse(escape(JSON.stringify(data)));
-          await db.collection('swagger_files').insertOne({
-            swagger: json,
-            slug: swaggerFile.substring(0, swaggerFile.indexOf('.')),
-          });
-        });
-      });
+      await db.collection('file_system').insertOne({ file_system: JSON.stringify({ '/': [] }) });
 
       await query('insert into users(name, email, password, uuid, isAdmin) values (?,?,?,?,?)',
         ['test', 'test@gmail.com', await bcrypt.hash('test', bcrypt.genSaltSync(12)), uuidv4(), 1]);

@@ -351,15 +351,16 @@ app.put('/app/api/application/update', validator.applicationValidationRules(), v
 
 /* Translation tool endpoint */
 app.get('/app/api/files', asyncHandler(async (req, res) => {
-  let swaggerFiles = await req.db.collection('swagger_files').find({}, { _id: 0, swagger: 0 }).toArray();
+  // let swaggerFiles = await req.db.collection('swagger_files').find({}, { _id: 0, swagger: 0 }).toArray();
 
-  swaggerFiles = await Promise.all(swaggerFiles.map(async (swaggerFile) => {
-    const results = await req.db.collection('translation_files').find({ slug: swaggerFile.slug },
-      { _id: 0, translationFile: 0, slug: 0 }).toArray();
-    return { ...swaggerFile, translationFiles: results };
-  }));
+  // swaggerFiles = await Promise.all(swaggerFiles.map(async (swaggerFile) => {
+  //   const results = await req.db.collection('translation_files').find({ slug: swaggerFile.slug },
+  //     { _id: 0, translationFile: 0, slug: 0 }).toArray();
+  //   return { ...swaggerFile, translationFiles: results };
+  // }));
 
-  res.send(makeSuccess(swaggerFiles));
+
+  // res.send(makeSuccess(swaggerFiles));
 }));
 
 // endpoints for viewing
@@ -370,13 +371,40 @@ app.get('/app/api/swagger_files', asyncHandler(async (req, res) => {
 }));
 
 app.get('/app/api/swagger', asyncHandler(async (req, res) => {
-  const { slug } = req.body.data;
+  const { slug } = req.query;
   const swaggerFile = JSON.parse(await getSwaggerFile(slug, req.db));
   res.send(makeSuccess(swaggerFile));
 }));
 
-// app.post('/app/api/swagger', asyncHandler(async (req, res) => {
-// }));
+app.post('/app/api/swagger', asyncHandler(async (req, res) => {
+  // const { swaggerName, swagger, location } = req.body.data;
+  // const path = location.split('/');
+  // path[0] = '/';
+
+  const filePath = ['/'];
+
+  const old = await req.db.collection('file_system').findOne({});
+
+  let { fileSystem } = old;
+
+  fileSystem = JSON.parse(unescape(JSON.stringify(fileSystem)));
+
+  fileSystem['/'] = {};
+
+  filePath.forEach((element) => {
+    fileSystem = fileSystem[element];
+  });
+
+  fileSystem['reddit.json'] = { data: 'fsdfds' };
+
+  await req.db.collection('file_system').updateOne(old, { file_system: escape(JSON.stringify(fileSystem)) });
+
+
+  // await req.db.collection('file_system').updateOne({}, { '/.foo.bar': '444' });
+  // await req.db.collection('file_system').updateOne({}, { '/.foo.bar': '4' });
+
+  // res.send(makeSuccess('Successfully Inserted Swagger File'));
+}));
 
 // app.delete('/app/api/swagger', asyncHandler(async (req, res) => {
 
@@ -388,6 +416,21 @@ app.get('/app/api/translation', asyncHandler(async (req, res) => {
   const { translationFile } = await req.db.collection('translation_files').findOne({ name });
 
   res.send(makeSuccess(translationFile));
+}));
+
+app.post('/app/api/translation', asyncHandler(async (req, res) => {
+  const { translationFile, name, slug } = req.body.data;
+  const swaggerFile = JSON.parse(await getSwaggerFile(slug, req.db));
+
+  const schema = printSchema(await getGraphqlSchema(swaggerFile, translationFile));
+
+  // const result = graphqlSync(schema, introspectionQuery).data;
+
+  await req.db.collection('translation_files').insertOne({
+    translationFile, name, slug, schema,
+  });
+
+  res.send(makeSuccess(req.body.data));
 }));
 
 app.post('/app/api/translation', asyncHandler(async (req, res) => {
