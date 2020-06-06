@@ -86,7 +86,12 @@ const init = async () => {
     try {
       const db = client.db('listenonline');
 
-      await db.collection('file_system').insertOne({ file_system: JSON.stringify({ '/': [] }) });
+      await db.collection('file_system').insertOne({
+        file_system: [{
+          name: '/',
+          children: [],
+        }],
+      });
 
       await query('insert into users(name, email, password, uuid, isAdmin) values (?,?,?,?,?)',
         ['test', 'test@gmail.com', await bcrypt.hash('test', bcrypt.genSaltSync(12)), uuidv4(), 1]);

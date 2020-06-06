@@ -17,10 +17,9 @@ const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const { CronJob } = require('cron');
 const expressMongoDb = require('express-mongo-db');
-const { introspectionQuery, printSchema } = require('graphql');
+const { introspectionQuery } = require('graphql');
 const MongoStore = require('connect-mongo')(session);
 const asyncHandler = require('express-async-handler');
-const { getGraphqlSchema } = require('translation-to-graphql');
 const validator = require('./validator.js');
 const { getNextSequenceValue, client, calculateQuotaUsed } = require('./mongodb_util');
 const { executeQuery } = require('./graphql_util');
@@ -28,7 +27,7 @@ const { query } = require('./sql');
 const authController = require('./lib/auth.controller');
 const passportInit = require('./lib/passport.init');
 const {
-  makeGeneralError, makeSuccess, checkUser, getCronPattern, getSwaggerFile,
+  makeGeneralError, makeSuccess, checkUser, getCronPattern, insertNewFolder, insertNewSwaggerFile, insertNewTranslationFile,
 } = require('./util');
 
 if (process.env.NODE_ENV === 'production') {
@@ -170,7 +169,6 @@ app.put('/app/api/server/update', validator.serverValidationRules(), validator.v
   } else if (type === 2) {
     // UPDATE
     await req.db.collection('graphql_servers').updateOne({ name: previousServerName }, { ...data, schema });
-    // await req.db.collection('graphql_servers').update({ name: previousServerName }, { $set: { name: data.name } });
   }
 
   res.send(makeSuccess(data));
@@ -361,66 +359,41 @@ app.put('/app/api/application/update', validator.applicationValidationRules(), v
 
 /* Translation tool endpoint */
 app.get('/app/api/files', asyncHandler(async (req, res) => {
-  // let swaggerFiles = await req.db.collection('swagger_files').find({}, { _id: 0, swagger: 0 }).toArray();
-
-  // swaggerFiles = await Promise.all(swaggerFiles.map(async (swaggerFile) => {
-  //   const results = await req.db.collection('translation_files').find({ slug: swaggerFile.slug },
-  //     { _id: 0, translationFile: 0, slug: 0 }).toArray();
-  //   return { ...swaggerFile, translationFiles: results };
-  // }));
-
-
-  // res.send(makeSuccess(swaggerFiles));
+  const fileSystem = (await req.db.collection('file_system').find({})).file_system;
+  res.send(makeSuccess(fileSystem));
 }));
 
-// endpoints for viewing
+app.post('/app/api/translation-tool/folder', asyncHandler(async (req, res) => {
+  const { location, folderName } = req.body.data;
+  insertNewFolder(location, folderName, req);
 
-app.get('/app/api/swagger_files', asyncHandler(async (req, res) => {
-  const swaggerFiles = await req.db.collection('swagger_files').find({}, { _id: 0, slug: 1 }).toArray();
-  res.send(makeSuccess(swaggerFiles.map((swaggerFile) => swaggerFile.slug)));
+  res.send(makeSuccess('Successfully Inserted New Folder'));
 }));
 
-app.get('/app/api/swagger', asyncHandler(async (req, res) => {
-  const { slug } = req.query;
-  const swaggerFile = JSON.parse(await getSwaggerFile(slug, req.db));
+// app.get('/app/api/translation-tool/swagger_files', asyncHandler(async (req, res) => {
+//   const swaggerFiles = await req.db.collection('swagger_files').find({}, { _id: 0, slug: 1 }).toArray();
+//   res.send(makeSuccess(swaggerFiles.map((swaggerFile) => swaggerFile.slug)));
+// }));
+
+app.get('/app/api/translation-tool/swagger', asyncHandler(async (req, res) => {
+  const { name } = req.query;
+  const { swagger } = await req.db.collection('swagger_files').findOne({ name });
   res.send(makeSuccess(swaggerFile));
 }));
 
-app.post('/app/api/swagger', asyncHandler(async (req, res) => {
-  // const { swaggerName, swagger, location } = req.body.data;
-  // const path = location.split('/');
-  // path[0] = '/';
+app.post('/app/api/translation-tool/swagger', asyncHandler(async (req, res) => {
+  const { swaggerName, swagger, location } = req.body.data;
 
-  const filePath = ['/'];
+  insertNewSwaggerFile(swaggerName, swagger, location, 'swagger_files', req);
 
-  const old = await req.db.collection('file_system').findOne({});
-
-  let { fileSystem } = old;
-
-  fileSystem = JSON.parse(unescape(JSON.stringify(fileSystem)));
-
-  fileSystem['/'] = {};
-
-  filePath.forEach((element) => {
-    fileSystem = fileSystem[element];
-  });
-
-  fileSystem['reddit.json'] = { data: 'fsdfds' };
-
-  await req.db.collection('file_system').updateOne(old, { file_system: escape(JSON.stringify(fileSystem)) });
-
-
-  // await req.db.collection('file_system').updateOne({}, { '/.foo.bar': '444' });
-  // await req.db.collection('file_system').updateOne({}, { '/.foo.bar': '4' });
-
-  // res.send(makeSuccess('Successfully Inserted Swagger File'));
+  res.send(makeSuccess('Successfully Inserted Swagger File'));
 }));
 
-// app.delete('/app/api/swagger', asyncHandler(async (req, res) => {
+app.delete('/app/api/translation-tool/swagger', asyncHandler(async (req, res) => {
+  // TODO
+}));
 
-// }));
-
-app.get('/app/api/translation', asyncHandler(async (req, res) => {
+app.get('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
   const { name } = req.body.data;
 
   const { translationFile } = await req.db.collection('translation_files').findOne({ name });
@@ -428,50 +401,22 @@ app.get('/app/api/translation', asyncHandler(async (req, res) => {
   res.send(makeSuccess(translationFile));
 }));
 
-app.post('/app/api/translation', asyncHandler(async (req, res) => {
-  const { translationFile, name, slug } = req.body.data;
-  const swaggerFile = JSON.parse(await getSwaggerFile(slug, req.db));
+app.post('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
+  const {
+    translation, translationName, swaggerName, location,
+  } = req.body.data;
 
-  const schema = printSchema(await getGraphqlSchema(swaggerFile, translationFile));
+  insertNewTranslationFile(translationName, translation, location, swaggerName, req);
 
-  // const result = graphqlSync(schema, introspectionQuery).data;
-
-  await req.db.collection('translation_files').insertOne({
-    translationFile, name, slug, schema,
-  });
-
-  res.send(makeSuccess(req.body.data));
+  res.send(makeSuccess('Successfully Inserted Translation File'));
 }));
 
-app.post('/app/api/translation', asyncHandler(async (req, res) => {
-  const { translationFile, name, slug } = req.body.data;
-  const swaggerFile = JSON.parse(await getSwaggerFile(slug, req.db));
-
-  const schema = printSchema(await getGraphqlSchema(swaggerFile, translationFile));
-
-  // const result = graphqlSync(schema, introspectionQuery).data;
-
-  await req.db.collection('translation_files').insertOne({
-    translationFile, name, slug, schema,
-  });
-
-  res.send(makeSuccess(req.body.data));
+app.delete('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
+  // TODO
 }));
 
-app.delete('/app/api/translation', asyncHandler(async (req, res) => {
-  const { name } = req.body.data;
-
-  await req.db.collection('translation_files').removeOne({ name });
-
-  res.send(makeSuccess(name));
-}));
-
-app.put('/app/api/translation', asyncHandler(async (req, res) => {
-  const { translationFile, name, previousName } = req.body.data;
-
-  await req.db.collection('translation_files').updateOne({ name: previousName }, { name, translationFile });
-
-  res.send(makeSuccess({ translationFile, name }));
+app.put('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
+  // TODO
 }));
 
 if (process.env.NODE_ENV === 'production') {
