@@ -75,6 +75,10 @@ app.get('/auth/youtube/callback', passport.authenticate('youtube'), authControll
 
 app.get('/auth/reddit/callback', passport.authenticate('reddit'), authController.reddit);
 
+app.get('/auth/stackexchange/callback', passport.authenticate('stackexchange'), authController.stackexchange);
+
+app.get('/auth/facebook/callback', passport.authenticate('facebook'), authController.facebook);
+
 app.get('/app/api/social-media-socket/:name', asyncHandler(async (req, res, next) => {
   req.session.slug = req.params.name;
   req.session.socketId = req.query.socketId;
@@ -170,7 +174,6 @@ app.put('/app/api/server/update', validator.serverValidationRules(), validator.v
   } else if (type === 2) {
     // UPDATE
     await req.db.collection('graphql_servers').updateOne({ name: previousServerName }, { ...data, schema });
-    // await req.db.collection('graphql_servers').update({ name: previousServerName }, { $set: { name: data.name } });
   }
 
   res.send(makeSuccess(data));
