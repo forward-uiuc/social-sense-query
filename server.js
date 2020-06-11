@@ -51,7 +51,7 @@ app.use(session({
   store: new MongoStore({ client }),
 }));
 
-// app.all('*', checkUser);
+app.all('*', checkUser);
 
 client.connect(async () => {
   const db = client.db('listenonline');

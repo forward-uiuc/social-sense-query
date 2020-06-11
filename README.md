@@ -22,7 +22,9 @@ These instructions will get you a copy of the project up and running on your loc
 
 5. Install a mysql gui tool (SequelPro, phpmyadmin, etc.)
 
-## Logging into third-party services
+6. Run ```npm run init```. This will populate the mysql database with a test user that has admin privaleges. Press ctrl+c to stop once the message saying the database has been initialized has appeared.
+
+7. Run ```npm run dev``` for development and ```npm run prod``` for a production environment.
  
 ## Adding GraphQL servers
 
