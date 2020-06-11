@@ -358,8 +358,8 @@ app.put('/app/api/application/update', validator.applicationValidationRules(), v
 }));
 
 /* Translation tool endpoint */
-app.get('/app/api/files', asyncHandler(async (req, res) => {
-  const fileSystem = (await req.db.collection('file_system').find({})).file_system;
+app.get('/app/api/translation-tool/files', asyncHandler(async (req, res) => {
+  const fileSystem = (await req.db.collection('file_system').findOne({})).file_system;
   res.send(makeSuccess(fileSystem));
 }));
 
