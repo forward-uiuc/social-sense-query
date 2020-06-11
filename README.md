@@ -14,8 +14,9 @@ These instructions will get you a copy of the project up and running on your loc
 1. Run ```npm install ``` to install all dependencies
 
 2. Next we need to setup the MySQL DB
+    - create a new user in the mysql database https://linuxize.com/post/how-to-create-mysql-user-accounts-and-grant-privileges/
 
-3. Run ```cp .env.example .env``` 
+3. Run ```cp .env.example .env```. Note: the credentials in .env are secret and should never be posted on github. 
 
 4. Install mongodb
 
@@ -31,5 +32,12 @@ These instructions will get you a copy of the project up and running on your loc
 WIP
 
 ## Deployment
+Use the sshIntoBaseServer.sh and sshIntoGraphQLserver.sh shell scripts to ssh into the base lion server and graphqlserver respectively. The code is found under /var/www. Simply pull the latest version from git.
+
+PM2 is used to keep the server running: https://pm2.keymetrics.io/
 
 ## Built With
+- React
+- Express
+- MongoDB
+- MySQL
