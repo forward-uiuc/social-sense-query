@@ -61,7 +61,7 @@ module.exports = {
 
   serverValidationRules: () => [
     body('data.name').if(body('type').equals('0')).custom((name, { req }) => findServerByName(name, req)).withMessage('Server name already in use'),
-    body('data.slug').isIn(['reddit', 'youtube', 'twitter', 'nytimes', 'stackexchange', 'facebook']).withMessage('Slug must be one of reddit, youtube, twitter, stackexchange or facebook.'),
+    body('data.slug').isIn(['reddit', 'youtube', 'twitter', 'nytimes', 'stackexchange', 'facebook', 'stack-exchange']).withMessage('Slug must be one of reddit, youtube, twitter, stackexchange or facebook.'),
     body('data.url').isURL({ protocols: ['http', 'https'], require_protocol: true, require_tld: false }).withMessage('Server URL is invalid (Must include http or https at beginning)'),
     body('data.description').trim().escape(),
   ],

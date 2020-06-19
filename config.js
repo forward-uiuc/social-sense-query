@@ -32,10 +32,11 @@ exports.REDDIT_CONFIG = {
 exports.STACKEXCHANGE_CONFIG = {
   clientID: process.env.STACKEXCHANGE_ID,
   clientSecret: process.env.STACKEXCHANGE_SECRET,
-  key: process.env.STACKEXCHANGE_KEY,
+  stackAppsKey: process.env.STACKEXCHANGE_KEY,
   callbackURL: stackexchangeURL,
   passReqToCallback: true,
   scope: ['read_inbox', 'no_expiry'],
+  site: 'stackoverflow',
 };
 
 exports.FACEBOOK_CONFIG = {
@@ -43,4 +44,5 @@ exports.FACEBOOK_CONFIG = {
   clientSecret: '532eaaaf716a6a206d8c7586dd137aef',
   callbackURL: facebookURL,
   passReqToCallback: true,
+  profileFields: ['id', 'displayName', 'photos', 'email'],
 };

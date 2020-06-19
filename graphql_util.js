@@ -1,6 +1,7 @@
 const axios = require('axios').default;
 const qs = require('querystring');
 const perf = require('execution-time')();
+const fetch = require('fetch').fetchUrl;
 const { query } = require('./sql');
 const { calculateQuotaUsed } = require('./mongodb_util');
 
@@ -41,6 +42,37 @@ const toGraphQLQueryString = (node) => {
   return graphqlQuery.string;
 };
 
+function getURL(url) {
+  return new Promise((resolve) => {
+    fetch(url, (_error, _meta, body) => {
+      resolve(body.toString());
+    });
+  });
+}
+
+function buildRecordsRecusively(data, pattern) {
+  const result = {};
+  let i;
+  let j;
+  for (i = 0; i < pattern.length; i += 1) {
+    const names = pattern[i].name;
+    let newName = '';
+    for (j = 0; j < names.length; j += 1) {
+      const character = names.charAt(j);
+      if (character !== character.toLowerCase()) {
+        newName += '_';
+      }
+      newName += character.toLowerCase();
+    }
+    if (pattern[i].children.length === 0 || typeof data[newName] === 'undefined') {
+      result[newName] = data[newName];
+    } else {
+      result[newName] = buildRecordsRecusively(data[newName], pattern[i].children);
+    }
+  }
+  return result;
+}
+
 const submitGraphQLQuery = async (url, accessToken, schema, req) => {
   const { quota } = (await query('SELECT quota from users where id=?', [req.session.user_id]))[0];
   const usedQuota = await calculateQuotaUsed(req.session.user_id, req.db);
@@ -50,6 +82,30 @@ const submitGraphQLQuery = async (url, accessToken, schema, req) => {
   }
 
   perf.start();
+  if (url === 'http://localhost:4005') {
+    let i;
+    let webpage = 'https://api.stackexchange.com/2.2/questions?';
+    for (i = 2; i < schema.children[0].inputs.length; i += 1) {
+      webpage += schema.children[0].inputs[i].name;
+      webpage += '=';
+      if (schema.children[0].inputs[i].value !== null) {
+        webpage += schema.children[0].inputs[i].value.slice(1, -1);
+      }
+      webpage += '&';
+    }
+    webpage = webpage.slice(0, -1);
+
+    const a = JSON.parse(await getURL(webpage));
+    const dataRecords = [];
+    for (i = 0; i < a.items.length; i += 1) {
+      const r = buildRecordsRecusively(a.items[i], schema.children[0].children);
+      dataRecords.push(r);
+    }
+    const result = { data: { children: dataRecords } };
+    const duration = perf.stop().time;
+    return { result, duration };
+  }
+
   const result = (await axios.post(url, {
     accessToken,
     query: toGraphQLQueryString(schema),
