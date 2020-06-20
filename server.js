@@ -74,6 +74,10 @@ app.get('/auth/youtube/callback', passport.authenticate('youtube'), authControll
 
 app.get('/auth/reddit/callback', passport.authenticate('reddit'), authController.reddit);
 
+app.get('/auth/stackexchange/callback', passport.authenticate('stack-exchange'), authController.stackexchange);
+
+app.get('/auth/facebook/callback', passport.authenticate('facebook'), authController.facebook);
+
 app.get('/app/api/social-media-socket/:name', asyncHandler(async (req, res, next) => {
   req.session.slug = req.params.name;
   req.session.socketId = req.query.socketId;
@@ -192,6 +196,11 @@ app.get('/app/api/social-media-platforms', asyncHandler(async (req, res) => {
 
   const authorizations = await query('SELECT server_id FROM authorizations WHERE user_id = ?', [req.session.user_id]);
 
+  const authorizedServerIds = [];
+  authorizations.forEach((data) => {
+    authorizedServerIds.push(data.server_id);
+  });
+
   const servers = await req.db.collection('graphql_servers').find({}).toArray();
 
   servers.forEach((server) => {
@@ -199,7 +208,7 @@ app.get('/app/api/social-media-platforms', asyncHandler(async (req, res) => {
       allServers.push({
         name: server.slug,
         imageURL: '',
-        isAuthenticated: authorizations.includes(server._id),
+        isAuthenticated: authorizedServerIds.includes(server._id),
       });
     }
   });
@@ -284,11 +293,12 @@ app.put('/app/api/query/update', validator.queryValidationRules(), validator.val
 }));
 
 app.put('/app/api/query/execute', validator.queryValidationRules(), validator.validate, asyncHandler(async (req, res) => {
-  const { data } = req.body;
+  const queryData = req.body.queryName;
+  const data = await req.db.collection('queries').findOne({ name: queryData }, { source: 1, schema: 1 });
   const { _id, url, slug } = await req.db.collection('graphql_servers').findOne({ name: data.source }, { url: 1, slug: 1 });
   const serverId = _id;
 
-  await executeQuery(url, slug, data.schema, serverId, req, data.name);
+  await executeQuery(url, slug, data.schema, serverId, req, queryData);
 
   res.send(makeSuccess(data));
 }));
