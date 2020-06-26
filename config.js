@@ -40,8 +40,8 @@ exports.STACKEXCHANGE_CONFIG = {
 };
 
 exports.FACEBOOK_CONFIG = {
-  clientID: '277179343436629',
-  clientSecret: '532eaaaf716a6a206d8c7586dd137aef',
+  clientID: process.env.FACEBOOK_ID,
+  clientSecret: process.env.FACEBOOK_SECRET,
   callbackURL: facebookURL,
   passReqToCallback: true,
   profileFields: ['id', 'displayName', 'photos', 'email'],
