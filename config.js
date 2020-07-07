@@ -44,5 +44,6 @@ exports.FACEBOOK_CONFIG = {
   clientSecret: process.env.FACEBOOK_SECRET,
   callbackURL: facebookURL,
   passReqToCallback: true,
-  profileFields: ['id', 'displayName', 'photos', 'email'],
+  profileFields: ['emails'],
+  scope: ['user_posts'],
 };

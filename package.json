@@ -41,8 +41,10 @@
     "passport-twitter": "^1.0.4",
     "passport-youtube-v3": "^2.1.0",
     "querystring": "^0.2.0",
+    "sentiment": "^5.0.2",
     "socket.io": "^2.3.0",
     "translation-to-graphql": "^1.32.99",
+    "twitter": "^1.7.1",
     "util": "^0.12.3",
     "uuid": "^8.1.0",
     "whatwg-fetch": "^3.0.0"

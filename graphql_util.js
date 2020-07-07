@@ -2,6 +2,9 @@ const axios = require('axios').default;
 const qs = require('querystring');
 const perf = require('execution-time')();
 const fetch = require('fetch').fetchUrl;
+const Twitter = require('twitter');
+const fs = require('fs');
+const Sentiment = require('sentiment');
 const { query } = require('./sql');
 const { calculateQuotaUsed } = require('./mongodb_util');
 
@@ -73,7 +76,20 @@ function buildRecordsRecusively(data, pattern) {
   return result;
 }
 
-const submitGraphQLQuery = async (url, accessToken, schema, req) => {
+function getTweeter(twitterQuery, accessToken, refreshToken) {
+  return new Promise((resolve) => {
+    new Twitter({
+      consumer_key: process.env.TWITTER_KEY,
+      consumer_secret: process.env.TWITTER_SECRET,
+      access_token_key: accessToken,
+      access_token_secret: refreshToken,
+    }).get('search/tweets', twitterQuery, (_error, tweets) => {
+      resolve(tweets);
+    });
+  });
+}
+
+const submitGraphQLQuery = async (url, accessToken, refreshToken, schema, req) => {
   const { quota } = (await query('SELECT quota from users where id=?', [req.session.user_id]))[0];
   const usedQuota = await calculateQuotaUsed(req.session.user_id, req.db);
 
@@ -82,6 +98,20 @@ const submitGraphQLQuery = async (url, accessToken, schema, req) => {
   }
 
   perf.start();
+
+  // fs.readdirSync('./positive').forEach((file) => {
+  //   fs.readFile(`./positive/${file}`, (err, data) => {
+  //     if (err) throw err;
+  //     const sentiment = new Sentiment();
+  //     console.log(sentiment.analyze(data.toString()).score);
+  //   });
+  // });
+
+  // const sentiment = new Sentiment();
+  // const r = sentiment.analyze('this is bad');
+  // console.dir(r);
+
+  // handle stackexchange
   if (url === 'http://localhost:4005') {
     let i;
     let webpage = 'https://api.stackexchange.com/2.2/questions?';
@@ -106,6 +136,45 @@ const submitGraphQLQuery = async (url, accessToken, schema, req) => {
     return { result, duration };
   }
 
+  // handle twitter
+  if (req.session.slug === 'twitter') {
+    const twitterQuery = {};
+    let i;
+    for (i = 0; i < schema.children[0].inputs.length; i += 1) {
+      if (schema.children[0].inputs[i].value) {
+        twitterQuery[schema.children[0].inputs[i].name] = schema.children[0].inputs[i].value;
+      }
+    }
+    const data = await getTweeter(twitterQuery, accessToken, refreshToken);
+    // console.log(data);
+
+    const dataRecords = [];
+    for (i = 0; i < data.statuses.length; i += 1) {
+      const r = buildRecordsRecusively(data.statuses[i], schema.children[0].children[0].children);
+      dataRecords.push(r);
+    }
+
+    const result = { data: { children: dataRecords } };
+    const duration = perf.stop().time;
+    return { result, duration };
+  }
+
+  // handle facebook
+  if (req.session.slug === 'facebook') {
+    const idUrl = `https://graph.facebook.com/me?fields=id&access_token=${accessToken}`;
+    const userID = (JSON.parse(await getURL(idUrl))).id;
+
+    const infoUrl = `https://graph.facebook.com/${userID}?fields=birthday,hometown&access_token=${accessToken}`;
+    const userInfo = JSON.parse(await getURL(infoUrl));
+
+    const postUrl = `https://graph.facebook.com/${userID}/feed?access_token=${accessToken}`;
+    const userPost = JSON.parse(await getURL(postUrl));
+
+    const result = { data: { children: { information: { birthday: userInfo.birthday, hometown: userInfo.hometown.name }, posts: userPost.data } } };
+    const duration = perf.stop().time;
+    return { result, duration };
+  }
+
   const result = (await axios.post(url, {
     accessToken,
     query: toGraphQLQueryString(schema),
@@ -119,6 +188,7 @@ module.exports = {
     const timestamp = new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '');
 
     let accessToken = await query('SELECT access_token FROM authorizations WHERE user_id = ? AND server_id = ?', [req.session.user_id, serverId]);
+    let refresh = await query('SELECT refresh_token FROM authorizations WHERE user_id = ? AND server_id = ?', [req.session.user_id, serverId]);
     let result;
     let duration;
 
@@ -127,8 +197,11 @@ module.exports = {
     } else if (slug === 'nytimes') {
       accessToken = process.env.NYTIMES_KEY;
     }
+    if (refresh.length) {
+      refresh = refresh[0].refresh_token;
+    }
 
-    ({ result, duration } = await submitGraphQLQuery(url, accessToken, schema, req));
+    ({ result, duration } = await submitGraphQLQuery(url, accessToken, refresh, schema, req));
 
     if (result.errors && result.errors[0].extensions.statusCode === 401) {
       const refreshToken = (await query('SELECT refresh_token FROM authorizations WHERE user_id = ? AND server_id = ?', [req.session.user_id, serverId]))[0].refresh_token;
@@ -166,7 +239,7 @@ module.exports = {
       query('update authorizations set access_token = ? WHERE user_id = ? AND server_id = ?',
         [newAccessToken, req.session.user_id, serverId]);
 
-      ({ result, duration } = await submitGraphQLQuery(url, newAccessToken, schema, req));
+      ({ result, duration } = await submitGraphQLQuery(url, newAccessToken, refreshToken, schema, req));
     }
 
     req.db.collection('query_histories').insertOne({
