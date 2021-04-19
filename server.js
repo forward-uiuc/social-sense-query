@@ -1,4 +1,6 @@
 /* eslint-disable no-underscore-dangle */
+const { execFile } = require('child_process');
+const fs = require('fs');
 
 require('dotenv').config();
 require('express-async-errors');
@@ -214,6 +216,53 @@ app.get('/app/api/social-media-platforms', asyncHandler(async (req, res) => {
   });
 
   res.send(makeSuccess(allServers));
+}));
+
+app.get('/app/api/runcode', asyncHandler(async (req, res) => {
+  console.log(3113);
+  console.log(req.query.code);
+  console.log(req.query.contents);
+  const pythonFile = `import base64\nfrom PIL import Image\nimport io\ndef render(image_name):\n    with open(image_name, "rb") as image:\n       b64string = base64.b64encode(image.read())\n    print('@user_image@' + str(b64string))\n\ncontents = ${JSON.stringify(req.query.contents)}\n${req.query.code}`;
+  fs.writeFile('user/test/python.py', pythonFile, (err) => {
+    if (err) throw err;
+  });
+
+  const tmp = await new Promise((resolve) => {
+    try {
+      execFile('docker', ['build', '-t', '183113/test', 'user/test'], (error, stdout) => {
+        if (error) {
+          // throw error;
+          console.log('failed to build');
+          console.log(error);
+        } else {
+          resolve(stdout);
+        }
+      });
+    } catch (error) {
+      resolve(error);
+    }
+  });
+
+  const result = await new Promise((resolve) => {
+    try {
+      execFile('docker', ['run', '--rm', '183113/test'], { maxBuffer: 1024 * 10240 }, (error, stdout) => {
+        if (error) {
+          // throw error;
+          console.log('failed to run');
+          console.log(error);
+        } else {
+          resolve(stdout);
+        }
+      });
+    } catch (error) {
+      resolve(error);
+    }
+  });
+  console.log(18);
+  console.log(result);
+  const rt = result.split('\n');
+  console.log(rt);
+  res.send(rt);
 }));
 
 app.get('/app/api/queries', asyncHandler(async (req, res) => {

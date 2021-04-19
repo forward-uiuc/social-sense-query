@@ -4,7 +4,6 @@ const perf = require('execution-time')();
 const fetch = require('fetch').fetchUrl;
 const Twitter = require('twitter');
 const fs = require('fs');
-const Sentiment = require('sentiment');
 const { query } = require('./sql');
 const { calculateQuotaUsed } = require('./mongodb_util');
 
@@ -89,6 +88,14 @@ function getTweeter(twitterQuery, accessToken, refreshToken) {
   });
 }
 
+function getTweeter1(url, options) {
+  return new Promise((resolve) => {
+    fetch(url, options, (_error, _meta, body) => {
+      resolve(body.toString());
+    });
+  });
+}
+
 const submitGraphQLQuery = async (url, accessToken, refreshToken, schema, req) => {
   const { quota } = (await query('SELECT quota from users where id=?', [req.session.user_id]))[0];
   const usedQuota = await calculateQuotaUsed(req.session.user_id, req.db);
@@ -99,19 +106,8 @@ const submitGraphQLQuery = async (url, accessToken, refreshToken, schema, req) =
 
   perf.start();
 
-  // fs.readdirSync('./positive').forEach((file) => {
-  //   fs.readFile(`./positive/${file}`, (err, data) => {
-  //     if (err) throw err;
-  //     const sentiment = new Sentiment();
-  //     console.log(sentiment.analyze(data.toString()).score);
-  //   });
-  // });
+  // console.log(schema);
 
-  // const sentiment = new Sentiment();
-  // const r = sentiment.analyze('this is bad');
-  // console.dir(r);
-
-  // handle stackexchange
   if (url === 'http://localhost:4005') {
     let i;
     let webpage = 'https://api.stackexchange.com/2.2/questions?';
@@ -119,14 +115,24 @@ const submitGraphQLQuery = async (url, accessToken, refreshToken, schema, req) =
       webpage += schema.children[0].inputs[i].name;
       webpage += '=';
       if (schema.children[0].inputs[i].value !== null) {
-        webpage += schema.children[0].inputs[i].value.slice(1, -1);
+        try {
+          let v = schema.children[0].inputs[i].value;
+          if (v.endsWith('"') && v.startsWith('"')) {
+            v = v.slice(1, -1);
+          }
+          webpage += v;
+        } catch (err) {
+          console.log('...');
+        }
       }
       webpage += '&';
     }
     webpage = webpage.slice(0, -1);
+    console.log(webpage);
 
     const a = JSON.parse(await getURL(webpage));
     const dataRecords = [];
+    console.log(a);
     for (i = 0; i < a.items.length; i += 1) {
       const r = buildRecordsRecusively(a.items[i], schema.children[0].children);
       dataRecords.push(r);
@@ -145,15 +151,28 @@ const submitGraphQLQuery = async (url, accessToken, refreshToken, schema, req) =
         twitterQuery[schema.children[0].inputs[i].name] = schema.children[0].inputs[i].value;
       }
     }
-    const data = await getTweeter(twitterQuery, accessToken, refreshToken);
-    // console.log(data);
+    // const data = await getTweeter(twitterQuery, accessToken, refreshToken);
+
+    const options = {
+      headers: {
+        authorization: {
+          oauth: {
+            consumer_key: 'jHN4Bv29FP2762ZCexnoJpc0S',
+            consumer_secret: '1Q1GYDnjMGWlW6i54W5lURfJj5L4zOVjqOXIW5cXEitwTgKDfd',
+            token: '1219055776981045248-2oQVvzzseDjZ5EAaYfg6WARgubIbXj ',
+            token_secret: 'D5TiGuJoRvMGBbXLatlg0jbQick9bO68YnLn83XOZYVXQ',
+          },
+        },
+      },
+    };
+    const data = await getTweeter1('https://api.twitter.com/1.1/search/tweets.json?q=from%3Atwitterdev&result_type=mixed&count=2', options);
+    console.log(data);
 
     const dataRecords = [];
     for (i = 0; i < data.statuses.length; i += 1) {
       const r = buildRecordsRecusively(data.statuses[i], schema.children[0].children[0].children);
       dataRecords.push(r);
     }
-
     const result = { data: { children: dataRecords } };
     const duration = perf.stop().time;
     return { result, duration };
@@ -175,10 +194,15 @@ const submitGraphQLQuery = async (url, accessToken, refreshToken, schema, req) =
     return { result, duration };
   }
 
+  console.log(url);
+  console.log(schema);
+  console.log(toGraphQLQueryString(schema));
+  console.log('-----------');
   const result = (await axios.post(url, {
     accessToken,
     query: toGraphQLQueryString(schema),
   })).data;
+  console.log(result);
   const duration = perf.stop().time;
   return { result, duration };
 };
