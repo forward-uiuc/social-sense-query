@@ -361,6 +361,24 @@ app.get('/app/api/query/history-records', asyncHandler(async (req, res) => {
   res.send(makeSuccess(history));
 }));
 
+app.get('/app/api/validate/history-rules', asyncHandler(async (req, res) => {
+
+  const history = await req.db.collection('validation_rules').find({}).toArray();
+  console.log("Returning rules",history);
+  res.send(makeSuccess(history));
+}));
+
+app.put('/app/api/validate/create', asyncHandler(async (req, res) => {
+  const { type,data } = req.body;
+
+  await req.db.collection('validation_rules').insertOne(data);
+
+  console.log("Creating Rule",data);
+
+  res.send(makeSuccess(data));
+
+
+}));
 
 app.get('/app/api/users', asyncHandler(async (req, res) => {
   const users = await query('SELECT name, isAdmin, email, quota, id FROM users WHERE id <> ?', [199]);
