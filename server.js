@@ -380,6 +380,14 @@ app.put('/app/api/validate/create', asyncHandler(async (req, res) => {
 
 }));
 
+app.put('/app/api/validate/delete', asyncHandler(async (req, res) => {
+  const { type,data } = req.body;
+    await req.db.collection('validation_rules').remove({ rule_name: data.rule_name });
+  
+  res.send(makeSuccess(data));
+
+  }));
+
 app.get('/app/api/users', asyncHandler(async (req, res) => {
   const users = await query('SELECT name, isAdmin, email, quota, id FROM users WHERE id <> ?', [199]);
 
