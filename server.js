@@ -380,10 +380,12 @@ app.put('/app/api/validate/create', asyncHandler(async (req, res) => {
 
 }));
 
+
+
 app.put('/app/api/validate/delete', asyncHandler(async (req, res) => {
   const { type,data } = req.body;
-    await req.db.collection('validation_rules').remove({ rule_name: data.rule_name });
-  
+  await req.db.collection('validation_rules').remove({ rule_name: data.rule_name });
+
   res.send(makeSuccess(data));
 
   }));
@@ -443,66 +445,98 @@ app.put('/app/api/application/update', validator.applicationValidationRules(), v
 }));
 
 /* Translation tool endpoint */
-app.get('/app/api/translation-tool/files', asyncHandler(async (req, res) => {
-  const fileSystem = (await req.db.collection('file_system').findOne({})).file_system;
-  res.send(makeSuccess(fileSystem));
-}));
-
-app.post('/app/api/translation-tool/folder', asyncHandler(async (req, res) => {
-  const { location, folderName } = req.body.data;
-  insertNewFolder(location, folderName, req);
-
-  res.send(makeSuccess('Successfully Inserted New Folder'));
-}));
+// app.get('/app/api/translation-tool/files', asyncHandler(async (req, res) => {
+//   const fileSystem = (await req.db.collection('file_system').findOne({})).file_system;
+//   res.send(makeSuccess(fileSystem));
+// }));
+//
+// app.post('/app/api/translation-tool/folder', asyncHandler(async (req, res) => {
+//   const { location, folderName } = req.body.data;
+//   insertNewFolder(location, folderName, req);
+//
+//   res.send(makeSuccess('Successfully Inserted New Folder'));
+// }));
 
 // app.get('/app/api/translation-tool/swagger_files', asyncHandler(async (req, res) => {
 //   const swaggerFiles = await req.db.collection('swagger_files').find({}, { _id: 0, slug: 1 }).toArray();
 //   res.send(makeSuccess(swaggerFiles.map((swaggerFile) => swaggerFile.slug)));
 // }));
 
-app.get('/app/api/translation-tool/swagger', asyncHandler(async (req, res) => {
-  const { name } = req.query;
-  const { swagger } = await req.db.collection('swagger_files').findOne({ name });
-  res.send(makeSuccess(swaggerFile));
+// app.get('/app/api/translation-tool/swagger', asyncHandler(async (req, res) => {
+//   const { name } = req.query;
+//   const { swagger } = await req.db.collection('swagger_files').findOne({ name });
+//   res.send(makeSuccess(swaggerFile));
+// }));
+//
+// app.post('/app/api/translation-tool/swagger', asyncHandler(async (req, res) => {
+//   const { swaggerName, swagger, location } = req.body.data;
+//
+//   insertNewSwaggerFile(swaggerName, swagger, location, 'swagger_files', req);
+//
+//   res.send(makeSuccess('Successfully Inserted Swagger File'));
+// }));
+//
+// app.delete('/app/api/translation-tool/swagger', asyncHandler(async (req, res) => {
+//   // TODO
+// }));
+
+//Richa : creating translate create
+// app.get('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
+//   const { name } = req.body.data;
+//
+//   const { translationFile } = await req.db.collection('translation_files').findOne({ name });
+//
+//   res.send(makeSuccess(translationFile));
+// }));
+//
+// app.post('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
+//   const {
+//     translation, translationName, swaggerName, location,
+//   } = req.body.data;
+//
+//   insertNewTranslationFile(translationName, translation, location, swaggerName, req);
+//
+//   res.send(makeSuccess('Successfully Inserted Translation File'));
+// }));
+
+app.put('/app/api/translate/create', asyncHandler(async (req, res) => {
+  const {type,data } = req.body;
+
+  await req.db.collection('translation_files').insertOne(data);
+
+  console.log("Creating translation",data);
+
+  res.send(makeSuccess(data));
+
 }));
 
-app.post('/app/api/translation-tool/swagger', asyncHandler(async (req, res) => {
-  const { swaggerName, swagger, location } = req.body.data;
+app.put('/app/api/translate/delete', asyncHandler(async (req, res) => {
+  // const {type,data } = req.body;
 
-  insertNewSwaggerFile(swaggerName, swagger, location, 'swagger_files', req);
+  const { type,data } = req.body;
+  await req.db.collection('translation_files').remove({ translation_name: data.translation_name });
+  //
+  // await req.db.collection('translation_files').deleteMany({});
 
-  res.send(makeSuccess('Successfully Inserted Swagger File'));
+  // console.log("Deleting All data");
+
+
 }));
 
-app.delete('/app/api/translation-tool/swagger', asyncHandler(async (req, res) => {
-  // TODO
+app.get('/app/api/translate/history-translations', asyncHandler(async (req, res) => {
+
+  const history = await req.db.collection('translation_files').find({}).toArray();
+  console.log("Returning translations",history);
+  res.send(makeSuccess(history));
 }));
 
-app.get('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
-  const { name } = req.body.data;
-
-  const { translationFile } = await req.db.collection('translation_files').findOne({ name });
-
-  res.send(makeSuccess(translationFile));
-}));
-
-app.post('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
-  const {
-    translation, translationName, swaggerName, location,
-  } = req.body.data;
-
-  insertNewTranslationFile(translationName, translation, location, swaggerName, req);
-
-  res.send(makeSuccess('Successfully Inserted Translation File'));
-}));
-
-app.delete('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
-  // TODO
-}));
-
-app.put('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
-  // TODO
-}));
+// app.delete('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
+//   // TODO
+// }));
+//
+// app.put('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
+//   // TODO
+// }));
 
 if (process.env.NODE_ENV === 'production') {
   app.get(['/app', '/app/*'], (req, res) => {
