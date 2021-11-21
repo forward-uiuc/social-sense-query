@@ -373,6 +373,8 @@ app.put('/app/api/validate/create', asyncHandler(async (req, res) => {
 
   await req.db.collection('validation_rules').insertOne(data);
 
+  // await req.db.collection('validation_rules').updateOne({ _id: server._id }, { $set: { schema: newSchema } });
+
   console.log("Creating Rule",data);
 
   res.send(makeSuccess(data));
@@ -502,7 +504,20 @@ app.put('/app/api/application/update', validator.applicationValidationRules(), v
 app.put('/app/api/translate/create', asyncHandler(async (req, res) => {
   const {type,data } = req.body;
 
-  await req.db.collection('translation_files').insertOne(data);
+  if (type==0){
+    await req.db.collection('translation_files').insertOne(data);
+  }
+  else {
+    await req.db.collection('translation_files').updateOne({ translationName: data.translationName },
+        { $set: {"checked":data.checked,
+        "nodes":data.nodes,
+        "translationDesc":data.translationDesc,
+        "translationFile":data.translationFile,
+        "checked": data.checked,
+        "expanded": data.expanded} });
+  }
+
+  // await req.db.collection('translation_files').deleteMany({});
 
   console.log("Creating translation",data);
 
@@ -510,18 +525,37 @@ app.put('/app/api/translate/create', asyncHandler(async (req, res) => {
 
 }));
 
-app.put('/app/api/translate/delete', asyncHandler(async (req, res) => {
-  // const {type,data } = req.body;
+// app.put('/app/api/translate/update', asyncHandler(async (req, res) => {
+//   const {type,data } = req.body;
+//
+//   // await req.db.collection('translation_files').insertOne(data);
+//
+//   await req.db.collection('translation_files').updateOne({ translationName: data.translationName },
+//     { $set: {"checked":data.checked,"nodes":data.nodes,"translationDesc":data.translationDesc} });
+//
+//   // await req.db.collection('translation_files').deleteMany({});
+//
+//   console.log("Creating translation",data);
+//
+//   res.send(makeSuccess(data));
+//
+// }));
 
-  const { type,data } = req.body;
-  await req.db.collection('translation_files').remove({ translation_name: data.translation_name });
-  //
-  // await req.db.collection('translation_files').deleteMany({});
-
-  // console.log("Deleting All data");
 
 
-}));
+// app.put('/app/api/translate/delete', asyncHandler(async (req, res) => {
+//   // const {type,data } = req.body;
+//
+//   const { type,data } = req.body;
+//   await req.db.collection('translation_files').remove({ translation_name: data.translation_name });
+//   //
+//   // await req.db.collection('translation_files').deleteMany({});
+//
+//   // console.log("Deleting All data");
+//
+//
+// }));
+
 
 app.get('/app/api/translate/history-translations', asyncHandler(async (req, res) => {
 
@@ -530,13 +564,6 @@ app.get('/app/api/translate/history-translations', asyncHandler(async (req, res)
   res.send(makeSuccess(history));
 }));
 
-// app.delete('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
-//   // TODO
-// }));
-//
-// app.put('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
-//   // TODO
-// }));
 
 if (process.env.NODE_ENV === 'production') {
   app.get(['/app', '/app/*'], (req, res) => {
