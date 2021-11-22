@@ -525,6 +525,14 @@ app.put('/app/api/translate/create', asyncHandler(async (req, res) => {
 
 }));
 
+app.put('/app/api/translate/delete', asyncHandler(async (req, res) => {
+  const { type,data } = req.body;
+  await req.db.collection('translation_files').remove({ translationName: data.translationName });
+  console.log(data.translationName);
+  res.send(makeSuccess(data));
+
+  }));
+
 // app.put('/app/api/translate/update', asyncHandler(async (req, res) => {
 //   const {type,data } = req.body;
 //
