@@ -31,6 +31,7 @@
     "fetch": "^1.1.0",
     "graphql": "^14.6.0",
     "json-size": "^1.0.0",
+    "jsonpath": "^1.1.1",
     "mongodb": "^3.5.3",
     "mysql": "^2.18.1",
     "passport": "^0.4.1",

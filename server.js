@@ -17,6 +17,7 @@ const socketio = require('socket.io');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
+var jp = require('jsonpath');
 const { CronJob } = require('cron');
 const expressMongoDb = require('express-mongo-db');
 const { introspectionQuery } = require('graphql');
@@ -28,6 +29,7 @@ const { executeQuery } = require('./graphql_util');
 const { query } = require('./sql');
 const authController = require('./lib/auth.controller');
 const passportInit = require('./lib/passport.init');
+const rules = require('./translator-validation-oas')
 const {
   makeGeneralError, makeSuccess, checkUser, getCronPattern, insertNewFolder, insertNewSwaggerFile, insertNewTranslationFile,
 } = require('./util');
@@ -387,7 +389,7 @@ app.put('/app/api/validate/create', asyncHandler(async (req, res) => {
 app.put('/app/api/validate/delete', asyncHandler(async (req, res) => {
   const { type,data } = req.body;
   await req.db.collection('validation_rules').remove({ rule_name: data.rule_name });
-
+  // await req.db.collection('validation_rules').deleteMany({});
   res.send(makeSuccess(data));
 
   }));
@@ -503,7 +505,7 @@ app.put('/app/api/application/update', validator.applicationValidationRules(), v
 
 app.put('/app/api/translate/create', asyncHandler(async (req, res) => {
   const {type,data } = req.body;
-
+  //
   if (type==0){
     await req.db.collection('translation_files').insertOne(data);
   }
@@ -513,6 +515,7 @@ app.put('/app/api/translate/create', asyncHandler(async (req, res) => {
         "nodes":data.nodes,
         "translationDesc":data.translationDesc,
         "translationFile":data.translationFile,
+        "newSwagger": data.newswagger,
         "checked": data.checked,
         "expanded": data.expanded} });
   }
@@ -530,6 +533,66 @@ app.put('/app/api/translate/delete', asyncHandler(async (req, res) => {
   await req.db.collection('translation_files').remove({ translationName: data.translationName });
   console.log(data.translationName);
   res.send(makeSuccess(data));
+
+  }));
+
+app.put('/app/api/translate/validate', asyncHandler(async (req, res) => {
+  const { type,data } = req.body;
+
+ //Richa: assumes that there is no duplicate rules in history db
+
+  console.log("New Validate Call");
+  const history = await req.db.collection('validation_rules').find({}).toArray();
+
+  //history is an array
+  var rule_len= history.length;
+
+  console.log("number of rules", rule_len);
+
+  // rule_parameters , list of comma seperated key value pairs
+  // create new array for err msgs
+
+  // loop through array and get rule checks for each
+
+  var actionMsg= [];
+
+  for (var i = 0; i < rule_len; i++) {
+
+
+  var rule= {
+    "id": history[i].rule_name,
+    "functionName": history[i].rule_function,
+    "path": history[i].rule_path,
+    "ruledesc": history[i].rule_desc,
+    "level": history[i].rule_level,
+    "errmsg": history[i].rule_error_msg
+  };
+
+  const parametArr = history[i].rule_parameters.split(",");
+
+  const parametArrLen= parametArr.length;
+
+  for (var k = 0; k < parametArrLen; k++) {
+    // for each key valuye pairs
+    var fieldname= parametArr[k].split(":")[0];
+    var values= parametArr[k].split(":")[1];
+    rule[fieldname]= values;
+  }
+
+
+  console.log("Rule derived from history",rule);
+
+  var err=rules.rules(data.swaggerFile, data.newSwagger,rule);
+
+  if (err.length>0){
+    actionMsg.push(err);
+  }
+
+
+}
+
+   console.log("Err",actionMsg);
+   res.send(makeSuccess(actionMsg));
 
   }));
 
