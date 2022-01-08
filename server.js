@@ -373,9 +373,23 @@ app.get('/app/api/validate/history-rules', asyncHandler(async (req, res) => {
 app.put('/app/api/validate/create', asyncHandler(async (req, res) => {
   const { type,data } = req.body;
 
-  await req.db.collection('validation_rules').insertOne(data);
+  // await req.db.collection('validation_rules').insertOne(data);
 
   // await req.db.collection('validation_rules').updateOne({ _id: server._id }, { $set: { schema: newSchema } });
+
+  if (type==2){
+    await req.db.collection('validation_rules').insertOne(data);
+  }
+  else {
+    await req.db.collection('validation_rules').updateOne({ rule_name: data.rule_name },
+        { $set: {"rule_desc":data.rule_desc,
+        "rule_function":data.rule_function,
+        "rule_parameters":data.rule_parameters,
+        "rule_path":data.rule_path,
+        "rule_action": data.rule_action,
+        "rule_error_msg": data.rule_error_msg,
+        "rule_level": data.rule_level} });
+  }
 
   console.log("Creating Rule",data);
 
@@ -539,20 +553,12 @@ app.put('/app/api/translate/delete', asyncHandler(async (req, res) => {
 app.put('/app/api/translate/validate', asyncHandler(async (req, res) => {
   const { type,data } = req.body;
 
- //Richa: assumes that there is no duplicate rules in history db
+ //Richa: assumes that there is no duplicate rules in history db. Add logic to handle duplocate rules.
 
   console.log("New Validate Call");
   const history = await req.db.collection('validation_rules').find({}).toArray();
 
-  //history is an array
   var rule_len= history.length;
-
-  console.log("number of rules", rule_len);
-
-  // rule_parameters , list of comma seperated key value pairs
-  // create new array for err msgs
-
-  // loop through array and get rule checks for each
 
   var actionMsg= [];
 
@@ -568,7 +574,7 @@ app.put('/app/api/translate/validate', asyncHandler(async (req, res) => {
     "errmsg": history[i].rule_error_msg
   };
 
-  const parametArr = history[i].rule_parameters.split(",");
+  const parametArr = history[i].rule_parameters.split("|");
 
   const parametArrLen= parametArr.length;
 
