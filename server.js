@@ -388,7 +388,8 @@ app.put('/app/api/validate/create', asyncHandler(async (req, res) => {
         "rule_path":data.rule_path,
         "rule_action": data.rule_action,
         "rule_error_msg": data.rule_error_msg,
-        "rule_level": data.rule_level} });
+        "rule_level": data.rule_level,
+        "rule_custom_code": data.rule_custom_code} });
   }
 
   console.log("Creating Rule",data);
@@ -550,6 +551,9 @@ app.put('/app/api/translate/delete', asyncHandler(async (req, res) => {
 
   }));
 
+  // sudo mongoexport --db listenonline -c validation_rules --out validation_rules.json
+
+
 app.put('/app/api/translate/validate', asyncHandler(async (req, res) => {
   const { type,data } = req.body;
 
@@ -561,7 +565,7 @@ app.put('/app/api/translate/validate', asyncHandler(async (req, res) => {
   var rule_len= history.length;
 
   var actionMsg= [];
-
+  var dbrules = [];
   for (var i = 0; i < rule_len; i++) {
 
 
@@ -571,7 +575,8 @@ app.put('/app/api/translate/validate', asyncHandler(async (req, res) => {
     "path": history[i].rule_path,
     "ruledesc": history[i].rule_desc,
     "level": history[i].rule_level,
-    "errmsg": history[i].rule_error_msg
+    "errmsg": history[i].rule_error_msg,
+    "code": history[i].rule_custom_code,
   };
 
   const parametArr = history[i].rule_parameters.split("|");
@@ -585,20 +590,20 @@ app.put('/app/api/translate/validate', asyncHandler(async (req, res) => {
     rule[fieldname]= values;
   }
 
+  dbrules.push(rule);
 
-  console.log("Rule derived from history",rule);
-
-  var err=rules.rules(data.swaggerFile, data.newSwagger,rule);
-
-  if (err.length>0){
-    actionMsg.push(err);
   }
-
-
-}
-
-   console.log("Err",actionMsg);
-   res.send(makeSuccess(actionMsg));
+  //
+  var err= await rules.rules(data.swaggerFile, data.newSwagger,dbrules);
+  // .then(err => console.log("Response err is ",err))
+  // .then(err => res.send(makeSuccess(err)));
+  //
+  // if (err.length>0){
+  //   actionMsg.push(err);
+  // }
+  //
+   console.log("Err",err);
+  res.send(makeSuccess(err));
 
   }));
 
