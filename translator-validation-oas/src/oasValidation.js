@@ -14,7 +14,7 @@ module.exports.oasValidate = function(openapi, options) {
     .catch(function(err) {
       if (options.context) returnhandle.returnHandler({
         "ruledesc": "OAS Validation",
-        'errmsg': err.message,
+        'errmsg': "Incorrect Swagger schema",
         'path': options.context.pop(),
         'level': 'warn',
         'errPath': 'OASfileError'

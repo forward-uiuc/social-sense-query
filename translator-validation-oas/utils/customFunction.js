@@ -15,19 +15,12 @@ module.exports.checkCustomFunction = function (swaggerFile,newswaggerFile, optio
   options.parentSchema  = swaggerFile;
   options.childSchema =  newswaggerFile;
 
-  //change the below target to be extracted from path
-  // options.targetobj =  jp.query(options.childSchema, options.path);
-  // options.targetpaths =  jp.paths(options.childSchema, options.path);
-
   var target = JSON.stringify(options.childSchema);
   var source = JSON.stringify(options.parentSchema);
 
 
   // compile template from customTemplate.py
   const template = compile(fs.readFileSync(__dirname + '/customTemplate.py', 'utf8'));
-  // options.errPath = jp.stringify(options.targetpaths);
-
-  // options.targetpaths =  jp.paths(options.childSchema, options.path);
   options.errPath = jp.stringify(options.path);
 
   const script = template({funcname:options.customFunctionName,
@@ -45,9 +38,6 @@ module.exports.checkCustomFunction = function (swaggerFile,newswaggerFile, optio
   let py_options = {
     pythonOptions: ['-u'],
   };
-
-  // execute script and return err , call returnHandler
-
 
   return new Promise((resolve, reject) => {
 
