@@ -1,8 +1,8 @@
 
 var rules= require('./rules.js')
-// This is where I ll import all the library and pass in parameter values from the user
-// TODO: Make function calls asynchronus
 
+// Richa 08/21: This file was used for testing the parser function directly from terminal.
+// Contains examples of different rules functions
 
 function rules() {
 

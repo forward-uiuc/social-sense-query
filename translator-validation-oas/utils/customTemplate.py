@@ -1,5 +1,8 @@
 import json
 
+# JSON data that comes through in OAS may not always be compatible with how Python handle JSON
+# For example OAS schema uses true in smallcase but python need CamelCase- True.
+
 data = '${targetobj}'
 data.replace('true','True')
 data.replace('false','False')

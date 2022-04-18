@@ -363,6 +363,7 @@ app.get('/app/api/query/history-records', asyncHandler(async (req, res) => {
   res.send(makeSuccess(history));
 }));
 
+// Load rules from database
 app.get('/app/api/validate/history-rules', asyncHandler(async (req, res) => {
 
   const history = await req.db.collection('validation_rules').find({}).toArray();
@@ -370,12 +371,9 @@ app.get('/app/api/validate/history-rules', asyncHandler(async (req, res) => {
   res.send(makeSuccess(history));
 }));
 
+// Create or Update existing rule
 app.put('/app/api/validate/create', asyncHandler(async (req, res) => {
   const { type,data } = req.body;
-
-  // await req.db.collection('validation_rules').insertOne(data);
-
-  // await req.db.collection('validation_rules').updateOne({ _id: server._id }, { $set: { schema: newSchema } });
 
   if (type==2){
     await req.db.collection('validation_rules').insertOne(data);
@@ -400,11 +398,10 @@ app.put('/app/api/validate/create', asyncHandler(async (req, res) => {
 }));
 
 
-
+// Delete existing rule
 app.put('/app/api/validate/delete', asyncHandler(async (req, res) => {
   const { type,data } = req.body;
   await req.db.collection('validation_rules').remove({ rule_name: data.rule_name });
-  // await req.db.collection('validation_rules').deleteMany({});
   res.send(makeSuccess(data));
 
   }));
@@ -463,64 +460,9 @@ app.put('/app/api/application/update', validator.applicationValidationRules(), v
   res.send(makeSuccess(data));
 }));
 
-/* Translation tool endpoint */
-// app.get('/app/api/translation-tool/files', asyncHandler(async (req, res) => {
-//   const fileSystem = (await req.db.collection('file_system').findOne({})).file_system;
-//   res.send(makeSuccess(fileSystem));
-// }));
-//
-// app.post('/app/api/translation-tool/folder', asyncHandler(async (req, res) => {
-//   const { location, folderName } = req.body.data;
-//   insertNewFolder(location, folderName, req);
-//
-//   res.send(makeSuccess('Successfully Inserted New Folder'));
-// }));
-
-// app.get('/app/api/translation-tool/swagger_files', asyncHandler(async (req, res) => {
-//   const swaggerFiles = await req.db.collection('swagger_files').find({}, { _id: 0, slug: 1 }).toArray();
-//   res.send(makeSuccess(swaggerFiles.map((swaggerFile) => swaggerFile.slug)));
-// }));
-
-// app.get('/app/api/translation-tool/swagger', asyncHandler(async (req, res) => {
-//   const { name } = req.query;
-//   const { swagger } = await req.db.collection('swagger_files').findOne({ name });
-//   res.send(makeSuccess(swaggerFile));
-// }));
-//
-// app.post('/app/api/translation-tool/swagger', asyncHandler(async (req, res) => {
-//   const { swaggerName, swagger, location } = req.body.data;
-//
-//   insertNewSwaggerFile(swaggerName, swagger, location, 'swagger_files', req);
-//
-//   res.send(makeSuccess('Successfully Inserted Swagger File'));
-// }));
-//
-// app.delete('/app/api/translation-tool/swagger', asyncHandler(async (req, res) => {
-//   // TODO
-// }));
-
-//Richa : creating translate create
-// app.get('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
-//   const { name } = req.body.data;
-//
-//   const { translationFile } = await req.db.collection('translation_files').findOne({ name });
-//
-//   res.send(makeSuccess(translationFile));
-// }));
-//
-// app.post('/app/api/translation-tool/translation', asyncHandler(async (req, res) => {
-//   const {
-//     translation, translationName, swaggerName, location,
-//   } = req.body.data;
-//
-//   insertNewTranslationFile(translationName, translation, location, swaggerName, req);
-//
-//   res.send(makeSuccess('Successfully Inserted Translation File'));
-// }));
-
+// Create or Update  Translation State and save to db
 app.put('/app/api/translate/create', asyncHandler(async (req, res) => {
   const {type,data } = req.body;
-  //
   if (type==0){
     await req.db.collection('translation_files').insertOne(data);
   }
@@ -543,6 +485,7 @@ app.put('/app/api/translate/create', asyncHandler(async (req, res) => {
 
 }));
 
+// Delete existing translation state
 app.put('/app/api/translate/delete', asyncHandler(async (req, res) => {
   const { type,data } = req.body;
   await req.db.collection('translation_files').remove({ translationName: data.translationName });
@@ -551,23 +494,21 @@ app.put('/app/api/translate/delete', asyncHandler(async (req, res) => {
 
   }));
 
-  // sudo mongoexport --db listenonline -c validation_rules --out validation_rules.json
+// Deployment: Use the following command to export rules from database
+// sudo mongoexport --db listenonline -c validation_rules --out validation_rules.json
 
-
+// Validate translation state by loading all rules from database and calling validation framework
 app.put('/app/api/translate/validate', asyncHandler(async (req, res) => {
   const { type,data } = req.body;
 
- //Richa: assumes that there is no duplicate rules in history db. Add logic to handle duplocate rules.
-
   console.log("New Validate Call");
+
   const history = await req.db.collection('validation_rules').find({}).toArray();
-
   var rule_len= history.length;
-
   var actionMsg= [];
   var dbrules = [];
-  for (var i = 0; i < rule_len; i++) {
 
+  for (var i = 0; i < rule_len; i++) {
 
   var rule= {
     "id": history[i].rule_name,
@@ -579,30 +520,23 @@ app.put('/app/api/translate/validate', asyncHandler(async (req, res) => {
     "code": history[i].rule_custom_code,
   };
 
+  // parameters in rule form are split on delimeter "|"
   const parametArr = history[i].rule_parameters.split("|");
 
   const parametArrLen= parametArr.length;
 
+  // split parameter and their values using delimeter ":"
   for (var k = 0; k < parametArrLen; k++) {
-    // for each key valuye pairs
     var fieldname= parametArr[k].split(":")[0];
     var values= parametArr[k].split(":")[1];
     rule[fieldname]= values;
   }
-
   dbrules.push(rule);
-
   }
-  //
+
+  // Call validation tool using rules and send the error list as response
   var err= await rules.rules(data.swaggerFile, data.newSwagger,dbrules);
-  // .then(err => console.log("Response err is ",err))
-  // .then(err => res.send(makeSuccess(err)));
-  //
-  // if (err.length>0){
-  //   actionMsg.push(err);
-  // }
-  //
-   console.log("Err",err);
+  console.log("Err",err);
   res.send(makeSuccess(err));
 
   }));
@@ -640,7 +574,6 @@ app.put('/app/api/translate/validate', asyncHandler(async (req, res) => {
 
 
 app.get('/app/api/translate/history-translations', asyncHandler(async (req, res) => {
-
   const history = await req.db.collection('translation_files').find({}).toArray();
   console.log("Returning translations",history);
   res.send(makeSuccess(history));

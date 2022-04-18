@@ -11,9 +11,11 @@ function checkProperty(options, propertyNameList,objfunc) {
       errflag=1
     }
   }
+  // If err, return 0 else return function to execute
   return errflag? undefinedProp: objfunc;
 }
 
+// Function to check if right options/parmeters for rule function exist in args
 module.exports.checkOptions = function(functionName, options) {
   var propertyNameList=['ruledesc','errmsg','path'];
   switch (functionName) {
