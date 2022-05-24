@@ -1,11 +1,4 @@
 
-var rules= require('./rules.js')
-
-// Richa 08/21: This file was used for testing the parser function directly from terminal.
-// Contains examples of different rules functions
-
-function rules() {
-
 // Check if operationId is unique
   // parser.parser('../sample_oas.json',
   // '../sample_translation.json',
@@ -139,7 +132,7 @@ function rules() {
   //   "errmsg": "Field does not exist"
   // });
 
-
+var parser = require('./parser.js');
 
   // parser.parser('../sample_oas.json',
   // '../sample_translation.json',
@@ -154,25 +147,81 @@ function rules() {
   //   "code":'../pythonCode.py'
   // });
   //
-
-
-  returnhandle.getResults();
-}
 // rules();
 
+//checkMatch Tested
 //this is what the user can call
-let result = rules.rules('./sample_oas.json', './sample_translation.json', {
-  "id": "Rule2", //get this from mongodb
-  "functionName": "checkMatch",
-  "path": "$.servers[*]",
-  "ruledesc": "Check if server match Rule2",
-  "fieldname": "url",
-  "regexp": "[a-z]+",
-  "level": "warn",
-  "errmsg": "Expression does not seem to be a URL."
-});
+// let result = parser.parser('./sample_oas.json', './sample_translation.json', {
+//   "id": "Rule2", //get this from mongodb
+//   "functionName": "checkMatch",
+//   "path": "$.servers[*]",
+//   "ruledesc": "Check if server match Rule2",
+//   "fieldname": "url",
+//   "regexp": "(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})",
+//   "level": "warn",
+//   "errmsg": "Expression does not seem to be a URL."
+// });
+
+// let result = parser.parser('./sample_oas.json', './sample_translation.json', {
+//   "id": "Rule2", //get this from mongodb
+//   "functionName": "checkMatch",
+//   "path": "$.paths[*][*].responses",
+//   "ruledesc": "Check if server match Rule2",
+//   "regexp": "^20[0-9]+",
+//   "level": "warn",
+//   "errmsg": "Expression does not seem to be a success code."
+// });
+
+let result = parser.parser('./sample_oas.json', './sample_translation.json', {
+   "id": "Rule2", //get this from mongodb
+   "functionName": "checkMatch",
+   "path": "$",
+   "ruledesc": "Check if server match Rule2",
+   "fieldname":"openapi",
+   "regexp": "3.0.0",
+   "level": "warn",
+   "errmsg": "Expression does not seem to be a success code."
+ });
+
+// checkEnum
+
+// let result = parser.parser('./sample_oas.json', './sample_translation.json', {
+//   "id": "Rule2", //get this from mongodb
+//   "functionName": "checkEnum",
+//   "path": "$.paths[*]",
+//   "ruledesc": "Check HTTP methods",
+//   "enumValue": "get,post,put,delete",
+//   "level": "warn",
+//   "errmsg": "Expression does not seem to be a success code."
+// });
+
+
+//checkLength
+
+// use to check if parameters are selected
+
+// let result = parser.parser('./sample_oas.json', './sample_translation.json', {
+//   "id": "Rule2", //get this from mongodb
+//   "functionName": "checkLength",
+//   "path": "$.servers[*]",
+//   "ruledesc": "Check Length of servers",
+//   "maxSize": 3,
+//   "minSize": 2,
+//   "level": "warn",
+//   "errmsg": "Expression does not seem to be a success code."
+// });
+
+// '$.servers[*]', {
+//     "ruledesc": "Check Length of servers",
+//     "level": "warn",
+//     "maxSize": 1,
+//     "minSize": 1,
+//     "errmsg": "Length not defined within limits "
+
+// use to check if multiple servers are selected
 
 console.log(result);
 
 
 // parser('../sample_oas.json',customFunction,'$.paths[*]',{"code":"import numpy;x=1+1;print(x)"})
+

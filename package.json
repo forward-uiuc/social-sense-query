@@ -44,6 +44,7 @@
     "passport-stackexchange": "^0.1.2",
     "passport-twitter": "^1.0.4",
     "passport-youtube-v3": "^2.1.0",
+    "python-bridge": "^1.1.0",
     "python-shell": "^3.0.1",
     "querystring": "^0.2.0",
     "sentiment": "^5.0.2",

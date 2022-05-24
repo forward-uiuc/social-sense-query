@@ -22,7 +22,7 @@ module.exports.checkUnique = function(options) {
 
 // Checks JSON object or JSON object array fields against a regex expression
 module.exports.checkMatch = function(options) {
-  var regex = new RegExp(options.regexp, 'g');
+  var regex = new RegExp(options.regexp);
   for (let i = 0; i < options.targetobj.length; i++) {
     if (options.fieldname) {
       if (!regex.test(options.targetobj[i][options.fieldname])) {
@@ -42,7 +42,7 @@ module.exports.checkMatch = function(options) {
 module.exports.checkLength = function(options) {
   if (options.targetobj instanceof Array) {
     console.log(options.targetobj.length, options.targetpaths)
-    if (!(options.targetobj.length <= options.maxSize) || !(options.targetobj.length >= options.minSize)) {
+    if (!((options.targetobj.length <= options.maxSize) && (options.targetobj.length >= options.minSize))) {
       options.targetpaths[0].pop()
       console.log(options.targetpaths[0])
       options.errPath = jp.stringify(options.targetpaths[0]);
