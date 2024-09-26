@@ -1,0 +1,2829 @@
+{
+  "swagger": "2.0",
+  "basePath": "/svc",
+  "host": "api.nytimes.com",
+  "schemes": [
+    "https"
+  ],
+  "info": {
+    "version": "2.0.0",
+    "title": "New York Times",
+    "description": "New York Times"
+  },
+  "produces": [
+    "application/json"
+  ],
+  "security": [
+    {
+      "apikey": []
+    }
+  ],
+  "paths": {
+    "/movies/v2/critics/{reviewer}.json": {
+      "get": {
+        "summary": "Get movie critics name, bio and image.",
+        "description": "Get movie critics. You can either specify the reviewer name or use \"all\", \"full-time\", or \"part-time\".\n",
+        "tags": [
+          "Movies"
+        ],
+        "parameters": [
+          {
+            "name": "reviewer",
+            "in": "path",
+            "description": "Reviewer name or \"all\" for all reviewers, \"full-time\" for full-time reviewers, or \"part-time\" for part-time reviewers.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of movie critics.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "num_results": {
+                  "type": "integer"
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Critic"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.  Make sure api-key is set."
+          },
+          "429": {
+            "description": "Too many requests.  You reached your per minute or per day rate limit."
+          }
+        }
+      }
+    },
+    "/movies/v2/reviews/{type}.json": {
+      "get": {
+        "summary": "Get movie reviews.",
+        "description": "Get movie reviews.  Can filter to only return Critics' Picks.\nSupports ordering results by-title, by-publication-date, or by-opening-date.\nUse offset to paginate thru results, 20 at a time.\n",
+        "tags": [
+          "Movies"
+        ],
+        "parameters": [
+          {
+            "name": "type",
+            "description": "Filter by critics' pick or not.",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "all",
+              "picks"
+            ]
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Sets the starting point of the result set.  Needs to be multiple of 20.",
+            "required": false,
+            "default": 0,
+            "type": "integer"
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "How to order the results.",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "by-opening-date",
+              "by-publication-date",
+              "by-title"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of movie reviews.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "description": "Status of call, should be OK."
+                },
+                "copyright": {
+                  "type": "string",
+                  "description": "Copyright text."
+                },
+                "has_more": {
+                  "type": "boolean",
+                  "description": "Whether there are more results to paginate thru."
+                },
+                "num_results": {
+                  "type": "integer",
+                  "description": "Number of movies returned in the API response results array."
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Review"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.  Make sure api-key is set."
+          },
+          "429": {
+            "description": "Too many requests.  You reached your per minute or per day rate limit."
+          }
+        }
+      }
+    },
+    "/movies/v2/reviews/search.json": {
+      "get": {
+        "summary": "Search for movie reviews.",
+        "description": "Search for movie reviews.  Supports filtering by Critics' Pick.\n",
+        "parameters": [
+          {
+            "name": "critics-pick",
+            "in": "query",
+            "description": "Set to Y to only show critics' picks.  Otherwise shows both.",
+            "type": "string",
+            "enum": [
+              "Y"
+            ],
+            "required": false
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Sets the starting point of the result set (0, 20, ...).  Used to paginate thru results. Defaults to 0. The has_more field indicates the response has more results.",
+            "type": "integer",
+            "multipleOf": 20
+          },
+          {
+            "name": "opening-date",
+            "in": "query",
+            "description": "U.S. opening date range. Start and end dates separated by semicolon (e.g. 1930-01-01;1940-01-01).  Don't set end date if you want open ended (e.g. 2019-01-01).",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "order",
+            "in": "query",
+            "description": "Field to order results by (e.g. by-publication-date).",
+            "type": "string",
+            "enum": [
+              "by-opening-date",
+              "by-publication-date",
+              "by-title"
+            ],
+            "required": false
+          },
+          {
+            "name": "publication-date",
+            "in": "query",
+            "description": "Review publication date range. Start and end dates separated by semicolon (e.g. 1930-01-01;1940-01-01).",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "reviewer",
+            "in": "query",
+            "description": "Filter by reviewer byline (e.g. Stephen Holden).",
+            "type": "string",
+            "required": false
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Search keyword (e.g. lebowski).",
+            "type": "string",
+            "required": false
+          }
+        ],
+        "tags": [
+          "Movies"
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of movie reviews.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "has_more": {
+                  "type": "boolean"
+                },
+                "num_results": {
+                  "type": "integer"
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Review"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.  Make sure api-key is set."
+          },
+          "429": {
+            "description": "Too many requests.  You reached your per minute or per day rate limit."
+          }
+        }
+      }
+    },
+    "/mostpopular/v2/emailed/{period}.json": {
+      "get": {
+        "summary": "Most emailed articles on NYTimes.com.",
+        "description": "Returns an array of the most emailed articles on NYTimes.com for specified period of time (1 day, 7 days, or 30 days).\n",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "path",
+            "description": "Time period: 1, 7, or 30 days.",
+            "required": true,
+            "type": "integer",
+            "enum": [
+              1,
+              7,
+              30
+            ],
+            "default": 1
+          }
+        ],
+        "tags": [
+          "Most Popular"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of articles.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "num_results": {
+                  "type": "integer"
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/EmailedArticle"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.  Make sure api-key is set."
+          },
+          "429": {
+            "description": "Too many requests.  You reached your per minute or per day rate limit."
+          }
+        }
+      }
+    },
+    "/mostpopular/v2/shared/{period}.json": {
+      "get": {
+        "summary": "Most shared articles on NYTimes.com.",
+        "description": "Returns an array of the most shared articles on NYTimes.com for specified period of time (1 day, 7 days, or 30 days).\n",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "path",
+            "description": "Time period: 1, 7, or 30 days.",
+            "required": true,
+            "type": "integer",
+            "enum": [
+              1,
+              7,
+              30
+            ],
+            "default": 1
+          }
+        ],
+        "tags": [
+          "Most Popular"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of articles.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "num_results": {
+                  "type": "integer"
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/SharedArticle"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.  Make sure api-key is set."
+          },
+          "429": {
+            "description": "Too many requests.  You reached your per minute or per day rate limit."
+          }
+        }
+      }
+    },
+    "/mostpopular/v2/shared/{period}/{share_type}.json": {
+      "get": {
+        "summary": "Most shared articles on NYTimes.com of specified share type.",
+        "description": "Returns an array of the most shared articles by share type on NYTimes.com for specified period of time (1 day, 7 days, or 30 days).\n",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "path",
+            "description": "Time period: 1, 7, or 30 days.",
+            "required": true,
+            "type": "integer",
+            "enum": [
+              1,
+              7,
+              30
+            ],
+            "default": 1
+          },
+          {
+            "name": "share_type",
+            "in": "path",
+            "description": "Share type: facebook.",
+            "required": true,
+            "type": "string",
+            "enum": [
+              "facebook"
+            ],
+            "default": "facebook"
+          }
+        ],
+        "tags": [
+          "Most Popular"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of articles.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "num_results": {
+                  "type": "integer"
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/SharedArticle"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.  Make sure api-key is set."
+          },
+          "429": {
+            "description": "Too many requests.  You reached your per minute or per day rate limit."
+          }
+        }
+      }
+    },
+    "/mostpopular/v2/viewed/{period}.json": {
+      "get": {
+        "summary": "Most viewed articles on NYTimes.com.",
+        "description": "Returns an array of the most viewed articles on NYTimes.com for specified period of time (1 day, 7 days, or 30 days).\n",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "path",
+            "description": "Time period: 1, 7, or 30 days.",
+            "required": true,
+            "type": "integer",
+            "enum": [
+              1,
+              7,
+              30
+            ],
+            "default": 1
+          }
+        ],
+        "tags": [
+          "Most Popular"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of articles.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "num_results": {
+                  "type": "integer"
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/ViewedArticle"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.  Make sure api-key is set."
+          },
+          "429": {
+            "description": "Too many requests.  You reached your per minute or per day rate limit."
+          }
+        }
+      }
+    },
+    "/community/v3/user-content/replies.json": {
+      "parameters": [],
+      "get": {
+        "summary": "Get replies to a comment.",
+        "description": "Get replies to a comment.  You need to pass in the article's URL and the comment sequence number of the parent comment.\n\n```\nhttps://api.nytimes.com/svc/community/v3/user-content/replies.json?api-key={your-API-key}&url={url}&commentSequence={sequence}[&offset=int]\n```\n\n```\nhttps://api.nytimes.com/svc/community/v3/user-content/replies.json?api-key=your-key&offset=0&url=https://www.nytimes.com/interactive/2019/04/30/dining/climate-change-food-eating-habits.html&commentSequence=100268335\n```\n\nThe response includes the parent comment and up to 25 replies.  The replyCount field has the total number of replies.\nUse offset query parameter to paginate thru results, 25 replies at a time (0,25,50, ...).\n",
+        "operationId": "GET_user-content-replies-json",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "description": "Article URL to get comments for.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "commentSequence",
+            "in": "query",
+            "description": "Parent comment sequence number.",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Sets starting point of result set (0, 25, 50, ...). Used to paginate thru replies. Defaults to 0. The replyCount field indicates how many replies there are for the parent comment.",
+            "required": false,
+            "type": "integer",
+            "default": 0,
+            "multipleOf": 25
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "debug": {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "results": {
+                  "type": "object",
+                  "properties": {
+                    "comments": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "commentID": {
+                            "type": "integer"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "commentSequence": {
+                            "type": "integer"
+                          },
+                          "userID": {
+                            "type": "integer"
+                          },
+                          "userDisplayName": {
+                            "type": "string"
+                          },
+                          "userLocation": {
+                            "type": "string"
+                          },
+                          "userTitle": {
+                            "type": "string"
+                          },
+                          "userURL": {
+                            "type": "string"
+                          },
+                          "commentTitle": {
+                            "type": "string"
+                          },
+                          "commentBody": {
+                            "type": "string"
+                          },
+                          "createDate": {
+                            "type": "string"
+                          },
+                          "updateDate": {
+                            "type": "string"
+                          },
+                          "approveDate": {
+                            "type": "string"
+                          },
+                          "recommendations": {
+                            "type": "integer"
+                          },
+                          "replyCount": {
+                            "type": "integer",
+                            "description": "Total number of replies."
+                          },
+                          "replies": {
+                            "type": "array",
+                            "items": {}
+                          },
+                          "editorsSelection": {
+                            "type": "boolean"
+                          },
+                          "parentID": {
+                            "type": "string"
+                          },
+                          "parentUserDisplayName": {
+                            "type": "string"
+                          },
+                          "depth": {
+                            "type": "integer"
+                          },
+                          "commentType": {
+                            "type": "string"
+                          },
+                          "trusted": {
+                            "type": "integer"
+                          },
+                          "recommendedFlag": {
+                            "type": "string"
+                          },
+                          "reportAbuseFlag": {
+                            "type": "string"
+                          },
+                          "permID": {
+                            "type": "string"
+                          },
+                          "picURL": {
+                            "type": "string"
+                          },
+                          "timespeople": {
+                            "type": "integer"
+                          },
+                          "sharing": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "totalCommentsReturned": {
+                      "type": "integer"
+                    },
+                    "totalCommentsFound": {
+                      "type": "integer"
+                    },
+                    "totalParentCommentsFound": {
+                      "type": "integer",
+                      "description": "Total number of parent comments."
+                    },
+                    "totalParentCommentsReturned": {
+                      "type": "integer"
+                    },
+                    "totalReplyCommentsFound": {
+                      "type": "integer"
+                    },
+                    "totalReplyCommentsReturned": {
+                      "type": "integer"
+                    },
+                    "totalReporterReplyCommentsFound": {
+                      "type": "integer"
+                    },
+                    "totalReporterReplyCommentsReturned": {
+                      "type": "integer"
+                    },
+                    "totalEditorsSelectionFound": {
+                      "type": "integer"
+                    },
+                    "totalEditorsSelectionReturned": {
+                      "type": "integer"
+                    },
+                    "totalRecommendationsFound": {
+                      "type": "integer"
+                    },
+                    "totalRecommendationsReturned": {
+                      "type": "integer"
+                    },
+                    "replyLimit": {
+                      "type": "integer"
+                    },
+                    "depthLimit": {
+                      "type": "integer"
+                    },
+                    "sort": {
+                      "type": "string"
+                    },
+                    "filter": {
+                      "type": "string"
+                    },
+                    "callerID": {
+                      "type": "string"
+                    },
+                    "api_timestamp": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.  Make sure api-key is set."
+          },
+          "429": {
+            "description": "Too many requests.  You reached your per minute or per day rate limit."
+          }
+        }
+      }
+    },
+    "/community/v3/user-content/url.json": {
+      "parameters": [],
+      "get": {
+        "summary": "Get top-level comments for URL.",
+        "description": "Get top-level comments associated with a specific NYTimes.com URL.\n\n```\nhttps://api.nytimes.com/svc/community/v3/user-content/url.json?api-key={your-API-key}&url={url}[&offset=int]\n```\n\n```\nhttps://api.nytimes.com/svc/community/v3/user-content/url.json?api-key=your-key&offset=0&url=https://www.nytimes.com/interactive/2019/04/30/dining/climate-change-food-eating-habits.html\n```\n\nThe response includes 25 top-level comments at a time.  Use offset query parameter to paginate thru results (0,25,50, ...).  The total number of top-level comments is returned in the totalParentCommentsFound field.\nThe response includes up to 3 replies.  If there are more than 3 replies for a top-level comment, use the replies endpoint to get the rest.  The replyCount field has the total number of replies.\n",
+        "operationId": "GET_user-content-url-json",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "url",
+            "in": "query",
+            "description": "Article URL to get comments for.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Sets starting point of result set (0, 25, 50, ...). Used to paginate thru top-level article comments. Defaults to 0. The totalParentCommentsFound field indicates how many top-level comments there are.",
+            "required": false,
+            "type": "integer",
+            "default": 0,
+            "multipleOf": 25
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Search comments by newest first, oldest first, or with most reader recommendations first.",
+            "required": false,
+            "type": "string",
+            "default": "newest",
+            "enum": [
+              "newest",
+              "oldest",
+              "reader"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "debug": {
+                  "type": "object",
+                  "properties": {
+                    "version": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "results": {
+                  "type": "object",
+                  "properties": {
+                    "comments": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "commentID": {
+                            "type": "integer"
+                          },
+                          "status": {
+                            "type": "string"
+                          },
+                          "commentSequence": {
+                            "type": "integer"
+                          },
+                          "userID": {
+                            "type": "integer"
+                          },
+                          "userDisplayName": {
+                            "type": "string"
+                          },
+                          "userLocation": {
+                            "type": "string"
+                          },
+                          "userTitle": {
+                            "type": "string"
+                          },
+                          "userURL": {
+                            "type": "string"
+                          },
+                          "commentTitle": {
+                            "type": "string"
+                          },
+                          "commentBody": {
+                            "type": "string"
+                          },
+                          "createDate": {
+                            "type": "string"
+                          },
+                          "updateDate": {
+                            "type": "string"
+                          },
+                          "approveDate": {
+                            "type": "string"
+                          },
+                          "recommendations": {
+                            "type": "integer"
+                          },
+                          "replyCount": {
+                            "type": "integer",
+                            "description": "Total number of replies."
+                          },
+                          "replies": {
+                            "type": "array",
+                            "items": {}
+                          },
+                          "editorsSelection": {
+                            "type": "boolean"
+                          },
+                          "parentID": {
+                            "type": "string"
+                          },
+                          "parentUserDisplayName": {
+                            "type": "string"
+                          },
+                          "depth": {
+                            "type": "integer"
+                          },
+                          "commentType": {
+                            "type": "string"
+                          },
+                          "trusted": {
+                            "type": "integer"
+                          },
+                          "recommendedFlag": {
+                            "type": "string"
+                          },
+                          "reportAbuseFlag": {
+                            "type": "string"
+                          },
+                          "permID": {
+                            "type": "string"
+                          },
+                          "picURL": {
+                            "type": "string"
+                          },
+                          "timespeople": {
+                            "type": "integer"
+                          },
+                          "sharing": {
+                            "type": "integer"
+                          }
+                        }
+                      }
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "totalCommentsReturned": {
+                      "type": "integer"
+                    },
+                    "totalCommentsFound": {
+                      "type": "integer"
+                    },
+                    "totalParentCommentsFound": {
+                      "type": "integer",
+                      "description": "Total number of parent comments."
+                    },
+                    "totalParentCommentsReturned": {
+                      "type": "integer"
+                    },
+                    "totalReplyCommentsFound": {
+                      "type": "integer"
+                    },
+                    "totalReplyCommentsReturned": {
+                      "type": "integer"
+                    },
+                    "totalReporterReplyCommentsFound": {
+                      "type": "integer"
+                    },
+                    "totalReporterReplyCommentsReturned": {
+                      "type": "integer"
+                    },
+                    "totalEditorsSelectionFound": {
+                      "type": "integer"
+                    },
+                    "totalEditorsSelectionReturned": {
+                      "type": "integer"
+                    },
+                    "totalRecommendationsFound": {
+                      "type": "integer"
+                    },
+                    "totalRecommendationsReturned": {
+                      "type": "integer"
+                    },
+                    "replyLimit": {
+                      "type": "integer"
+                    },
+                    "depthLimit": {
+                      "type": "integer"
+                    },
+                    "sort": {
+                      "type": "string"
+                    },
+                    "filter": {
+                      "type": "string"
+                    },
+                    "callerID": {
+                      "type": "string"
+                    },
+                    "api_timestamp": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.  Make sure api-key is set."
+          },
+          "429": {
+            "description": "Too many requests.  You reached your per minute or per day rate limit."
+          }
+        }
+      }
+    },
+    "/books/v3/reviews.json": {
+      "get": {
+        "summary": "Reviews",
+        "description": "Get book reviews.",
+        "operationId": "GET_reviews-format",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "isbn",
+            "in": "query",
+            "description": "Searching by ISBN is the recommended method. You can enter 10- or 13-digit ISBNs.",
+            "type": "integer"
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "You’ll need to enter the full title of the book. Spaces in the title will be converted into the characters %20.",
+            "type": "string"
+          },
+          {
+            "name": "author",
+            "in": "query",
+            "description": "You’ll need to enter the author’s first and last name, separated by a space. This space will be converted into the characters %20.",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Book reviews.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "num_results": {
+                  "type": "integer"
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "url": {
+                        "type": "string"
+                      },
+                      "publication_dt": {
+                        "type": "string"
+                      },
+                      "byline": {
+                        "type": "string"
+                      },
+                      "book_title": {
+                        "type": "string"
+                      },
+                      "book_author": {
+                        "type": "string"
+                      },
+                      "summary": {
+                        "type": "string"
+                      },
+                      "isbn13": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/books/v3/lists/best-sellers/history.json": {
+      "get": {
+        "summary": "Best Sellers List History",
+        "description": "Get Best Sellers list history.",
+        "operationId": "GET_lists-best-sellers-history-json",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "age-group",
+            "in": "query",
+            "description": "The target age group for the best seller.",
+            "type": "string"
+          },
+          {
+            "name": "author",
+            "in": "query",
+            "description": "The author of the best seller. The author field does not include additional contributors (see Data Structure for more details about the author and contributor fields).\n\nWhen searching the author field, you can specify any combination of first, middle and last names.\n\nWhen sort-by is set to author, the results will be sorted by author's first name.",
+            "type": "string"
+          },
+          {
+            "name": "contributor",
+            "in": "query",
+            "description": "The author of the best seller, as well as other contributors such as the illustrator (to search or sort by author name only, use author instead).\n\nWhen searching, you can specify any combination of first, middle and last names of any of the contributors.\n\nWhen sort-by is set to contributor, the results will be sorted by the first name of the first contributor listed.",
+            "type": "string"
+          },
+          {
+            "name": "isbn",
+            "in": "query",
+            "description": "International Standard Book Number, 10 or 13 digits\n\nA best seller may have both 10-digit and 13-digit ISBNs, and may have multiple ISBNs of each type. To search on multiple ISBNs, separate the ISBNs with semicolons (example: 9780446579933;0061374229).",
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Sets the starting point of the result set (0, 20, ...).  Used to paginate thru results if there are more than 20. Defaults to 0. The num_results field indicates how many results there are total.",
+            "type": "integer",
+            "multipleOf": 20
+          },
+          {
+            "name": "price",
+            "in": "query",
+            "description": "The publisher's list price of the best seller, including decimal point.",
+            "type": "string"
+          },
+          {
+            "name": "publisher",
+            "in": "query",
+            "description": "The standardized name of the publisher",
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "in": "query",
+            "description": "The title of the best seller\n\nWhen searching, you can specify a portion of a title or a full title.",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Best Sellers list history",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "num_results": {
+                  "type": "integer"
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "contributor": {
+                        "type": "string"
+                      },
+                      "author": {
+                        "type": "string"
+                      },
+                      "contributor_note": {
+                        "type": "string"
+                      },
+                      "price": {
+                        "type": "integer"
+                      },
+                      "age_group": {
+                        "type": "string"
+                      },
+                      "publisher": {
+                        "type": "string"
+                      },
+                      "isbns": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "isbn10": {
+                              "type": "string"
+                            },
+                            "isbn13": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "ranks_history": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "primary_isbn10": {
+                              "type": "string"
+                            },
+                            "primary_isbn13": {
+                              "type": "string"
+                            },
+                            "rank": {
+                              "type": "integer"
+                            },
+                            "list_name": {
+                              "type": "string"
+                            },
+                            "display_name": {
+                              "type": "string"
+                            },
+                            "published_date": {
+                              "type": "string"
+                            },
+                            "bestsellers_date": {
+                              "type": "string"
+                            },
+                            "weeks_on_list": {
+                              "type": "integer"
+                            },
+                            "ranks_last_week": {
+                              "type": "string"
+                            },
+                            "asterisk": {
+                              "type": "integer"
+                            },
+                            "dagger": {
+                              "type": "integer"
+                            }
+                          }
+                        }
+                      },
+                      "reviews": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "book_review_link": {
+                              "type": "string"
+                            },
+                            "first_chapter_link": {
+                              "type": "string"
+                            },
+                            "sunday_review_link": {
+                              "type": "string"
+                            },
+                            "article_chapter_link": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/books/v3/lists/names.json": {
+      "get": {
+        "summary": "Best Sellers List Names",
+        "description": "Get Best Sellers list names.",
+        "operationId": "GET_lists-names-format",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Get Best Sellers list names.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "num_results": {
+                  "type": "integer"
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "list_name": {
+                        "type": "string"
+                      },
+                      "display_name": {
+                        "type": "string"
+                      },
+                      "list_name_encoded": {
+                        "type": "string"
+                      },
+                      "oldest_published_date": {
+                        "type": "string"
+                      },
+                      "newest_published_date": {
+                        "type": "string"
+                      },
+                      "updated": {
+                        "type": "string",
+                        "enum": [
+                          "WEEKLY",
+                          "MONTHLY"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/books/v3/lists/overview.json": {
+      "get": {
+        "summary": "Best Sellers List Overview",
+        "description": "Get top 5 books for all the Best Sellers lists for specified date.",
+        "operationId": "GET_lists-overview-format",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "published_date",
+            "in": "query",
+            "description": "YYYY-MM-DD\n\nThe best-seller list publication date.\nYou do not have to specify the exact date the list was published. The service will search forward (into the future) for the closest publication date to the date you specify. For example, a request for lists/overview/2013-05-22 will retrieve the list that was published on 05-26.\n\nIf you do not include a published date, the current week's best sellers lists will be returned.",
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overview of Best Sellers lists.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "num_results": {
+                  "type": "integer"
+                },
+                "results": {
+                  "type": "object",
+                  "properties": {
+                    "bestsellers_date": {
+                      "type": "string"
+                    },
+                    "published_date": {
+                      "type": "string"
+                    },
+                    "lists": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "list_id": {
+                            "type": "integer"
+                          },
+                          "list_name": {
+                            "type": "string"
+                          },
+                          "display_name": {
+                            "type": "string"
+                          },
+                          "updated": {
+                            "type": "string"
+                          },
+                          "list_image": {
+                            "type": "string"
+                          },
+                          "books": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "age_group": {
+                                  "type": "string"
+                                },
+                                "author": {
+                                  "type": "string"
+                                },
+                                "contributor": {
+                                  "type": "string"
+                                },
+                                "contributor_note": {
+                                  "type": "string"
+                                },
+                                "created_date": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "price": {
+                                  "type": "integer"
+                                },
+                                "primary_isbn13": {
+                                  "type": "string"
+                                },
+                                "primary_isbn10": {
+                                  "type": "string"
+                                },
+                                "publisher": {
+                                  "type": "string"
+                                },
+                                "rank": {
+                                  "type": "integer"
+                                },
+                                "title": {
+                                  "type": "string"
+                                },
+                                "updated_date": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/books/v3/lists/{date}/{list}.json": {
+      "get": {
+        "summary": "Best Sellers List by Date",
+        "description": "Get Best Sellers list by date.",
+        "operationId": "GET_lists-date-list-json",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "date",
+            "in": "path",
+            "description": "YYYY-MM-DD or \"current\"\n\nThe date the best sellers list was published on NYTimes.com.  Use \"current\" to get latest list.",
+            "required": true,
+            "type": "string",
+            "pattern": "^(\\d{4}-\\d{2}-\\d{2}|current)$"
+          },
+          {
+            "name": "list",
+            "in": "path",
+            "description": "Name of the Best Sellers List (e.g. hardcover-fiction). You can get the full list of names from the /lists/names.json service.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Sets the starting point of the result set (0, 20, ...).  Used to paginate thru books if list has more than 20. Defaults to 0.  The num_results field indicates how many books are in the list.",
+            "type": "integer",
+            "multipleOf": 20
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Best Sellers list books.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "num_results": {
+                  "type": "integer"
+                },
+                "last_modified": {
+                  "type": "string"
+                },
+                "results": {
+                  "type": "object",
+                  "properties": {
+                    "list_name": {
+                      "type": "string"
+                    },
+                    "bestsellers_date": {
+                      "type": "string"
+                    },
+                    "published_date": {
+                      "type": "string"
+                    },
+                    "display_name": {
+                      "type": "string"
+                    },
+                    "normal_list_ends_at": {
+                      "type": "integer"
+                    },
+                    "updated": {
+                      "type": "string"
+                    },
+                    "books": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "rank": {
+                            "type": "integer"
+                          },
+                          "rank_last_week": {
+                            "type": "integer"
+                          },
+                          "weeks_on_list": {
+                            "type": "integer"
+                          },
+                          "asterisk": {
+                            "type": "integer"
+                          },
+                          "dagger": {
+                            "type": "integer"
+                          },
+                          "primary_isbn10": {
+                            "type": "string"
+                          },
+                          "primary_isbn13": {
+                            "type": "string"
+                          },
+                          "publisher": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "price": {
+                            "type": "integer"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "author": {
+                            "type": "string"
+                          },
+                          "contributor": {
+                            "type": "string"
+                          },
+                          "contributor_note": {
+                            "type": "string"
+                          },
+                          "book_image": {
+                            "type": "string"
+                          },
+                          "amazon_product_url": {
+                            "type": "string"
+                          },
+                          "age_group": {
+                            "type": "string"
+                          },
+                          "book_review_link": {
+                            "type": "string"
+                          },
+                          "first_chapter_link": {
+                            "type": "string"
+                          },
+                          "sunday_review_link": {
+                            "type": "string"
+                          },
+                          "article_chapter_link": {
+                            "type": "string"
+                          },
+                          "isbns": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "isbn10": {
+                                  "type": "string"
+                                },
+                                "isbn13": {
+                                  "type": "string"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "corrections": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {}
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/books/v3/lists.json": {
+      "get": {
+        "summary": "Best Sellers List",
+        "description": "Get Best Sellers list.  If no date is provided returns the latest list.",
+        "operationId": "GET_lists-format",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "list",
+            "in": "query",
+            "description": "The name of the Times best sellers list (hardcover-fiction, paperback-nonfiction, ...).\nThe /lists/names service returns all the list names.\nThe encoded list names are lower case with hyphens instead of spaces (e.g. e-book-fiction, instead of E-Book Fiction).",
+            "type": "string",
+            "required": true,
+            "default": "hardcover-fiction"
+          },
+          {
+            "name": "bestsellers-date",
+            "in": "query",
+            "description": "YYYY-MM-DD\n\nThe week-ending date for the sales reflected on list-name. Times best sellers lists are compiled using available book sale data. The bestsellers-date may be significantly earlier than published-date. For additional information, see the explanation at the bottom of any best-seller list page on NYTimes.com (example: Hardcover Fiction, published Dec. 5 but reflecting sales to Nov. 29).",
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          {
+            "name": "published-date",
+            "in": "query",
+            "description": "YYYY-MM-DD\n\nThe date the best sellers list was published on NYTimes.com (different than bestsellers-date).  Use \"current\" for latest list.",
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "description": "Sets the starting point of the result set (0, 20, ...).  Used to paginate thru books if list has more than 20. Defaults to 0.  The num_results field indicates how many books are in the list.",
+            "type": "integer",
+            "multipleOf": 20
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Best Sellers list books",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "num_results": {
+                  "type": "integer"
+                },
+                "last_modified": {
+                  "type": "string"
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "list_name": {
+                        "type": "string"
+                      },
+                      "display_name": {
+                        "type": "string"
+                      },
+                      "bestsellers_date": {
+                        "type": "string"
+                      },
+                      "published_date": {
+                        "type": "string"
+                      },
+                      "rank": {
+                        "type": "integer"
+                      },
+                      "rank_last_week": {
+                        "type": "integer"
+                      },
+                      "weeks_on_list": {
+                        "type": "integer"
+                      },
+                      "asterisk": {
+                        "type": "integer"
+                      },
+                      "dagger": {
+                        "type": "integer"
+                      },
+                      "amazon_product_url": {
+                        "type": "string"
+                      },
+                      "isbns": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "isbn10": {
+                              "type": "string"
+                            },
+                            "isbn13": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "book_details": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "title": {
+                              "type": "string"
+                            },
+                            "description": {
+                              "type": "string"
+                            },
+                            "contributor": {
+                              "type": "string"
+                            },
+                            "author": {
+                              "type": "string"
+                            },
+                            "contributor_note": {
+                              "type": "string"
+                            },
+                            "price": {
+                              "type": "integer"
+                            },
+                            "age_group": {
+                              "type": "string"
+                            },
+                            "publisher": {
+                              "type": "string"
+                            },
+                            "primary_isbn13": {
+                              "type": "string"
+                            },
+                            "primary_isbn10": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "reviews": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "book_review_link": {
+                              "type": "string"
+                            },
+                            "first_chapter_link": {
+                              "type": "string"
+                            },
+                            "sunday_review_link": {
+                              "type": "string"
+                            },
+                            "article_chapter_link": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/v2/articlesearch.json": {
+      "get": {
+        "summary": "Returns an array of articles.",
+        "description": "Search for NYT articles by keywords, filters and facets.",
+        "parameters": [
+          {
+            "name": "begin_date",
+            "in": "query",
+            "description": "Begin date (e.g. 20120101)",
+            "required": false,
+            "type": "string",
+            "pattern": "^\\d{8}$"
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "description": "End date (e.g. 20121231)",
+            "required": false,
+            "type": "string",
+            "pattern": "^\\d{8}$"
+          },
+          {
+            "name": "facet",
+            "in": "query",
+            "description": "Whether to show facet counts",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "false",
+              "true"
+            ]
+          },
+          {
+            "name": "facet_fields",
+            "in": "query",
+            "description": "Facets",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "day_of_week",
+              "document_type",
+              "ingredients",
+              "news_desk",
+              "pub_month",
+              "pub_year",
+              "section_name",
+              "source",
+              "subsection_name",
+              "type_of_material"
+            ]
+          },
+          {
+            "name": "facet_filter",
+            "in": "query",
+            "description": "Have facet counts use filters",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "false",
+              "true"
+            ]
+          },
+          {
+            "name": "fl",
+            "in": "query",
+            "description": "Field list",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "fq",
+            "in": "query",
+            "description": "Filter query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "Page number (0, 1, ...)",
+            "required": false,
+            "minimum": 0,
+            "maximum": 100,
+            "type": "integer"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "description": "Query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "Sort order",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "newest",
+              "oldest",
+              "relevance"
+            ]
+          }
+        ],
+        "tags": [
+          "Search"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of articles.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "response": {
+                  "type": "object",
+                  "properties": {
+                    "docs": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/Article"
+                      }
+                    },
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "hits": {
+                          "type": "integer"
+                        },
+                        "offset": {
+                          "type": "integer"
+                        },
+                        "time": {
+                          "type": "integer"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.  Make sure api-key is set."
+          },
+          "429": {
+            "description": "Too many requests.  You reached your per minute or per day rate limit."
+          }
+        }
+      }
+    },
+    "/archive/v1/{year}/{month}.json": {
+      "get": {
+        "summary": "Returns an array of articles for a given month.",
+        "description": "Pass in year and month and get back JSON with all articles for that month. The response can be big (~20 megabytes) and contain thousands of articles, depending on the year and month.\n",
+        "parameters": [
+          {
+            "name": "year",
+            "in": "path",
+            "description": "Year: 1851-2019",
+            "required": true,
+            "type": "integer",
+            "default": 2018
+          },
+          {
+            "name": "month",
+            "in": "path",
+            "description": "Year: 1-12",
+            "required": true,
+            "type": "integer",
+            "default": 9
+          }
+        ],
+        "tags": [
+          "Archive"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of articles.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "copyright": {
+                  "type": "string"
+                },
+                "response": {
+                  "type": "object",
+                  "properties": {
+                    "meta": {
+                      "type": "object",
+                      "properties": {
+                        "hits": {
+                          "type": "integer"
+                        }
+                      }
+                    },
+                    "docs": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/Article"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request, check api-key is set.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "fault": {
+                  "type": "object",
+                  "properties": {
+                    "faultstring": {
+                      "type": "string"
+                    },
+                    "detail": {
+                      "type": "object",
+                      "properties": {
+                        "errorcode": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many requests.  You reached your per minute or per day rate limit."
+          }
+        }
+      }
+    },
+    "/topstories/v2/{section}.json": {
+      "get": {
+        "summary": "Top Stories",
+        "description": "The Top Stories API returns an array of articles currently on the specified section.\n",
+        "parameters": [
+          {
+            "name": "section",
+            "in": "path",
+            "description": "The section the story appears in.",
+            "required": true,
+            "type": "string",
+            "default": "home",
+            "enum": [
+              "arts",
+              "automobiles",
+              "books",
+              "business",
+              "fashion",
+              "food",
+              "health",
+              "home",
+              "insider",
+              "magazine",
+              "movies",
+              "nyregion",
+              "obituaries",
+              "opinion",
+              "politics",
+              "realestate",
+              "science",
+              "sports",
+              "sundayreview",
+              "technology",
+              "theater",
+              "t-magazine",
+              "travel",
+              "upshot",
+              "us",
+              "world"
+            ]
+          }
+        ],
+        "tags": [
+          "Stories"
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of articles.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "status": {
+                  "type": "string"
+                },
+                "copyright": {
+                  "type": "string"
+                },
+                "section": {
+                  "type": "string"
+                },
+                "last_updated": {
+                  "type": "string"
+                },
+                "num_results": {
+                  "type": "integer"
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/TopArticle"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized request.  Make sure api-key is set."
+          },
+          "429": {
+            "description": "Too many requests.  You reached your per minute or per day rate limit."
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Critic": {
+      "type": "object",
+      "properties": {
+        "display_name": {
+          "type": "string",
+          "description": "Critic's name (e.g. A. O. Scott)."
+        },
+        "sort_name": {
+          "type": "string",
+          "description": "Field used when sorting."
+        },
+        "status": {
+          "type": "string",
+          "description": "Status of the critic (full-time, part-time, or null)."
+        },
+        "bio": {
+          "type": "string",
+          "description": "Short bio of critic."
+        },
+        "seo-name": {
+          "type": "string",
+          "description": "Critic name for URL (spaces are replaced with hyphens and periods removed)."
+        },
+        "multimedia": {
+          "type": "object",
+          "description": "Image of critic.",
+          "properties": {
+            "resource": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "description": "Type of resource (always set to image)."
+                },
+                "src": {
+                  "type": "string",
+                  "description": "URL of image."
+                },
+                "height": {
+                  "type": "integer",
+                  "description": "Image height."
+                },
+                "width": {
+                  "type": "integer",
+                  "description": "Image width."
+                },
+                "credit": {
+                  "type": "string",
+                  "description": "Image photo credit."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Link": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Type of asset linked to. Always article."
+        },
+        "url": {
+          "type": "string",
+          "description": "Review URL."
+        },
+        "suggested_link_text": {
+          "type": "string",
+          "description": "Suggested text for link."
+        }
+      }
+    },
+    "MultiMedia": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Image crop name."
+        },
+        "src": {
+          "type": "string",
+          "description": "Image URL."
+        },
+        "width": {
+          "type": "integer",
+          "description": "Image width."
+        },
+        "height": {
+          "type": "integer",
+          "description": "Image height."
+        }
+      }
+    },
+    "Review": {
+      "type": "object",
+      "properties": {
+        "display_title": {
+          "type": "string",
+          "description": "Movie title."
+        },
+        "mpaa_rating": {
+          "type": "string",
+          "description": "Movie MPAA rating (e.g. PG-13)."
+        },
+        "critics_pick": {
+          "type": "integer",
+          "description": "Set to 1 if a critics' pick and 0 if not."
+        },
+        "byline": {
+          "type": "string",
+          "description": "Author of the review (e.g. Manohla Dargis)."
+        },
+        "headline": {
+          "type": "string",
+          "description": "Headline of the review."
+        },
+        "summary_short": {
+          "type": "string",
+          "description": "Short summary about the review."
+        },
+        "publication_date": {
+          "type": "string",
+          "description": "Review publication date."
+        },
+        "opening_date": {
+          "type": "string",
+          "description": "Movie U.S. opening date."
+        },
+        "date_updated": {
+          "type": "string",
+          "description": "Last modified date of the review."
+        },
+        "link": {
+          "$ref": "#/definitions/Link"
+        },
+        "multimedia": {
+          "$ref": "#/definitions/MultiMedia"
+        }
+      }
+    },
+    "EmailedArticle": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "adx_keywords": {
+          "type": "string"
+        },
+        "subsection": {
+          "type": "string"
+        },
+        "email_count": {
+          "type": "integer"
+        },
+        "count_type": {
+          "type": "string"
+        },
+        "column": {
+          "type": "string"
+        },
+        "eta_id": {
+          "type": "integer"
+        },
+        "section": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "asset_id": {
+          "type": "integer"
+        },
+        "nytdsection": {
+          "type": "string"
+        },
+        "byline": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "abstract": {
+          "type": "string"
+        },
+        "published_date": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string"
+        },
+        "des_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "org_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "per_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "geo_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "media": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Media"
+          }
+        },
+        "uri": {
+          "type": "string"
+        }
+      }
+    },
+    "Media": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "subtype": {
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "copyright": {
+          "type": "string"
+        },
+        "approved_for_syndication": {
+          "type": "boolean"
+        },
+        "media-metadata": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MediaMetadata"
+          }
+        }
+      }
+    },
+    "MediaMetadata": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "format": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer"
+        },
+        "width": {
+          "type": "integer"
+        }
+      }
+    },
+    "SharedArticle": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "adx_keywords": {
+          "type": "string"
+        },
+        "subsection": {
+          "type": "string"
+        },
+        "share_count": {
+          "type": "integer"
+        },
+        "count_type": {
+          "type": "string"
+        },
+        "column": {
+          "type": "string"
+        },
+        "eta_id": {
+          "type": "integer"
+        },
+        "section": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "asset_id": {
+          "type": "integer"
+        },
+        "nytdsection": {
+          "type": "string"
+        },
+        "byline": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "abstract": {
+          "type": "string"
+        },
+        "published_date": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "updated": {
+          "type": "string"
+        },
+        "des_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "org_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "per_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "geo_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "media": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Media"
+          }
+        },
+        "uri": {
+          "type": "string"
+        }
+      }
+    },
+    "ViewedArticle": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "adx_keywords": {
+          "type": "string"
+        },
+        "column": {
+          "type": "string"
+        },
+        "section": {
+          "type": "string"
+        },
+        "byline": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "abstract": {
+          "type": "string"
+        },
+        "published_date": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer"
+        },
+        "asset_id": {
+          "type": "integer"
+        },
+        "views": {
+          "type": "integer"
+        },
+        "des_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "org_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "per_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "geo_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "media": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Media"
+          }
+        },
+        "uri": {
+          "type": "string"
+        }
+      }
+    },
+    "Article": {
+      "type": "object",
+      "properties": {
+        "web_url": {
+          "type": "string"
+        },
+        "snippet": {
+          "type": "string"
+        },
+        "print_page": {
+          "type": "integer"
+        },
+        "source": {
+          "type": "string"
+        },
+        "multimedia": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Multimedia"
+          }
+        },
+        "headline": {
+          "$ref": "#/definitions/Headline"
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Keyword"
+          }
+        },
+        "pub_date": {
+          "type": "string"
+        },
+        "document_type": {
+          "type": "string"
+        },
+        "news_desk": {
+          "type": "string"
+        },
+        "byline": {
+          "$ref": "#/definitions/Byline"
+        },
+        "type_of_material": {
+          "type": "string"
+        },
+        "_id": {
+          "type": "string"
+        },
+        "word_count": {
+          "type": "integer"
+        },
+        "score": {
+          "type": "integer"
+        },
+        "uri": {
+          "type": "string"
+        }
+      }
+    },
+    "Byline": {
+      "type": "object",
+      "properties": {
+        "original": {
+          "type": "string"
+        },
+        "person": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Person"
+          }
+        },
+        "organization": {
+          "type": "string"
+        }
+      }
+    },
+    "Headline": {
+      "type": "object",
+      "properties": {
+        "main": {
+          "type": "string"
+        },
+        "kicker": {
+          "type": "string"
+        },
+        "content_kicker": {
+          "type": "string"
+        },
+        "print_headline": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "seo": {
+          "type": "string"
+        },
+        "sub": {
+          "type": "string"
+        }
+      }
+    },
+    "Keyword": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "rank": {
+          "type": "integer"
+        },
+        "major": {
+          "type": "string"
+        }
+      }
+    },
+    "Multimedia": {
+      "type": "object",
+      "properties": {
+        "rank": {
+          "type": "integer"
+        },
+        "subtype": {
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        },
+        "credit": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "height": {
+          "type": "integer"
+        },
+        "width": {
+          "type": "integer"
+        },
+        "legacy": {
+          "type": "object",
+          "properties": {
+            "xlarge": {
+              "type": "string"
+            },
+            "xlargewidth": {
+              "type": "integer"
+            },
+            "xlargeheight": {
+              "type": "integer"
+            }
+          }
+        },
+        "crop_name": {
+          "type": "string"
+        }
+      }
+    },
+    "Person": {
+      "type": "object",
+      "properties": {
+        "firstname": {
+          "type": "string"
+        },
+        "middlename": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "qualifier": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string"
+        },
+        "organization": {
+          "type": "string"
+        },
+        "rank": {
+          "type": "integer"
+        }
+      }
+    },
+    "TopArticle": {
+      "type": "object",
+      "properties": {
+        "section": {
+          "type": "string"
+        },
+        "subsection": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "abstract": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "uri": {
+          "type": "string"
+        },
+        "byline": {
+          "type": "string"
+        },
+        "item_type": {
+          "type": "string"
+        },
+        "updated_date": {
+          "type": "string"
+        },
+        "created_date": {
+          "type": "string"
+        },
+        "published_date": {
+          "type": "string"
+        },
+        "material_type_facet": {
+          "type": "string"
+        },
+        "kicker": {
+          "type": "string"
+        },
+        "des_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "org_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "per_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "geo_facet": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "multimedia": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string"
+              },
+              "format": {
+                "type": "string"
+              },
+              "height": {
+                "type": "integer"
+              },
+              "width": {
+                "type": "integer"
+              },
+              "type": {
+                "type": "string"
+              },
+              "subtype": {
+                "type": "string"
+              },
+              "caption": {
+                "type": "string"
+              },
+              "copyright": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "short_url": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "apikey": {
+      "type": "apiKey",
+      "name": "api-key",
+      "in": "query"
+    }
+  }
+}
